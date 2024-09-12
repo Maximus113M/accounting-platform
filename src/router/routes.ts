@@ -13,8 +13,19 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
         },
-        component: () => import('../modules/settings/display/views/SettingsView.vue'), 
+        component: () => import('../modules/settings/display/views/SettingsView.vue'),
+        children:[
+          
+        ] 
       },
+      { 
+        path: 'users-management', 
+        meta: {
+          requiresAuth: true,
+        },
+        component: () => import('../modules/settings/modules/user_management/display/views/UsersManagementView.vue'), 
+      },
+      
       { 
         path: 'test', 
         meta: {

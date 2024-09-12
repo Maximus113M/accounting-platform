@@ -1,5 +1,5 @@
 <template>
-    <q-card class="column items-center justify-center q-px-sm q-py-xl q-mx-lg q-my-md card">
+    <q-card class="column items-center justify-center q-px-sm q-py-xl q-mx-lg q-my-md card" @click="router.push(route)">
         <q-icon size="95px" color="primary" :name="props.icon"></q-icon>
         <div class="q-mt-xs text-center text-h5 text-bold text-primary">{{ props.name }}</div>
         <div class="q-mt-sm q-mx-sm text-center text-caption">{{ props.description }}</div>
@@ -7,6 +7,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const props = defineProps<SettingsCardProps>();
 
 export interface SettingsCardProps {
