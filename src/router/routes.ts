@@ -4,7 +4,34 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    meta: {
+      requiresAuth: true,
+    },
+    children: [
+      { 
+        path: '', 
+        meta: {
+          requiresAuth: true,
+        },
+        component: () => import('../modules/settings/display/views/SettingsView.vue'), 
+      },
+      { 
+        path: 'test', 
+        meta: {
+          requiresAuth: true,
+        },
+        component: () => import('../xpagesx/IndexPage.vue'), 
+      },
+      { 
+        path: 'NoRoute', 
+        meta: {
+          requiresAuth: true,
+        },
+        component: () => import('../xpagesx/ErrorNotFound.vue'), 
+      },
+      
+
+    ],
   },
 
   // Always leave this as last one,
