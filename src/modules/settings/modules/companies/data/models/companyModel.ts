@@ -1,5 +1,5 @@
-import { UserModel } from "src/models/userModel";
-import { LegalRepresentative } from "./legalRepresentative";
+import { UserModel } from 'src/models/userModel';
+import { LegalRepresentative } from './legalRepresentative';
 
 class CompanyModel{
     serial: number;

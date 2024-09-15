@@ -23,7 +23,14 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
         },
-        component: () => import('../modules/settings/modules/user_management/display/views/UsersManagementView.vue'), 
+        component: () => import('../modules/settings/modules/user_management/display/views/UsersManagementMainView.vue'), 
+      },
+      { 
+        path: 'group-management', 
+        meta: {
+          requiresAuth: true,
+        },
+        component: () => import('../modules/settings/modules/user_management/display/views/GroupManagementView.vue'), 
       },
       
       { 

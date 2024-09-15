@@ -7,7 +7,7 @@
 
         <q-toolbar-title>
           <div class="text-primary text-bold text-capitalize text-h4">SenaCont</div>
-          <div class="text-body2 text-weight-medium text-grey-10">Hola ¡Bienvenido!</div>
+          <div class="text-caption text-weight-medium text-grey-10">Hola ¡Bienvenido!</div>
         </q-toolbar-title>
         <div class="text-weight-medium text-grey-10">Quasar v{{ $q.version }}</div>
       </q-toolbar>

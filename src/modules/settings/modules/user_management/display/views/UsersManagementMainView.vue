@@ -28,9 +28,9 @@ const settingsMenu: SettingsCardProps[] = [
     },
     {
         icon: 'school',
-        name: 'Aprendices',
+        name: 'Fichas',
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus.',
-        route: '',
+        route: 'group-management',
     },
 ];
 

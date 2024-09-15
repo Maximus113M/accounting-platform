@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export abstract class UsersManagementDatasource {
     abstract getInstructor(id: string): Promise<any>;
     abstract getAllInstructors(): Promise<any[]>;
@@ -16,6 +18,7 @@ export abstract class UsersManagementDatasource {
     //Instructors
     async getInstructor(id: string): Promise<any> {
         try {
+            axios.get('', {});
             id;
         } catch (error) {
             throw new Error('Method not implemented.');

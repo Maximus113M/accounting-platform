@@ -35,9 +35,9 @@ export interface SettingsCardProps {
 
 .card:hover {
     background-color: #f7f7f7;
-    box-shadow: 0 8px 35px rgb(0, 183, 255, 0.8);
+    box-shadow: 0 8px 38px rgb(0, 183, 255, 0.8);
     border: 3px solid #00C8F8;
-    transform: scale(1.04);
+    transform: scale(1.05);
     cursor: pointer;
 }
 </style>
