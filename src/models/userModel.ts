@@ -16,20 +16,20 @@ export class UserModel{
         email,
         rol,
     } : {
-        id: number;
+        id?: number;
         names?: string;
         lastNames?: string;
         documentType?: string;
         documentNumber?: string;
         email?: string;
-        rol: number;
+        rol?: number;
     }){
-        this.id= id;
+        this.id= id?? 0;
         this.names= names?? '';
         this.lastNames= lastNames?? '';
         this.documentType= documentType?? '';
         this.documentNumber= documentNumber?? '';
         this.email= email?? '';
-        this.rol= rol;
+        this.rol= rol?? 0;
     }
 }

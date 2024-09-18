@@ -14,14 +14,14 @@ class LegalRepresentative{
         documentNumber,
         hasPartners,
     }:{
-        id: number;
+        id?: number;
         names?: string;
         lastNames?: string;
         documentType?: string;
         documentNumber?: string;
         hasPartners?: boolean;
     }){
-        this.id= id,
+        this.id= id?? 0,
         this.names= names?? '',
         this.lastNames= lastNames?? '',
         this.documentType= documentType?? '',

@@ -5,7 +5,7 @@
         </q-tooltip>
     </q-btn>
     <q-dialog v-model="isShowingDialog" backdrop-filter="blur(1px)">
-        <q-card style="min-width: 550px; width: 80%; max-width: 1300px;">
+        <q-card style="min-width: 580px; width: 90%; max-width: 1200px;">
             <q-card-section>
                 <div class="row justify-between q-pb-sm">
                     <div class="text-h5 text-weight-medium">Gestión de aprendices</div>
@@ -32,7 +32,8 @@
                     <template v-slot:body-cell-actions="props">
                         <q-td :props="props">
                             <div class="row justify-center q-gutter-xs">
-                                <q-btn flat dense icon="delete" @click="deleteDialog(props.row.id)">
+                                <StudentsDialog :student="props.row" />
+                                <q-btn flat dense icon="delete" @click="deleteDialog(props.row)">
                                     <q-tooltip :offset="[0, 10]" transition-show="scale" transition-hide="scale"
                                         class="text-caption">
                                         Eliminar
@@ -55,8 +56,10 @@
 </template>
 
 <script setup lang="ts">
+import StudentsDialog from './students/StudentsDialog.vue';
 import { ref } from 'vue';
 import { Dialog } from 'quasar';
+
 import { ClassGroup } from '../../../data/models/classGroup';
 import { StudentModel } from '../../../data/models/studentModel';
 
@@ -145,10 +148,10 @@ const columns: any = [
 ];
 
 
-const deleteDialog = (id: number) => {
+const deleteDialog = (student: StudentModel) => {
     Dialog.create({
         title: '<div class="text-red-7">Eliminar aprendiz</div>',
-        message: '¿Deseas eliminar al aprendiz seleccionado? Esta acción no puede revertirse.',
+        message: `¿<strong>Deseas eliminar</strong> al aprendiz seleccionado <strong>"${student.names} ${student.lastNames}"</strong> ? Esta acción <strong>no puede revertirse.</strong>`,
         ok: {
             push: true,
             color: 'light-blue-4'
@@ -160,7 +163,7 @@ const deleteDialog = (id: number) => {
         html: true,
     }).onOk(async (data) => {
         data;
-        console.log('>>>> OK, received', id)
+        console.log('>>>> OK, received', student)
     }).onCancel(() => {
     });
 }

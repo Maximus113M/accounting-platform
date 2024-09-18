@@ -32,6 +32,14 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('../modules/settings/modules/user_management/display/views/GroupManagementView.vue'), 
       },
+      //Company
+      { 
+        path: 'company', 
+        meta: {
+          requiresAuth: true,
+        },
+        component: () => import('../modules/settings/modules/companies/display/views/CompaniesView.vue'), 
+      },
       
       { 
         path: 'test', 

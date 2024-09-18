@@ -3,7 +3,7 @@
         <q-card flat class="bg-white q-pa-md"
             style="height: 100%; border-radius: 20px; border: 1px solid #EBEBEB; overflow-y: auto; ">
             <div class="row justify-start items-center">
-                <div class="cursor-pointer" @click="router.back()">
+                <div class="row items-center cursor-pointer" @click="router.back()">
                     <q-icon size="md" name="arrow_circle_left" />
                     <span class="q-ml-sm text-h6 text-bold">Gestión Usuarios</span>
                 </div>

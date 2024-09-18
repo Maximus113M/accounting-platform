@@ -18,18 +18,21 @@
             </q-card-section>
 
             <q-card-section>
-                <q-form @submit="onSubmit" id="class_group_form" class="row q-col-gutter-sm q-px-lg q-pb-lg">
+                <q-form @submit="onSubmit" id="class_group_form" class="row q-col-gutter-sm q-px-lg q-pb-md">
                     <div class="col-12 col-sm-6 col-md-2">
                         <div class="text-subtitle text-weight-medium">Codigo</div>
-                        <q-input outlined dense type="number" v-model.number="currentClassGroup.code" />
+                        <q-input outlined dense type="number" v-model.number="currentClassGroup.code"
+                            :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
                     </div>
                     <div class="col-12 col-sm-6 col-md-4">
                         <div class="text-subtitle text-weight-medium">Numero de programa</div>
-                        <q-input outlined dense type="number" v-model.number="currentClassGroup.number" />
+                        <q-input outlined dense type="number" v-model.number="currentClassGroup.number"
+                            :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
                     </div>
                     <div class="col-12 col-sm-12 col-md-6">
                         <div class="text-subtitle text-weight-medium">Nombre</div>
-                        <q-input outlined dense type="text" v-model="currentClassGroup.name" />
+                        <q-input outlined dense type="text" v-model="currentClassGroup.name"
+                            :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                     </div>
                 </q-form>
             </q-card-section>
