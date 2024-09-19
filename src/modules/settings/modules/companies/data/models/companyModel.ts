@@ -1,7 +1,7 @@
 import { UserModel } from 'src/models/userModel';
-import { LegalRepresentative } from './legalRepresentative';
-import { TaxData } from './taxData';
-import { BasicData } from './basicData';
+import { LegalRepresentative, legalRepresentativeFromJson, legalRepresentativeToJson } from './legalRepresentative';
+import { TaxData, taxDataFromJson, taxDataToJson } from './taxData';
+import { BasicData, basicDataFromJson, basicDataToJson } from './basicData';
 
 class CompanyModel{
     serial: number;
@@ -61,24 +61,44 @@ class CompanyModel{
 
 const companyModelFromJson= (json: any)=>{
     return new CompanyModel({
-        serial: json.serial,
-        regimeType: json.tipo_regimen,
-        emailContact: json.correo_contacto,
-        nameContact: json.nombre_contacto,
-        pageUrl: json.pagina_web,
-        isConsortium: json.es_consorcio,
-        debtCollector: json.cobrador_id,
-        logo: json.logo,
+        serial: json.datos_empresa?.serial,
+        regimeType: json.datos_empresa?.tipo_regimen_iva,
+        emailContact: json.datos_empresa?.correo_contacto,
+        nameContact: json.datos_empresa?.nombre_contacto,
+        pageUrl: json.datos_empresa?.pagina_web,
+        isConsortium: json.datos_empresa?.es_consorcio,
+        debtCollector: json.datos_empresa?.cobrador_id,
+        logo: json.datos_empresa?.logo,
         //TODO REVIEW
         relatedUser: new UserModel({}),
         //TODO REVIEW
-        taxData: new TaxData({}),
+        taxData: taxDataFromJson(json.datos_tributarios),
         //TODO REVIEW
-        legalRepresentative: new LegalRepresentative({}),
+        legalRepresentative: legalRepresentativeFromJson(json.representante_legal),
         //TODO REVIEW
-        basicData: new BasicData({}),
+        basicData: basicDataFromJson(json.datos_basicos),
     });
 }
 
+const companyModelToJson= (company: CompanyModel)=>{
+    return {
+        tipo_regimen_iva: company.regimeType,
+        correo_contacto: company.emailContact,
+        nombre_contacto: company.nameContact,
+        pagina_web: company.pageUrl,
+        es_consorcio: company.isConsortium,
+        cobrador_id: company.debtCollector,
+        logo: company.logo,
+        //TODO REVIEW
+        relatedUser: new UserModel({}),
+        //TODO REVIEW
+        taxData: taxDataToJson(company.taxData),
+        //TODO REVIEW
+        legalRepresentative: legalRepresentativeToJson(company.legalRepresentative),
+        //TODO REVIEW
+        basicData: basicDataToJson(company.basicData),
+    };
+}
 
-export{ CompanyModel, companyModelFromJson }
+
+export{ CompanyModel, companyModelFromJson, companyModelToJson }

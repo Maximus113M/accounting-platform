@@ -1,49 +1,43 @@
 class LegalRepresentative{
-    id: number;
     names: string;
     lastNames: string;
     documentType: string;
-    documentNumber: string;
+    documentNumber: number;
     hasPartners: boolean;
 
     constructor({
-        id,
         names,
         lastNames,
         documentType,
         documentNumber,
         hasPartners,
     }:{
-        id?: number;
         names?: string;
         lastNames?: string;
         documentType?: string;
-        documentNumber?: string;
+        documentNumber?: number;
         hasPartners?: boolean;
     }){
-        this.id= id?? 0,
         this.names= names?? '',
         this.lastNames= lastNames?? '',
         this.documentType= documentType?? '',
-        this.documentNumber= documentNumber?? '',
+        this.documentNumber= documentNumber?? 0,
         this.hasPartners= hasPartners?? false
     }
 }
 
 const legalRepresentativeFromJson= (json: any)=>{
     return new LegalRepresentative({
-        id: json.id_representante_legal,
         names: json.nombres,
         lastNames: json.apellidos,
         documentType: json.tipo_identificacion,
-        documentNumber: json.identificacion,
+        documentNumber: json.numero_identificacion,
         hasPartners: json.tiene_socios
     });   
 }
 
 const legalRepresentativeToJson= (legalRep: LegalRepresentative)=>{
     return {
-        id_representante_legal: legalRep.id,
         nombres: legalRep.names,
         apellidos: legalRep.lastNames,
         tipo_identificacion: legalRep.documentType,

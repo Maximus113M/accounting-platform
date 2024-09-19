@@ -44,46 +44,48 @@ class TaxData{
 
 
 class Tax {
-    code: string;
-    description: string;
+    key: string;
+    value: string;
 
     constructor({
-        code,
-        description
+        key,
+        value
     }:{
-        code?: string;
-        description?: string;
+        key?: string;
+        value?: string;
     }){
-        this.code= code?? '';
-        this.description= description?? '';
+        this.key= key?? '';
+        this.value= value?? '';
     }
 }
 
 class FiscalResponsibilities extends Tax {
     constructor({
-        code,
-        description
+        key,
+        value
     }:{
-        code?: string;
-        description?: string;
+        key?: string;
+        value?: string;
     }){
-        super({code, description});
+        super({key, value});
     }
 }
 
 class EconomicActivity extends Tax {
     constructor({
-        code,
-        description
+        key,
+        value
     }:{
-        code?: string;
-        description?: string;
+        key?: string;
+        value?: string;
     }){
-        super({code, description});
+        super({key, value});
     }
 }
 
 const taxDataFromJson= (json: any)=>{
+    const taxes= JSON.parse(json.tributos);
+
     return new TaxData({
         icaRate: json.tarifa_ica,
         hasAIU: json.maneja_aiu,
@@ -92,13 +94,19 @@ const taxDataFromJson= (json: any)=>{
         hasAdValoremTax: json.maneja_impuesto_ad_valorem,
         isForeignCurrency: json.moneda_extranjera,
         //TODO VERIFY
-        taxes: Object.keys((json.tributos as Record<string, any>)).map((item)=> new Tax({code: item, description: json.tributos[item]})),
-        economicActivity: new EconomicActivity({code: json.actividad_economica_codigo_ciiu}),
-        fiscalResponsibilities: (json.responsabilidades_fiscales as Array<string>).map((item)=> new FiscalResponsibilities({code: item})),
+        taxes: Object.keys(taxes).map((key)=> new Tax({key: key, value: taxes[key]})),
+        economicActivity: new EconomicActivity({key: json.actividad_economica_codigo_ciiu}),
+        fiscalResponsibilities: (json.responsabilidades_fiscales as Array<string>).map(
+            (key)=> new FiscalResponsibilities({key: key})
+        ),
     });
 }
 
 const taxDataToJson= (taxData: TaxData)=>{
+    const taxes: Record<string, any>= {};
+    taxData.taxes.forEach((item)=>{
+        taxes[item.key]= item.value;
+    });
     return {
         tarifa_ica: taxData.icaRate,
         maneja_aiu: taxData.hasAIU,
@@ -107,10 +115,10 @@ const taxDataToJson= (taxData: TaxData)=>{
         maneja_impuesto_ad_valorem: taxData.hasAdValoremTax,
         moneda_extranjera: taxData.isForeignCurrency,
         //TODO VERIFY
-        tributos: taxData.taxes.map((item)=>item.code),
-        actividad_economica_codigo_ciiu: taxData.economicActivity.code,
-        responsabilidades_fiscales: taxData.fiscalResponsibilities.map((item)=>item.code),
+        tributos: JSON.stringify(taxes),
+        actividad_economica_codigo_ciiu: taxData.economicActivity.key,
+        responsabilidades_fiscales: taxData.fiscalResponsibilities.map((item)=>item.key),
     };
 }
 
-export { TaxData, Tax, FiscalResponsibilities, EconomicActivity, taxDataFromJson }
+export { TaxData, Tax, FiscalResponsibilities, EconomicActivity, taxDataFromJson, taxDataToJson }
