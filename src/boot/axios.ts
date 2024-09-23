@@ -15,10 +15,11 @@ declare module 'vue' {
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = (accessToken: string) =>{
-  return axios.create({ baseURL: 'http://127.0.0.1:8000/api', 
+  return axios.create({ baseURL: 'http://127.0.0.1:8000/api',
     headers:{
       'Content-Type':'application/json',
-      'Authorization':'Bearer '+ accessToken
+      'Authorization':'Bearer '+ accessToken,
+      'Accept': 'application/json',
     }
   });
 

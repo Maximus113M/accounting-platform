@@ -33,10 +33,10 @@ const classGroupFromJson= (json: any)=>{
 
 const classGroupToJson= (classGroup: ClassGroup)=>{
     return {
-        id: classGroup.id,
-        code: classGroup.code,
-        number: classGroup.number,
-        name: classGroup.name,
+        //id: classGroup.id,
+        codigo: classGroup.code,
+        numero: classGroup.number,
+        programa: classGroup.name,
     };
 }
 

@@ -2,6 +2,6 @@ import { ClassGroup } from 'src/modules/settings/modules/user_management/data/mo
 
 export const useUsersManagementState = () => {
   return {
-    classGroups: [] as ClassGroup[]
+    classGroups: [] as ClassGroup[],
   };
 };

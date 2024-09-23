@@ -4,6 +4,7 @@ import { UsersManagementRepositoryImpl } from '../../data/respositories/usersMan
 import { UsersManagementUseCases } from '../../domain/use-cases/usersManagementUseCases';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { exceptiosResponseHandler } from 'src/core/helpers/exceptions';
+import { ClassGroup } from 'src/modules/settings/modules/user_management/data/models/classGroup';
 
 const usersManagementRepositoryImp = new UsersManagementRepositoryImpl(
   new UsersManagementDatasourceImpl()
@@ -25,23 +26,29 @@ const createStudent = async () => {
 const getClassGroups = async () => {
   try {
     const userManagementStore = useUsersManagementStore();
-    const token= sessionStorage.getItem('token');
 
-    if (!token) return { status: statusMessages.fail, message: 'Usuario no autenticado'};
-
-    const resp = await usersManagementUseCases.getClassGroups(token);
+    const token = sessionStorage.getItem('token');
+    const resp = await usersManagementUseCases.getClassGroups(token!);
 
     if (!resp || resp instanceof Error) {
-      console.log(resp);
       return { status: statusMessages.fail, message: (resp as Error).message ?? 'Error al obtener las fichas'};
     }
-    console.log(resp);
     userManagementStore.classGroups = resp;
     return { status: statusMessages.success, message: 'Datos obtenidos'};
   } catch (error: any) {
-    console.log(error);
     return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
   }
 }
 
-export { createStudent, getClassGroups };
+const createClassGroup = async (data: ClassGroup) => {
+  try {
+    const token= sessionStorage.getItem('token');
+    const res = await usersManagementUseCases.createClassGroup(token!, data);
+    return { status: statusMessages.success, message: res };
+  } catch (error: any) {
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
+
+
+export { createStudent, getClassGroups, createClassGroup };

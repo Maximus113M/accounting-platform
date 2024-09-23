@@ -20,4 +20,5 @@ export class UsersManagementUseCases{
     deleteStudent= (id: string) => this.usersManagementRepository.deleteStudent(id);
 
     getClassGroups= (accessToken: string): Promise<ClassGroup[] | Error> => this.usersManagementRepository.getClassGroups(accessToken);
+    createClassGroup= (accessToken: string, data: ClassGroup): Promise<string> => this.usersManagementRepository.createClassGroup(accessToken, data);
 }

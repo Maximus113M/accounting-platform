@@ -13,7 +13,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     async getInstructor(id: string): Promise<UserModel> {
         try {
 
-            return await this.usersManagementDatasource.getInstructor(id); 
+            return await this.usersManagementDatasource.getInstructor(id);
 
         } catch (err) {
             const error= err as ServerException;
@@ -23,7 +23,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     async getAllInstructors(): Promise<UserModel[]> {
         try {
 
-            return await this.usersManagementDatasource.getAllInstructors(); 
+            return await this.usersManagementDatasource.getAllInstructors();
 
         } catch (err) {
             const error= err as ServerException;
@@ -33,7 +33,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     async createInstructor(data: any): Promise<void> {
         try {
 
-            return await this.usersManagementDatasource.createInstructor(data); 
+            return await this.usersManagementDatasource.createInstructor(data);
 
         } catch (err) {
             const error= err as ServerException;
@@ -43,8 +43,8 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     async updateInstructor(id: string, data: any): Promise<void> {
         try {
 
-            return await this.usersManagementDatasource.updateInstructor(id, data); 
-          
+            return await this.usersManagementDatasource.updateInstructor(id, data);
+
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
@@ -52,9 +52,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     }
     async deleteInstructor(id: string): Promise<void> {
         try {
-
-            return await this.usersManagementDatasource.deleteInstructor(id); 
-
+            return await this.usersManagementDatasource.deleteInstructor(id);
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
@@ -63,9 +61,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
 
     async getStudent(id: string): Promise<UserModel> {
         try {
-
-            return await this.usersManagementDatasource.getStudent(id); 
-
+            return await this.usersManagementDatasource.getStudent(id);
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
@@ -73,9 +69,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     }
     async getAllStudents(): Promise<UserModel[]> {
         try {
-
-            return await this.usersManagementDatasource.getAllStudents(); 
-
+            return await this.usersManagementDatasource.getAllStudents();
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
@@ -83,9 +77,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     }
     async createStudent(data: any): Promise<void> {
         try {
-
-            return await this.usersManagementDatasource.createStudent(data); 
-
+            return await this.usersManagementDatasource.createStudent(data);
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
@@ -93,9 +85,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     }
     async updateStudent(id: string, data: any): Promise<void> {
         try {
-
-            return await this.usersManagementDatasource.updateStudent(id, data); 
-
+            return await this.usersManagementDatasource.updateStudent(id, data);
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
@@ -103,9 +93,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     }
     async deleteStudent(id: string): Promise<void> {
         try {
-
-            return await this.usersManagementDatasource.deleteStudent(id); 
-
+            return await this.usersManagementDatasource.deleteStudent(id);
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
@@ -115,8 +103,16 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository{
     async getClassGroups(accessToken: string) : Promise<ClassGroup[] | Error> {
         try {
             return await this.usersManagementDatasource.getClassGroups(accessToken);
-
         } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }
+    }
+
+    async createClassGroup(accessToken:string, data: ClassGroup): Promise<string> {
+        try {
+            return await this.createClassGroup(accessToken, data);
+        }  catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
         }

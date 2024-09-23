@@ -1,4 +1,4 @@
-import { UserModel } from "src/models/userModel";
+import { UserModel } from 'src/models/userModel';
 import { ClassGroup } from 'src/modules/settings/modules/user_management/data/models/classGroup';
 
 
@@ -15,8 +15,8 @@ export abstract class UsersManagementRepository{
     abstract updateStudent(id: string, data: any): Promise<void>;
     abstract deleteStudent(id: string): Promise<void>;
 
-
     abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error>;
+    abstract createClassGroup(accessToken:string, data: ClassGroup): Promise<string>;
 
 }
 

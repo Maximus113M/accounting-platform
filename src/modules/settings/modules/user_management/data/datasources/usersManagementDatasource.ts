@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { ServerException } from 'src/core/helpers/exceptions';
 import { UserModel } from 'src/models/userModel';
-import { ClassGroup, classGroupFromJson } from 'src/modules/settings/modules/user_management/data/models/classGroup';
+import {
+  ClassGroup,
+  classGroupFromJson,
+  classGroupToJson
+} from 'src/modules/settings/modules/user_management/data/models/classGroup';
 import { api } from 'boot/axios';
-import { ServerException } from 'src/core/helpers/exceptions';
 
 export abstract class UsersManagementDatasource {
     abstract getInstructor(id: string): Promise<UserModel>;
@@ -18,7 +21,9 @@ export abstract class UsersManagementDatasource {
     abstract updateStudent(id: string, data: any): Promise<void>;
     abstract deleteStudent(id: string): Promise<void>;
 
-    abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error> ;
+    abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error>;
+    abstract createClassGroup(accessToken: string, data: ClassGroup): Promise<string>;
+
   }
 
   export class UsersManagementDatasourceImpl implements UsersManagementDatasource{
@@ -107,12 +112,20 @@ export abstract class UsersManagementDatasource {
     // Class Groups
     async getClassGroups(accessToken: string): Promise<ClassGroup[]|Error> {
         try {
-          console.log(accessToken);
             const { data } = await api(accessToken).get('/ficha');
-            return (data as Array<any>).map(function (data) {
+            return (data as []).map(function (data) {
                 return classGroupFromJson(data);
             });
         } catch (error : any) {
+            throw new ServerException({code: error?.status , data: error});
+        }
+    }
+    async createClassGroup(accessToken: string, data: ClassGroup): Promise<string> {
+        try {
+            const res = await api(accessToken).post('/ficha', classGroupToJson(data));
+            return res.data['message'];
+        }  catch (error : any) {
+            // @TODO = Falta Implementar el manejo de errores cuando la data no cumple con las reglas del Backend.
             console.log(error);
             throw new ServerException({code: error?.status , data: error});
         }
