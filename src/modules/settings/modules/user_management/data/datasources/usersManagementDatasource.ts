@@ -1,5 +1,8 @@
 import axios from 'axios';
 import { UserModel } from 'src/models/userModel';
+import { ClassGroup, classGroupFromJson } from 'src/modules/settings/modules/user_management/data/models/classGroup';
+import { api } from 'boot/axios';
+import { ServerException } from 'src/core/helpers/exceptions';
 
 export abstract class UsersManagementDatasource {
     abstract getInstructor(id: string): Promise<any>;
@@ -13,8 +16,10 @@ export abstract class UsersManagementDatasource {
     abstract createStudent(data: any): Promise<void>;
     abstract updateStudent(id: string, data: any): Promise<void>;
     abstract deleteStudent(id: string): Promise<void>;
+
+    abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error> ;
   }
-  
+
   export class UsersManagementDatasourceImpl implements UsersManagementDatasource{
     //Instructors
     async getInstructor(id: string): Promise<any> {
@@ -27,7 +32,7 @@ export abstract class UsersManagementDatasource {
     }
     async getAllInstructors(): Promise<UserModel[] | Error> {
         try {
-            
+
             return [];
         } catch (error) {
             throw new Error('Method not implemented.');
@@ -55,7 +60,7 @@ export abstract class UsersManagementDatasource {
             throw new Error('Method not implemented.');
         }
     }
-    
+
     //Students
     async getStudent(id: string): Promise<any> {
         try {
@@ -91,6 +96,20 @@ export abstract class UsersManagementDatasource {
             id
         } catch (error) {
             throw new Error('Method not implemented.');
+        }
+    }
+
+    // Class Groups
+    async getClassGroups(accessToken: string): Promise<ClassGroup[]|Error> {
+        try {
+          console.log(accessToken);
+            const { data } = await api(accessToken).get('/ficha');
+            return (data as Array<any>).map(function (data) {
+                return classGroupFromJson(data);
+            });
+        } catch (error : any) {
+            console.log(error);
+            throw new ServerException({code: error?.status , data: error});
         }
     }
   }

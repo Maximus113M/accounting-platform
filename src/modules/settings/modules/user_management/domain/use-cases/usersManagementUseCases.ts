@@ -1,6 +1,7 @@
 import { UsersManagementRepository } from '../repositories/usersManagementRepository';
+import { ClassGroup } from 'src/modules/settings/modules/user_management/data/models/classGroup';
 export class UsersManagementUseCases{
-    
+
     private usersManagementRepository: UsersManagementRepository;
     constructor(usersManagementRepository: UsersManagementRepository){
         this.usersManagementRepository = usersManagementRepository;
@@ -17,4 +18,6 @@ export class UsersManagementUseCases{
     createStudent= (data: any) => this.usersManagementRepository.createStudent(data);
     updateStudent= (id: string, data: any) => this.usersManagementRepository.updateStudent(id, data);
     deleteStudent= (id: string) => this.usersManagementRepository.deleteStudent(id);
+
+    getClassGroups= (accessToken: string): Promise<ClassGroup[] | Error> => this.usersManagementRepository.getClassGroups(accessToken);
 }

@@ -25,9 +25,9 @@ class ClassGroup{
 const classGroupFromJson= (json: any)=>{
     return new ClassGroup({
         id: json.id,
-        code: json.code,
-        number: json.number,
-        name: json.name,
+        code: json.codigo,
+        number: json.numero,
+        name: json.programa,
     });
 }
 
