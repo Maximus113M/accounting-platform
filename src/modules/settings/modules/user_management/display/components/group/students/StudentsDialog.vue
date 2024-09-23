@@ -59,23 +59,23 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { StudentModel } from '../../../../data/models/studentModel';
+import { UserModel } from 'src/models/userModel';
 import { useUsersManagementStore } from '../../../store';
 
 const props = defineProps({
-    student: { type: StudentModel }
+    student: { type: UserModel }
 });
 
 const useStudentsStore = useUsersManagementStore();
 
 const isShowingDialog = ref<boolean>(false);
-const currentStudent = ref(new StudentModel({ id: 0, rol: 3, groupCode: 0 }));
+const currentStudent = ref(new UserModel({ id: 0, rol: 3, classGroupCode: 0 }));
 
 const showDialog = () => {
     if (props.student) {
-        currentStudent.value = new StudentModel({ ...props.student });
+        currentStudent.value = new UserModel({ ...props.student });
     } else {
-        currentStudent.value = new StudentModel({ id: 0, rol: 3, groupCode: 0 });
+        currentStudent.value = new UserModel({ id: 0, rol: 3, classGroupCode: 0 });
     }
 
     isShowingDialog.value = true;

@@ -31,8 +31,8 @@
                         </div>
 
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Tipo razón social</div>
-                            <div class="row justify-around">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo razón social</div>
+                            <div class="row justify-around radio-border">
                                 <q-radio v-model="currentCompany.basicData.businessTypeName" label="Personal Natural"
                                     val="Personal Natural" />
                                 <q-radio v-model="currentCompany.basicData.businessTypeName" label="Empresa"
@@ -40,83 +40,83 @@
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Razón social</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Razón social</div>
                             <q-input outlined dense type="text" v-model="currentCompany.basicData.businessName"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Serial</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Serial</div>
                             <q-input outlined dense type="text" v-model.number="currentCompany.serial"
                                 :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Tipo Documento</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
                             <q-select outlined dense v-model="currentCompany.basicData.documentType"
                                 :options="documentTypes"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                             </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Documento</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
                             <q-input outlined dense type="number"
                                 v-model.number="currentCompany.basicData.documentNumber"
                                 :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Nombre Comercial</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre Comercial</div>
                             <q-input outlined dense type="text" v-model="currentCompany.basicData.companyName"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Ciudad</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Ciudad</div>
                             <q-select outlined dense v-model="currentCompany.basicData.city.name" :options="cities"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Dirección</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
                             <q-input outlined dense type="text" v-model="currentCompany.basicData.address"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Dirección</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
                             <q-input outlined dense type="text" v-model="currentCompany.basicData.address"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Tipo de Regimen</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo de Regimen</div>
                             <q-select outlined dense type="text" v-model="currentCompany.regimeType"
                                 :options="regimeTypeOptions"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Correo contacto</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo contacto</div>
                             <q-input outlined dense type="text" v-model="currentCompany.emailContact"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Correo contacto</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo contacto</div>
                             <q-input outlined dense type="text" v-model="currentCompany.nameContact"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Página Web</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Página Web</div>
                             <q-input outlined dense type="text" v-model="currentCompany.pageUrl"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Teléfono</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Teléfono</div>
                             <q-input outlined dense type="text" v-model="currentCompany.basicData.phone"
                                 :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Es consorcio o unión temporal</div>
-                            <div class="row justify-around">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Es consorcio o unión temporal</div>
+                            <div class="row justify-around radio-border">
                                 <q-radio v-model="currentCompany.basicData.businessTypeName" label="Si" :val="true" />
                                 <q-radio v-model="currentCompany.basicData.businessTypeName" label="No" :val="false" />
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Cobrador por defecto</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Cobrador por defecto</div>
                             <q-select outlined dense type="text" v-model="currentCompany.regimeType"
                                 :options="['Camilo', 'Daniel', 'Freddy']"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
@@ -130,48 +130,62 @@
                         </div>
 
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Código actividad económica</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Código actividad económica</div>
                             <q-select outlined dense v-model="currentCompany.taxData.economicActivity"
                                 :options="economicActivities"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                             </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Tarifa ICA</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Tarifa ICA</div>
                             <q-input outlined dense type="number" v-model.number="currentCompany.taxData.icaRate"
                                 :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Responsabilidades fiscales</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Responsabilidades fiscales</div>
                             <q-select outlined dense v-model="currentCompany.taxData.fiscalResponsibilities"
-                                :options="fiscalResponsibilities" />
+                                :options="fiscalResponsibilities"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 q-mb-lg">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Tributos</div>
-                            <q-select outlined dense v-model="currentCompany.taxData.taxes" :options="[]" />
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Tributos</div>
+                            <q-select outlined dense v-model="currentCompany.taxData.taxes" :options="[]"
+                                class="q-mb-md" />
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 row items-center justify-around">
-                            <span class="q-pb-xs text-subtitle text-weight-medium">Maneja AIU</span>
-                            <q-checkbox outlined dense type="text" v-model="currentCompany.taxData.hasAIU" />
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4 row items-center justify-around q-mb-md">
-                            <div class="q-pb-xs text-subtitle text-weight-medium row items-center justify-around">
-                                Utilizo dos impuestos cargos en la factura de venta
+                        <div class="col-12 col-sm-6 col-md-4 ">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Maneja AIU</div>
+                            <div class="row justify-around radio-border">
+                                <q-radio v-model="currentCompany.taxData.hasAIU" label="Si" :val="true" />
+                                <q-radio v-model="currentCompany.taxData.hasAIU" label="No" :val="false" />
                             </div>
-                            <q-checkbox outlined dense type="text" v-model="currentCompany.taxData.hasDoubleTax" />
+
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 row items-center justify-around q-mb-md">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">
+                                Utilizó dos impuestos cargos en la factura de venta
+                            </div>
+                            <div class="row justify-around radio-border">
+                                <q-radio v-model="currentCompany.taxData.hasDoubleTax" label="Si" :val="true" />
+                                <q-radio v-model="currentCompany.taxData.hasDoubleTax" label="No" :val="false" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">
                                 Es agente retenedor del impuesto sobre las ventas IVA
                             </div>
-                            <q-checkbox outlined dense type="text"
-                                v-model="currentCompany.taxData.isWithholdingAgent" />
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4 row items-center justify-around q-mb-md">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">
-                                Maneja impuesto Ad-Valorem (para industrias de licores)
+                            <div class="row justify-around radio-border">
+                                <q-radio v-model="currentCompany.taxData.isWithholdingAgent" label="Si" :val="true" />
+                                <q-radio v-model="currentCompany.taxData.isWithholdingAgent" label="No" :val="false" />
                             </div>
-                            <q-checkbox outlined dense type="text" v-model="currentCompany.taxData.hasAdValoremTax" />
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">
+                                Maneja impuesto Ad-Valorem (industrias de licores)
+                            </div>
+                            <div class="row justify-around radio-border">
+                                <q-radio v-model="currentCompany.taxData.hasAdValoremTax" label="Si" :val="true" />
+                                <q-radio v-model="currentCompany.taxData.hasAdValoremTax" label="No" :val="false" />
+                            </div>
                         </div>
                     </div>
 
@@ -180,31 +194,31 @@
                             Representante Legal
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Nombres</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombres</div>
                             <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.names"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Apellidos</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
                             <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.lastNames"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Tipo Identificación</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Identificación</div>
                             <q-select outlined dense v-model="currentCompany.legalRepresentative.documentType"
                                 :options="documentTypes"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                             </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">Identificación</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Identificación</div>
                             <q-input outlined dense type="number"
                                 v-model.number="currentCompany.legalRepresentative.documentNumber"
                                 :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle text-weight-medium">¿Tienes socios en la empresa?</div>
-                            <div class="row justify-around">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">¿Tienes socios en la empresa?</div>
+                            <div class="row justify-around radio-border">
                                 <q-radio v-model="currentCompany.legalRepresentative.hasPartners" label="Si"
                                     :val="true" />
                                 <q-radio v-model="currentCompany.legalRepresentative.hasPartners" label="No"
@@ -316,3 +330,10 @@ const hideDialog = () => {
 }
 
 </script>
+
+<style scoped>
+.radio-border {
+    border-radius: 7px;
+    border: 1px solid lightgray;
+}
+</style>

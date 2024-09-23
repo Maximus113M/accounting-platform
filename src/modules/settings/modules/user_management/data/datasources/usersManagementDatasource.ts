@@ -1,18 +1,19 @@
 import axios from 'axios';
+import { ServerException } from 'src/core/helpers/exceptions';
 import { UserModel } from 'src/models/userModel';
 import { ClassGroup, classGroupFromJson } from 'src/modules/settings/modules/user_management/data/models/classGroup';
 import { api } from 'boot/axios';
 import { ServerException } from 'src/core/helpers/exceptions';
 
 export abstract class UsersManagementDatasource {
-    abstract getInstructor(id: string): Promise<any>;
-    abstract getAllInstructors(): Promise<any[] | Error>;
+    abstract getInstructor(id: string): Promise<UserModel>;
+    abstract getAllInstructors(): Promise<UserModel[]>;
     abstract createInstructor(data: any): Promise<void>;
     abstract updateInstructor(id: string, data: any): Promise<void>;
     abstract deleteInstructor(id: string): Promise<void>;
 
-    abstract getStudent(id: string): Promise<any>;
-    abstract getAllStudents(): Promise<any[]>;
+    abstract getStudent(id: string): Promise<UserModel>;
+    abstract getAllStudents(): Promise<UserModel[]>;
     abstract createStudent(data: any): Promise<void>;
     abstract updateStudent(id: string, data: any): Promise<void>;
     abstract deleteStudent(id: string): Promise<void>;
@@ -22,80 +23,84 @@ export abstract class UsersManagementDatasource {
 
   export class UsersManagementDatasourceImpl implements UsersManagementDatasource{
     //Instructors
-    async getInstructor(id: string): Promise<any> {
+    async getInstructor(id: string): Promise<UserModel> {
         try {
             axios.get('', {});
             id;
-        } catch (error) {
-            throw new Error('Method not implemented.');
+            //TODO Verify
+            return new UserModel({});
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
-    async getAllInstructors(): Promise<UserModel[] | Error> {
+    async getAllInstructors(): Promise<UserModel[]> {
         try {
-
             return [];
-        } catch (error) {
-            throw new Error('Method not implemented.');
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
     async createInstructor(data: any): Promise<void> {
         try {
             data
-        } catch (error) {
-            throw new Error('Method not implemented.');
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
     async updateInstructor(id: string, data: any): Promise<void> {
         try {
             id
             data
-        } catch (error) {
-            throw new Error('Method not implemented.');
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
     async deleteInstructor(id: string): Promise<void> {
         try {
             id
-        } catch (error) {
-            throw new Error('Method not implemented.');
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
 
     //Students
-    async getStudent(id: string): Promise<any> {
+    async getStudent(id: string): Promise<UserModel> {
         try {
             id
-        } catch (error) {
-            throw new Error('Method not implemented.');
+            //TODO Verify
+            return new UserModel({});
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
-    async getAllStudents(): Promise<any[]> {
+    async getAllStudents(): Promise<UserModel[]> {
         try {
+            //TODO Verify
             return [];
-        } catch (error) {
-            throw new Error('Method not implemented.');
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
     async createStudent(data: any): Promise<void> {
         try {
             data
-        } catch (error) {
-            throw new Error('Method not implemented.');
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
     async updateStudent(id: string, data: any): Promise<void> {
         try {
             id
             data
-        } catch (error) {
-            throw new Error('Method not implemented.');
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
     async deleteStudent(id: string): Promise<void> {
         try {
             id
-        } catch (error) {
-            throw new Error('Method not implemented.');
+        } catch (error: any) {
+            throw new ServerException({code: error?.status , data: error});
         }
     }
 
