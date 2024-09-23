@@ -1,58 +1,59 @@
 import { ServerException } from 'src/core/helpers/exceptions';
 import { CompaniesRepository } from '../../domain/repositories/companiesRepository';
 import { CompaniesDatasource } from '../datasources/companiesDatasource';
+import { CompanyModel } from '../models/companyModel';
 
 export class CompaniesRepositoryImpl implements CompaniesRepository{
     private companiesDatasource: CompaniesDatasource;
     constructor(companiesDatasource: CompaniesDatasource){
         this.companiesDatasource= companiesDatasource;
     }
-    async getCompany(id: string, accessToken: string): Promise<any> {
+    async getCompany(id: string, accessToken: string): Promise<CompanyModel> {
         try {
-            await this.companiesDatasource.getCompany(id, accessToken); 
+            return await this.companiesDatasource.getCompany(id, accessToken); 
         } catch (err) {
-            const error= err as Error;
-            throw new ServerException(error.message);
+            const error= err as ServerException;
+            throw new ServerException({...error});
         }
     }
-    async getAllCompanies(accessToken: string): Promise<any> {
+    async getAllCompanies(accessToken: string): Promise<CompanyModel[]> {
         try {
-            await this.companiesDatasource.getAllCompanies(accessToken); 
+            return await this.companiesDatasource.getAllCompanies(accessToken); 
         } catch (err) {
-            const error= err as Error;
-            throw new ServerException(error.message);
+            const error= err as ServerException;
+            throw new ServerException({...error});
         }
     }
     async createCompany(data: any, accessToken: string): Promise<void> {
         try {
-            await this.companiesDatasource.createCompany(data, accessToken); 
+            return await this.companiesDatasource.createCompany(data, accessToken); 
         } catch (err) {
-            const error= err as Error;
-            throw new ServerException(error.message);
+            const error= err as ServerException;
+            throw new ServerException({...error});
         }
     }
     async updateCompany(id: string, data: any, accessToken: string): Promise<void> {
         try {
-            await this.companiesDatasource.updateCompany(id, data, accessToken); 
+            return await this.companiesDatasource.updateCompany(id, data, accessToken); 
         } catch (err) {
-            const error= err as Error;
-            throw new ServerException(error.message);
+            const error= err as ServerException;
+            throw new ServerException({...error});
         }
     }
     async deleteCompany(id: string, accessToken: string): Promise<void> {
         try {
-            await this.companiesDatasource.deleteCompany(id, accessToken); 
+            return await this.companiesDatasource.deleteCompany(id, accessToken); 
         } catch (err) {
-            const error= err as Error;
-            throw new ServerException(error.message);
+            const error= err as ServerException;
+            throw new ServerException({...error});
         }
     }
     async cloneCompany(serial: string, groupNumber: number, accessToken: string): Promise<any> {
         try {
-            await this.companiesDatasource.cloneCompany(serial, groupNumber, accessToken); 
+            return await this.companiesDatasource.cloneCompany(serial, groupNumber, accessToken); 
         } catch (err) {
-            const error= err as Error;
-            throw new ServerException(error.message);
+            const error= err as ServerException;
+            throw new ServerException({...error});
         }
     }
 }

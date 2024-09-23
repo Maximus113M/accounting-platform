@@ -1,15 +1,19 @@
 import { useUsersManagementStore } from '.';
+import { UsersManagementDatasourceImpl } from '../../data/datasources/usersManagementDatasource';
+import { UsersManagementRepositoryImpl } from '../../data/respositories/usersManagementRepositoryImpl';
+import { UsersManagementUseCases } from '../../domain/use-cases/usersManagementUseCases';
 
-//const salesRepositoryImp = new SalesRepositoryImpl(new SalesDatasourceImpl());
-//const salesUseCase = new SalesUseCase(salesRepositoryImp);
+const usersManagementRepositoryImp = new UsersManagementRepositoryImpl(new UsersManagementDatasourceImpl());
+const usersManagementUseCases = new UsersManagementUseCases(usersManagementRepositoryImp);
 
 export const createStudent = async () => {
   try {
     useUsersManagementStore
-    // const res = await salesUseCase.create(toFirebaseSales(sale), file);
-    // return { status: statusMessages.success, message: "success", id: res };
+    await usersManagementUseCases.createStudent({});
+    
+    return { status: 'success', message: 'success' };
   } catch (error: any) {
-    // const { code, message, details } = "response" in error ? error.response.data.error : error;
-    // return { status: statusMessages.fail, error: new CustomError(code, message, details) };
+     //const { code, message, details } = "response" in error ? error.response.data.error : error;
+     //return { status: statusMessages.fail, error: new CustomError(code, message, details) };
   }
 };

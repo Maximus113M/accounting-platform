@@ -1,57 +1,84 @@
 import { RouteRecordRaw } from 'vue-router';
+import { accessRols, checkIfAuthenticated } from './guards/authGuard';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
+    beforeEnter: [checkIfAuthenticated],
+    component: () => import('../modules/auth/display/views/AuthView.vue'),
+    meta: {
+      requiresAuth: false,
+      access: accessRols.all
+    },
+    children: [
+
+    ]
+  },
+  {
+    path: '/main/',
+    beforeEnter: [checkIfAuthenticated],
     component: () => import('layouts/MainLayout.vue'),
     meta: {
       requiresAuth: true,
+      access: accessRols.all
     },
     children: [
       { 
         path: '', 
+        beforeEnter: [checkIfAuthenticated],
+        component: () => import('../modules/settings/display/views/SettingsView.vue'),
         meta: {
           requiresAuth: true,
+          access: accessRols.all,
         },
-        component: () => import('../modules/settings/display/views/SettingsView.vue'),
         children:[
           
         ] 
       },
       { 
         path: 'users-management', 
+        beforeEnter: [checkIfAuthenticated],
+        component: () => import('../modules/settings/modules/user_management/display/views/UsersManagementMainView.vue'), 
         meta: {
           requiresAuth: true,
+          access: accessRols.adminAndTeachers
+
         },
-        component: () => import('../modules/settings/modules/user_management/display/views/UsersManagementMainView.vue'), 
       },
       { 
-        path: 'group-management', 
+        path: 'group-management',
+        beforeEnter: [checkIfAuthenticated], 
+        component: () => import('../modules/settings/modules/user_management/display/views/GroupManagementView.vue'), 
         meta: {
           requiresAuth: true,
+          access: accessRols.adminAndTeachers
         },
-        component: () => import('../modules/settings/modules/user_management/display/views/GroupManagementView.vue'), 
       },
       //Company
       { 
         path: 'company', 
+        beforeEnter: [checkIfAuthenticated],
+        component: () => import('../modules/settings/modules/companies/display/views/CompaniesView.vue'), 
         meta: {
           requiresAuth: true,
+          access: accessRols.all
         },
-        component: () => import('../modules/settings/modules/companies/display/views/CompaniesView.vue'), 
       },
       
       { 
         path: 'test', 
+        beforeEnter: [checkIfAuthenticated],
+        component: () => import('../xpagesx/IndexPage.vue'), 
         meta: {
           requiresAuth: true,
+          access: accessRols.all
         },
-        component: () => import('../xpagesx/IndexPage.vue'), 
       },
       { 
         path: 'NoRoute', 
         meta: {
-          requiresAuth: true,
+          requiresAuth: false,
+          access:  accessRols.all
         },
         component: () => import('../xpagesx/ErrorNotFound.vue'), 
       },

@@ -1,4 +1,5 @@
 import { useSettingsStore } from '.';
+import { useSettingsState } from './state';
 
 //const salesRepositoryImp = new SalesRepositoryImpl(new SalesDatasourceImpl());
 //const salesUseCase = new SalesUseCase(salesRepositoryImp);
@@ -6,6 +7,8 @@ import { useSettingsStore } from '.';
 export const createSale = async () => {
   try {
     useSettingsStore
+    const state= useSettingsState();
+    state.x;
     // const res = await salesUseCase.create(toFirebaseSales(sale), file);
     // return { status: statusMessages.success, message: 'success', id: res };
   } catch (error: any) {
@@ -13,14 +16,3 @@ export const createSale = async () => {
     // return { status: statusMessages.fail, error: new CustomError(code, message, details) };
   }
 };
-
-
-export enum SalesActivityTypes {
-  createSale = 'Creación de Venta',
-  editSale = 'Edición de Venta',
-  deleteSale = 'Eliminación de Venta',
-  paymentError = 'Registro Error de Pago',
-  refund = 'Devolución',
-  updateBaseCash = 'Edición de Base Caja',
-  printBill = 'Impresión de factura',
-}

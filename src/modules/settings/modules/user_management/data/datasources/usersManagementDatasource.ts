@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { UserModel } from 'src/models/userModel';
 
 export abstract class UsersManagementDatasource {
     abstract getInstructor(id: string): Promise<any>;
-    abstract getAllInstructors(): Promise<any[]>;
+    abstract getAllInstructors(): Promise<any[] | Error>;
     abstract createInstructor(data: any): Promise<void>;
     abstract updateInstructor(id: string, data: any): Promise<void>;
     abstract deleteInstructor(id: string): Promise<void>;
@@ -24,8 +25,9 @@ export abstract class UsersManagementDatasource {
             throw new Error('Method not implemented.');
         }
     }
-    async getAllInstructors(): Promise<any[]> {
+    async getAllInstructors(): Promise<UserModel[] | Error> {
         try {
+            
             return [];
         } catch (error) {
             throw new Error('Method not implemented.');

@@ -14,13 +14,15 @@ declare module 'vue' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-const api = (accessToken: string) =>
-axios.create({ baseURL: 'http://127.0.0.1:8000/api', 
-  headers:{
-    'Content-Type':'application/json',
-    'Authorization':'Bearer '+ accessToken
-  }
-});
+const api = (accessToken: string) =>{
+  return axios.create({ baseURL: 'http://127.0.0.1:8000/api', 
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+ accessToken
+    }
+  });
+
+}
 
 
 export default boot(({ app }) => {

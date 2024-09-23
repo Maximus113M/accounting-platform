@@ -1,4 +1,4 @@
-export const  deepClone = <T>(obj: T): T =>{
+const  deepClone = <T>(obj: T): T =>{
     if (obj === null || typeof obj !== 'object') {
       return obj;
     }
@@ -28,3 +28,5 @@ export const  deepClone = <T>(obj: T): T =>{
   
     return objCopy;
   }
+
+  export { deepClone }

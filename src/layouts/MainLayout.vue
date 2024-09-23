@@ -51,13 +51,13 @@ const menuItemList = ref<SideBarItemProps[]>([
   {
     title: 'Configuración',
     icon: 'settings',
-    route: '/',
+    route: '/main/',
     isSelected: true,
   },
   {
     title: 'Contabilidad',
     icon: 'receipt_long',
-    route: '/test',
+    route: '/main/test',
     isSelected: false,
   },
   {

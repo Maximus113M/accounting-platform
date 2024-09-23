@@ -60,10 +60,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { StudentModel } from '../../../../data/models/studentModel';
+import { useUsersManagementStore } from '../../../store';
 
 const props = defineProps({
     student: { type: StudentModel }
 });
+
+const useStudentsStore = useUsersManagementStore();
 
 const isShowingDialog = ref<boolean>(false);
 const currentStudent = ref(new StudentModel({ id: 0, rol: 3, groupCode: 0 }));
@@ -78,8 +81,13 @@ const showDialog = () => {
     isShowingDialog.value = true;
 }
 
-const onSubmit = () => {
+const onSubmit = async () => {
+    const resp = await useStudentsStore.createStudent();
+    if (resp?.status != 'sucess') {
+
+    }
     hideDialog();
+
 }
 
 const hideDialog = () => {
