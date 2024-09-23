@@ -50,15 +50,25 @@
 import ClassGroupDialog from '../components/group/ClassGroupDialog.vue';
 import ManagementStudentsDialog from '../components/group/ManagementStudentsDialog.vue';
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Dialog } from 'quasar';
 import { useRouter } from 'vue-router';
 
 import { ClassGroup } from '../../data/models/classGroup';
+import { useUsersManagementStore } from 'src/modules/settings/modules/user_management/display/store';
+import { getClassGroups } from 'src/modules/settings/modules/user_management/display/store/actions';
 
 const router = useRouter();
 const filter = ref<string>('');
+const userManagementStore = useUsersManagementStore();
+const exampleGroupList = ref<ClassGroup[]>([]);
 
+onMounted(async () => {
+  const res = await getClassGroups();
+  console.log(res);
+  exampleGroupList.value = userManagementStore.classGroups;
+});
+/*
 const exampleGroupList: ClassGroup[] = [
     new ClassGroup({ id: 1, code: 101, number: 10, name: 'Group A' }),
     new ClassGroup({ id: 2, code: 102, number: 20, name: 'Group B' }),
@@ -67,7 +77,7 @@ const exampleGroupList: ClassGroup[] = [
     new ClassGroup({ id: 5, code: 105, number: 50, name: 'Group E' }),
     new ClassGroup({ id: 6, code: 106, number: 60, name: 'Group F' }),
     new ClassGroup({ id: 7, code: 107, number: 70, name: 'Group G' }),
-];
+];*/
 
 const columns: any = [
     {
