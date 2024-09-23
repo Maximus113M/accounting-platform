@@ -89,8 +89,7 @@ const companyModelToJson= (company: CompanyModel)=>{
         es_consorcio: company.isConsortium,
         cobrador_id: company.debtCollector,
         logo: company.logo,
-        //TODO REVIEW
-        relatedUser: new UserModel({}),
+        user_id: company.relatedUser.id,
         //TODO REVIEW
         taxData: taxDataToJson(company.taxData),
         //TODO REVIEW

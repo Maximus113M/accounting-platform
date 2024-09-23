@@ -22,8 +22,7 @@ export abstract class CompaniesDatasource {
             const company: CompanyModel= companyModelFromJson(resp.data);
             
             return company;
-        } catch (err) {
-          const error = err as any;
+        } catch (error: any) {
           throw new ServerException({code: error?.status , data: error}); 
         }
       }
@@ -36,9 +35,8 @@ export abstract class CompaniesDatasource {
           const companies: CompanyModel[]= (resp.data as Array<any>).map((company)=> companyModelFromJson(company));
           
           return companies;
-        } catch (err) {
-          const error = err as any;
-          throw new ServerException({code: error?.status , data: error});
+        } catch (error: any) {
+          throw new ServerException({code: error?.status , data: error}); 
         }
       }
       async createCompany(data: any, accessToken: string): Promise<void> {
@@ -46,8 +44,7 @@ export abstract class CompaniesDatasource {
           //TODO REVIEW THIS
           await api(accessToken).post('/create-company', data);
           
-        } catch (err) {
-          const error = err as any;
+        } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }
       }
@@ -56,8 +53,7 @@ export abstract class CompaniesDatasource {
             //TODO REVIEW THIS
             await api(accessToken).put(`/update-company/${serial}`, data);
             
-        } catch (err) {
-          const error = err as any;
+        } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }
       }
@@ -65,8 +61,7 @@ export abstract class CompaniesDatasource {
         try {
           await api(accessToken).delete(`/delete-company/${serial}`);
           
-        } catch (err) {
-          const error = err as any;
+        } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }
       }
@@ -77,8 +72,7 @@ export abstract class CompaniesDatasource {
             {empresa_serial: serial, numero_ficha: groupNumber} 
           );
 
-        } catch (err) {
-          const error = err as any;
+        } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }
       }

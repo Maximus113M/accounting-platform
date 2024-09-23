@@ -41,7 +41,7 @@ const legalRepresentativeToJson= (legalRep: LegalRepresentative)=>{
         nombres: legalRep.names,
         apellidos: legalRep.lastNames,
         tipo_identificacion: legalRep.documentType,
-        identificacion: legalRep.documentNumber,
+        numero_identificacion: legalRep.documentNumber,
         tiene_socios: legalRep.hasPartners
     };   
 }

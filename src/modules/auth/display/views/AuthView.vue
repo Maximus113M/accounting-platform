@@ -1,7 +1,7 @@
 <template>
-    <div class="row justify-center items-center bg-grey" style="height: 100dvh;">
+    <div class="row justify-center items-center bg-image" style="height: 100dvh;">
         <q-card flat class="bg-white q-pa-md"
-            style="height: 450px; width: 350px; border-radius: 20px; border: 1px solid #EBEBEB; overflow-y: auto; ">
+            style="height: 450px; width: 350px; border-radius: 20px; border: 2px solid #AAAAAA; overflow-y: auto; ">
             <q-card-section>
                 <div class="q-mt-sm text-center text-h4 text-primary text-bold">
                     SenaCont
@@ -22,13 +22,10 @@
     </div>
 </template>
 <script setup lang="ts">
-//import { ref } from 'vue';
-//import { Dialog } from 'quasar';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../store/index';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
-//import { Notify } from 'quasar';
 import { customNotify } from 'src/core/utils/notifications';
 
 const router = useRouter();
@@ -54,8 +51,21 @@ const logIn = async () => {
         isLoading.value = false;
         return;
     }
-    router.push('/main/')
+    router.push('/main/');
     console.log(authStore.signInUser);
     isLoading.value = false;
 }
 </script>
+<style scoped>
+.bg-image {
+    background-image: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0.5),
+            rgba(255, 255, 255, 0.25)),
+        url(../../../../assets/images/sena2.jpg);
+    background-color: rgb(235, 235, 235);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+</style>
