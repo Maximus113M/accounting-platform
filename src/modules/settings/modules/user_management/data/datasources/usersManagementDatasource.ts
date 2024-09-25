@@ -3,7 +3,6 @@ import { ServerException } from 'src/core/helpers/exceptions';
 import { UserModel } from 'src/models/userModel';
 import { ClassGroup, classGroupFromJson } from 'src/modules/settings/modules/user_management/data/models/classGroup';
 import { api } from 'boot/axios';
-import { ServerException } from 'src/core/helpers/exceptions';
 
 export abstract class UsersManagementDatasource {
     abstract getInstructor(id: string): Promise<UserModel>;

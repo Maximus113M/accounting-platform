@@ -1,4 +1,4 @@
-import { UserModel } from "src/models/userModel";
+import { UserModel } from 'src/models/userModel';
 import { ClassGroup } from 'src/modules/settings/modules/user_management/data/models/classGroup';
 
 
