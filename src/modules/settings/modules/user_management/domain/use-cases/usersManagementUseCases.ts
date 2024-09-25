@@ -1,5 +1,6 @@
 import { UsersManagementRepository } from '../repositories/usersManagementRepository';
 import { ClassGroup } from 'src/modules/settings/modules/user_management/data/models/classGroup';
+import { UserModel } from 'src/models/userModel';
 export class UsersManagementUseCases{
 
     private usersManagementRepository: UsersManagementRepository;
@@ -18,7 +19,10 @@ export class UsersManagementUseCases{
     createStudent= (data: any) => this.usersManagementRepository.createStudent(data);
     updateStudent= (id: string, data: any) => this.usersManagementRepository.updateStudent(id, data);
     deleteStudent= (id: string) => this.usersManagementRepository.deleteStudent(id);
+    getStudentsByClassGroup= (number: number, accessToken: string) : Promise<UserModel[]>  => this.usersManagementRepository.getStudentsByClassGroup(number, accessToken);
 
     getClassGroups= (accessToken: string): Promise<ClassGroup[] | Error> => this.usersManagementRepository.getClassGroups(accessToken);
-    createClassGroup= (accessToken: string, data: ClassGroup): Promise<string> => this.usersManagementRepository.createClassGroup(accessToken, data);
+    createClassGroup= (accessToken: string, data: ClassGroup): Promise<ClassGroup> => this.usersManagementRepository.createClassGroup(accessToken, data);
+    deleteClassGroup= (accessToken: string, number: number): Promise<string> => this.usersManagementRepository.deleteClassGroup(accessToken, number);
+    updateClassGroup= (number:number, data: ClassGroup, accessToken: string): Promise<ClassGroup> => this.usersManagementRepository.updateClassGroup(number, data, accessToken);
 }

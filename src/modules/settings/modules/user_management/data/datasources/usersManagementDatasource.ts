@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ServerException } from 'src/core/helpers/exceptions';
-import { UserModel } from 'src/models/userModel';
+import { UserModel, userModelFromJson } from 'src/models/userModel';
 import {
   ClassGroup,
   classGroupFromJson,
@@ -20,11 +20,14 @@ export abstract class UsersManagementDatasource {
     abstract createStudent(data: any): Promise<void>;
     abstract updateStudent(id: string, data: any): Promise<void>;
     abstract deleteStudent(id: string): Promise<void>;
+    abstract getStudentsByClassGroup(number: number, acccessToken:string): Promise<UserModel[]>;
 
     abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error>;
-    abstract createClassGroup(accessToken: string, data: ClassGroup): Promise<string>;
+    abstract createClassGroup(accessToken: string, data: ClassGroup): Promise<ClassGroup>;
+    abstract deleteClassGroup(accessToken: string, number: number): Promise<string>;
+    abstract updateClassGroup(number: number, data: ClassGroup, accessToken:string): Promise<ClassGroup>;
 
-  }
+}
 
   export class UsersManagementDatasourceImpl implements UsersManagementDatasource{
     //Instructors
@@ -108,6 +111,18 @@ export abstract class UsersManagementDatasource {
             throw new ServerException({code: error?.status , data: error});
         }
     }
+    async getStudentsByClassGroup(number: number, accessToken: string): Promise<UserModel[]> {
+        try {
+            const { data } = await api(accessToken).get('/ficha/'+number);
+            return (data as []).map(function (student: any) {
+              student['ficha'] = number;
+              return userModelFromJson(student);
+            });
+        } catch (error: any) {
+            console.log(error);
+            throw new ServerException({code: error?.status , data: error});
+        }
+    }
 
     // Class Groups
     async getClassGroups(accessToken: string): Promise<ClassGroup[]|Error> {
@@ -120,14 +135,34 @@ export abstract class UsersManagementDatasource {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async createClassGroup(accessToken: string, data: ClassGroup): Promise<string> {
+
+    async createClassGroup(accessToken: string, data: ClassGroup): Promise<ClassGroup> {
         try {
             const res = await api(accessToken).post('/ficha', classGroupToJson(data));
-            return res.data['message'];
+            return classGroupFromJson(res.data['ficha']);
         }  catch (error : any) {
-            // @TODO = Falta Implementar el manejo de errores cuando la data no cumple con las reglas del Backend.
             console.log(error);
             throw new ServerException({code: error?.status , data: error});
         }
     }
+
+    async deleteClassGroup(accessToken: string, number: number): Promise<string> {
+        try {
+            const res = await api(accessToken).delete('/ficha/'+number);
+            return res.data['message'];
+        } catch (error : any) {
+          throw new ServerException({code: error?.status , data: error});
+        }
+    }
+
+    async updateClassGroup(number: number, data: ClassGroup, accessToken:string): Promise<ClassGroup> {
+        try {
+          const res = await api(accessToken).put('/ficha/'+number, classGroupToJson(data));
+          return classGroupFromJson(res.data['ficha']);
+        } catch (error : any) {
+          console.log(error);
+          throw new ServerException({code: error?.status , data: error});
+        }
+    }
+
   }

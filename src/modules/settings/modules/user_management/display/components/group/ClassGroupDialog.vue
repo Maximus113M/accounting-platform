@@ -96,9 +96,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { ClassGroup } from '../../../data/models/classGroup';
-import { createClassGroup } from 'src/modules/settings/modules/user_management/display/store/actions';
+//import { createClassGroup } from 'src/modules/settings/modules/user_management/display/store/actions';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
-import { customNotify } from 'src/core/utils/notifications';
+        import { customNotify } from 'src/core/utils/notifications';
+import { useUsersManagementStore } from 'src/modules/settings/modules/user_management/display/store';
+import { updateClassGroup } from 'src/modules/settings/modules/user_management/display/store/actions';
 
 const props = defineProps({
     classGroup: { type: ClassGroup }
@@ -119,15 +121,25 @@ const showDialog = () => {
 }
 
 const onSubmit = async () => {
+    const userManagementStore = useUsersManagementStore();
     if (!props.classGroup) {
-      const res = await createClassGroup(currentClassGroup.value);
+      const res = await userManagementStore.createClassGroup(currentClassGroup.value);
       if (res.status === statusMessages.success) {
-        customNotify({
-          status: res.status,
-          message: res.message
-        });
+        userManagementStore.classGroups.push(res.classGroup!);
       }
-      else customNotify({
+      customNotify({
+        status: res.status,
+        message: res.message
+      });
+    } else {
+      const res = await updateClassGroup(props.classGroup.number, currentClassGroup.value);
+      if (res.status === statusMessages.success) {
+        const index = userManagementStore.classGroups.findIndex(function(classGroup: ClassGroup) {
+          return classGroup.id === props.classGroup?.id
+        });
+        userManagementStore.classGroups[index] = res.classGroup!;
+      }
+      customNotify({
         status: res.status,
         message: res.message
       });

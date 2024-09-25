@@ -23,6 +23,20 @@ const createStudent = async () => {
   }
 };
 
+const getStudentsByClassGroup = async (number: number) => {
+  try {
+    const userManagementStore = useUsersManagementStore();
+
+    const token = sessionStorage.getItem('token');
+    userManagementStore.studentsByClassGroup = await usersManagementUseCases.getStudentsByClassGroup(number, token!);
+
+    return { status: statusMessages.success, message: 'Aprendices obtenidos'};
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
+
 const getClassGroups = async () => {
   try {
     const userManagementStore = useUsersManagementStore();
@@ -44,11 +58,30 @@ const createClassGroup = async (data: ClassGroup) => {
   try {
     const token= sessionStorage.getItem('token');
     const res = await usersManagementUseCases.createClassGroup(token!, data);
+    return { status: statusMessages.success, message: 'Ficha creada correctamente.', classGroup: res };
+  } catch (error: any) {
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
+
+const deleteClassGroup = async (number: number) => {
+  try {
+    const token= sessionStorage.getItem('token');
+    const res = await usersManagementUseCases.deleteClassGroup(token!, number);
     return { status: statusMessages.success, message: res };
   } catch (error: any) {
     return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
   }
 }
 
+const updateClassGroup = async (number: number, data: ClassGroup) => {
+  try {
+    const token= sessionStorage.getItem('token');
+    const res = await usersManagementUseCases.updateClassGroup(number, data, token!);
+    return { status: statusMessages.success, message: 'Ficha actualizada correctamente', classGroup: res };
+  } catch (error: any) {
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
 
-export { createStudent, getClassGroups, createClassGroup };
+export { createStudent, getClassGroups, createClassGroup, getStudentsByClassGroup, deleteClassGroup, updateClassGroup };

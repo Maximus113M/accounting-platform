@@ -93,7 +93,7 @@ import { useRouter } from 'vue-router';
 
 import { ClassGroup } from '../../data/models/classGroup';
 import { useUsersManagementStore } from 'src/modules/settings/modules/user_management/display/store';
-import { getClassGroups } from 'src/modules/settings/modules/user_management/display/store/actions';
+import { deleteClassGroup, getClassGroups } from 'src/modules/settings/modules/user_management/display/store/actions';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
 
@@ -110,16 +110,6 @@ onMounted(async () => {
     message: res.message
   });
 });
-/*
-const exampleGroupList: ClassGroup[] = [
-    new ClassGroup({ id: 1, code: 101, number: 10, name: 'Group A' }),
-    new ClassGroup({ id: 2, code: 102, number: 20, name: 'Group B' }),
-    new ClassGroup({ id: 3, code: 103, number: 30, name: 'Group C' }),
-    new ClassGroup({ id: 4, code: 104, number: 40, name: 'Group D' }),
-    new ClassGroup({ id: 5, code: 105, number: 50, name: 'Group E' }),
-    new ClassGroup({ id: 6, code: 106, number: 60, name: 'Group F' }),
-    new ClassGroup({ id: 7, code: 107, number: 70, name: 'Group G' }),
-];*/
 
 const columns: any = [
   {
@@ -162,7 +152,7 @@ const columns: any = [
 const deleteDialog = (group: ClassGroup) => {
   Dialog.create({
     title: '<div class="text-red-7">Eliminar ficha</div>',
-    message: `¿<strong>Deseas eliminar</strong> a la ficha seleccionada <strong>"${group.name}"</strong> ? Se eliminará la información y aprendices asociados.`,
+    message: `¿<strong>Deseas eliminar</strong> a la ficha seleccionada <strong>"${group.name}"</strong> ? Se eliminará la información y aprendices con sus empresas asociadas.`,
     ok: {
       push: true,
       color: 'light-blue-4',
@@ -173,10 +163,20 @@ const deleteDialog = (group: ClassGroup) => {
     },
     html: true,
   })
-    .onOk(async (data) => {
-      data;
-      console.log('>>>> OK, received', group);
+    .onOk(async () => {
+      const res = await deleteClassGroup(group.number);
+      customNotify({
+        status: res.status,
+        message: res.message
+      });
+      if (res.status === statusMessages.success) {
+        exampleGroupList.value = exampleGroupList.value.filter(function(classGroup: ClassGroup) {
+          return classGroup.number !== group.number;
+        });
+        userManagementStore.classGroups = exampleGroupList.value;
+      }
     })
     .onCancel(() => {});
 };
+
 </script>

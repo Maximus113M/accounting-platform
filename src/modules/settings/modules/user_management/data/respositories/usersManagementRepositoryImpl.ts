@@ -4,118 +4,152 @@ import { UsersManagementDatasource } from '../datasources/usersManagementDatasou
 import { UserModel } from 'src/models/userModel';
 import { ClassGroup } from 'src/modules/settings/modules/user_management/data/models/classGroup';
 
-export class UsersManagementRepositoryImpl implements UsersManagementRepository{
+export class UsersManagementRepositoryImpl implements UsersManagementRepository {
 
-    usersManagementDatasource: UsersManagementDatasource;
-    constructor(usersManagementDatasource: UsersManagementDatasource){
-        this.usersManagementDatasource = usersManagementDatasource;
-    }
-    async getInstructor(id: string): Promise<UserModel> {
-        try {
+  usersManagementDatasource: UsersManagementDatasource;
 
-            return await this.usersManagementDatasource.getInstructor(id);
+  constructor(usersManagementDatasource: UsersManagementDatasource) {
+    this.usersManagementDatasource = usersManagementDatasource;
+  }
 
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
+  async getInstructor(id: string): Promise<UserModel> {
+    try {
+      return await this.usersManagementDatasource.getInstructor(id);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
     }
-    async getAllInstructors(): Promise<UserModel[]> {
-        try {
+  }
 
-            return await this.usersManagementDatasource.getAllInstructors();
+  async getAllInstructors(): Promise<UserModel[]> {
+    try {
 
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
-    async createInstructor(data: any): Promise<void> {
-        try {
+      return await this.usersManagementDatasource.getAllInstructors();
 
-            return await this.usersManagementDatasource.createInstructor(data);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
 
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
-    async updateInstructor(id: string, data: any): Promise<void> {
-        try {
+  async createInstructor(data: any): Promise<void> {
+    try {
 
-            return await this.usersManagementDatasource.updateInstructor(id, data);
+      return await this.usersManagementDatasource.createInstructor(data);
 
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
     }
-    async deleteInstructor(id: string): Promise<void> {
-        try {
-            return await this.usersManagementDatasource.deleteInstructor(id);
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
+  }
 
-    async getStudent(id: string): Promise<UserModel> {
-        try {
-            return await this.usersManagementDatasource.getStudent(id);
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
-    async getAllStudents(): Promise<UserModel[]> {
-        try {
-            return await this.usersManagementDatasource.getAllStudents();
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
-    async createStudent(data: any): Promise<void> {
-        try {
-            return await this.usersManagementDatasource.createStudent(data);
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
-    async updateStudent(id: string, data: any): Promise<void> {
-        try {
-            return await this.usersManagementDatasource.updateStudent(id, data);
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
-    async deleteStudent(id: string): Promise<void> {
-        try {
-            return await this.usersManagementDatasource.deleteStudent(id);
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
+  async updateInstructor(id: string, data: any): Promise<void> {
+    try {
 
-    async getClassGroups(accessToken: string) : Promise<ClassGroup[] | Error> {
-        try {
-            return await this.usersManagementDatasource.getClassGroups(accessToken);
-        } catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
-    }
+      return await this.usersManagementDatasource.updateInstructor(id, data);
 
-    async createClassGroup(accessToken:string, data: ClassGroup): Promise<string> {
-        try {
-            return await this.createClassGroup(accessToken, data);
-        }  catch (err) {
-            const error= err as ServerException;
-            throw new ServerException({...error});
-        }
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
     }
+  }
 
+  async deleteInstructor(id: string): Promise<void> {
+    try {
+      return await this.usersManagementDatasource.deleteInstructor(id);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async getStudent(id: string): Promise<UserModel> {
+    try {
+      return await this.usersManagementDatasource.getStudent(id);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async getAllStudents(): Promise<UserModel[]> {
+    try {
+      return await this.usersManagementDatasource.getAllStudents();
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async createStudent(data: any): Promise<void> {
+    try {
+      return await this.usersManagementDatasource.createStudent(data);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async updateStudent(id: string, data: any): Promise<void> {
+    try {
+      return await this.usersManagementDatasource.updateStudent(id, data);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async deleteStudent(id: string): Promise<void> {
+    try {
+      return await this.usersManagementDatasource.deleteStudent(id);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async getStudentsByClassGroup(number: number, accessToken: string): Promise<UserModel[]> {
+    try {
+      return await this.usersManagementDatasource.getStudentsByClassGroup(number, accessToken);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+
+  async getClassGroups(accessToken: string): Promise<ClassGroup[] | Error> {
+    try {
+      return await this.usersManagementDatasource.getClassGroups(accessToken);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async createClassGroup(accessToken: string, data: ClassGroup): Promise<ClassGroup> {
+    try {
+      return await this.usersManagementDatasource.createClassGroup(accessToken, data);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async deleteClassGroup(accessToken: string, number: number): Promise<string> {
+    try {
+      return await this.usersManagementDatasource.deleteClassGroup(accessToken, number);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async updateClassGroup(number: number, data: ClassGroup, accessToken: string): Promise<ClassGroup> {
+    try {
+      return await this.usersManagementDatasource.updateClassGroup(number, data, accessToken);
+    } catch (error: any) {
+      throw new ServerException({ code: error?.status, data: error });
+    }
+  }
 }
