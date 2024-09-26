@@ -49,7 +49,7 @@
           </div>
           <div class="col-12 col-sm-6 col-md-4">
             <div class="text-subtitle text-weight-medium">
-              Numero de programa
+              Numero de ficha
             </div>
             <q-input
               outlined
@@ -60,7 +60,7 @@
             />
           </div>
           <div class="col-12 col-sm-12 col-md-6">
-            <div class="text-subtitle text-weight-medium">Nombre</div>
+            <div class="text-subtitle text-weight-medium">Nombre del programa</div>
             <q-input
               outlined
               dense

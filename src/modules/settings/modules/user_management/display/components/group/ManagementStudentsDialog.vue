@@ -128,7 +128,6 @@
             </q-card-actions> -->
     </q-card>
   </q-dialog>
-
 </template>
 
 <script setup lang="ts">
@@ -140,7 +139,7 @@ import { ClassGroup } from '../../../data/models/classGroup';
 import { UserModel } from 'src/models/userModel';
 import {
   getStudentsByClassGroup,
-  uploadStudents
+  uploadStudents,
 } from 'src/modules/settings/modules/user_management/display/store/actions';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
@@ -171,19 +170,20 @@ const loadStudents = async () => {
       status: res.status,
       message: res.message,
     });
-}
+};
 
 const showDialog = () => {
   currentClassGroup.value = new ClassGroup({ ...props.classGroup });
   isShowingDialog.value = true;
 };
 
-const validatedFile = () : boolean => {
+const validatedFile = (): boolean => {
   if (!uploadFile.value) {
     customNotify({
       status: statusMessages.fail,
       message: 'Seleccione el archivo',
     });
+    isLoading.value = false;
     return false;
   }
   if (uploadFile.value.size > 10000000) {
@@ -192,14 +192,19 @@ const validatedFile = () : boolean => {
       message: 'El archivo no puede superar de 10MB',
     });
     uploadFile.value = null;
+    isLoading.value = false;
     return false;
   }
-  if (uploadFile.value.type !== 'text/csv' && uploadFile.value.type !== 'text/plain') {
+  if (
+    uploadFile.value.type !== 'text/csv' &&
+    uploadFile.value.type !== 'text/plain'
+  ) {
     customNotify({
       status: statusMessages.fail,
       message: 'El tipo de archivo no es valido, solo se admite csv | txt',
     });
     uploadFile.value = null;
+    isLoading.value = false;
     return false;
   }
   return true;
@@ -214,12 +219,23 @@ const onSubmit = async () => {
   const res = await uploadStudents(formData);
   if (res.status === statusMessages.success) {
     hideDialog();
+    customNotify({
+      status: res.status,
+      message: 'Carga realizada correctamente',
+    });
     await loadStudents();
+    if (res.message.trim() !== '') {
+      customNotify({
+        status: statusMessages.warning,
+        message: res.message,
+      });
+    }
+  } else {
+    customNotify({
+      status: res.status,
+      message: res.message,
+    });
   }
-  customNotify({
-    status: res.status,
-    message: res.message,
-  });
 
   uploadFile.value = null;
   isLoading.value = false;

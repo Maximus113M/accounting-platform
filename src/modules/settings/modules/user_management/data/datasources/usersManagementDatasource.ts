@@ -130,7 +130,14 @@ export abstract class UsersManagementDatasource {
             const headers : _headers = { ContentType : 'multipart/form-data' };
             const { data } = await api(accessToken, headers)
                 .post('/upload-aprendices/', formData);
-            return data['message'];
+            const res = data['repeated'] as [];
+            if (res.length === 0) return '';
+            return res.reduce(function(acc, currentValue) {
+              const user = userModelFromJson(currentValue);
+              acc += user.documentNumber + ': ' + user.names + ' ';
+              return acc;
+            }, 'Los siguientes usuarios estan repetidos: ');
+
         } catch (error: any) {
             console.log(error);
             throw new ServerException({code: error?.status , data: error});
