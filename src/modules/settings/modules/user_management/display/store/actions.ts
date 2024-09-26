@@ -37,6 +37,16 @@ const getStudentsByClassGroup = async (number: number) => {
   }
 }
 
+const uploadStudents = async (formData: FormData,) => {
+  try {
+    const token= sessionStorage.getItem('token');
+    const res = await usersManagementUseCases.uploadStudents(formData, token!);
+    return { status: statusMessages.success, message: res};
+  } catch (error: any) {
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
+
 const getClassGroups = async () => {
   try {
     const userManagementStore = useUsersManagementStore();
@@ -84,4 +94,6 @@ const updateClassGroup = async (number: number, data: ClassGroup) => {
   }
 }
 
-export { createStudent, getClassGroups, createClassGroup, getStudentsByClassGroup, deleteClassGroup, updateClassGroup };
+
+
+export { createStudent, getClassGroups, createClassGroup, getStudentsByClassGroup, deleteClassGroup, updateClassGroup, uploadStudents };

@@ -20,6 +20,7 @@ export class UsersManagementUseCases{
     updateStudent= (id: string, data: any) => this.usersManagementRepository.updateStudent(id, data);
     deleteStudent= (id: string) => this.usersManagementRepository.deleteStudent(id);
     getStudentsByClassGroup= (number: number, accessToken: string) : Promise<UserModel[]>  => this.usersManagementRepository.getStudentsByClassGroup(number, accessToken);
+    uploadStudents= (formData: FormData, accessToken: string) : Promise<string> => this.usersManagementRepository.uploadStudents(formData, accessToken);
 
     getClassGroups= (accessToken: string): Promise<ClassGroup[] | Error> => this.usersManagementRepository.getClassGroups(accessToken);
     createClassGroup= (accessToken: string, data: ClassGroup): Promise<ClassGroup> => this.usersManagementRepository.createClassGroup(accessToken, data);

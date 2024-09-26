@@ -117,6 +117,15 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository 
     }
   }
 
+  async uploadStudents(formData: FormData, accessToken: string) : Promise<string> {
+    try {
+      return await this.usersManagementDatasource.uploadStudents(formData, accessToken);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
 
   async getClassGroups(accessToken: string): Promise<ClassGroup[] | Error> {
     try {

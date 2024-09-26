@@ -6,7 +6,7 @@ import {
   classGroupFromJson,
   classGroupToJson
 } from 'src/modules/settings/modules/user_management/data/models/classGroup';
-import { api } from 'boot/axios';
+import { _headers, api } from 'boot/axios';
 
 export abstract class UsersManagementDatasource {
     abstract getInstructor(id: string): Promise<UserModel>;
@@ -21,11 +21,13 @@ export abstract class UsersManagementDatasource {
     abstract updateStudent(id: string, data: any): Promise<void>;
     abstract deleteStudent(id: string): Promise<void>;
     abstract getStudentsByClassGroup(number: number, acccessToken:string): Promise<UserModel[]>;
+    abstract uploadStudents(formData: FormData, accessToken: string) : Promise<string>;
 
     abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error>;
     abstract createClassGroup(accessToken: string, data: ClassGroup): Promise<ClassGroup>;
     abstract deleteClassGroup(accessToken: string, number: number): Promise<string>;
     abstract updateClassGroup(number: number, data: ClassGroup, accessToken:string): Promise<ClassGroup>;
+
 
 }
 
@@ -114,7 +116,7 @@ export abstract class UsersManagementDatasource {
     async getStudentsByClassGroup(number: number, accessToken: string): Promise<UserModel[]> {
         try {
             const { data } = await api(accessToken).get('/ficha/'+number);
-            return (data as []).map(function (student: any) {
+            return (data['users'] as []).map(function (student: any) {
               student['ficha'] = number;
               return userModelFromJson(student);
             });
@@ -123,6 +125,18 @@ export abstract class UsersManagementDatasource {
             throw new ServerException({code: error?.status , data: error});
         }
     }
+    async uploadStudents(formData: FormData, accessToken: string) : Promise<string> {
+        try {
+            const headers : _headers = { ContentType : 'multipart/form-data' };
+            const { data } = await api(accessToken, headers)
+                .post('/upload-aprendices/', formData);
+            return data['message'];
+        } catch (error: any) {
+            console.log(error);
+            throw new ServerException({code: error?.status , data: error});
+        }
+    }
+
 
     // Class Groups
     async getClassGroups(accessToken: string): Promise<ClassGroup[]|Error> {
