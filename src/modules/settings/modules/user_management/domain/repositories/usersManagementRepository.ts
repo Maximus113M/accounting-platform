@@ -14,9 +14,13 @@ export abstract class UsersManagementRepository{
     abstract createStudent(data: any): Promise<void>;
     abstract updateStudent(id: string, data: any): Promise<void>;
     abstract deleteStudent(id: string): Promise<void>;
-
+    abstract getStudentsByClassGroup(number: number, accessToken: string): Promise<UserModel[]>;
 
     abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error>;
+    abstract createClassGroup(accessToken:string, data: ClassGroup): Promise<ClassGroup>;
+    abstract deleteClassGroup(accessToken: string, number: number): Promise<string>;
+    abstract updateClassGroup(number: number, data: ClassGroup, accessToken:string): Promise<ClassGroup>;
+
 
 }
 

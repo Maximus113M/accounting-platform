@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { ServerException } from 'src/core/helpers/exceptions';
-import { UserModel } from 'src/models/userModel';
-import { ClassGroup, classGroupFromJson } from 'src/modules/settings/modules/user_management/data/models/classGroup';
+import { UserModel, userModelFromJson } from 'src/models/userModel';
+import {
+  ClassGroup,
+  classGroupFromJson,
+  classGroupToJson
+} from 'src/modules/settings/modules/user_management/data/models/classGroup';
 import { api } from 'boot/axios';
 
 export abstract class UsersManagementDatasource {
@@ -16,9 +20,14 @@ export abstract class UsersManagementDatasource {
     abstract createStudent(data: any): Promise<void>;
     abstract updateStudent(id: string, data: any): Promise<void>;
     abstract deleteStudent(id: string): Promise<void>;
+    abstract getStudentsByClassGroup(number: number, acccessToken:string): Promise<UserModel[]>;
 
-    abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error> ;
-  }
+    abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error>;
+    abstract createClassGroup(accessToken: string, data: ClassGroup): Promise<ClassGroup>;
+    abstract deleteClassGroup(accessToken: string, number: number): Promise<string>;
+    abstract updateClassGroup(number: number, data: ClassGroup, accessToken:string): Promise<ClassGroup>;
+
+}
 
   export class UsersManagementDatasourceImpl implements UsersManagementDatasource{
     //Instructors
@@ -102,18 +111,58 @@ export abstract class UsersManagementDatasource {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-
-    // Class Groups
-    async getClassGroups(accessToken: string): Promise<ClassGroup[]|Error> {
+    async getStudentsByClassGroup(number: number, accessToken: string): Promise<UserModel[]> {
         try {
-          console.log(accessToken);
-            const { data } = await api(accessToken).get('/ficha');
-            return (data as Array<any>).map(function (data) {
-                return classGroupFromJson(data);
+            const { data } = await api(accessToken).get('/ficha/'+number);
+            return (data as []).map(function (student: any) {
+              student['ficha'] = number;
+              return userModelFromJson(student);
             });
-        } catch (error : any) {
+        } catch (error: any) {
             console.log(error);
             throw new ServerException({code: error?.status , data: error});
         }
     }
+
+    // Class Groups
+    async getClassGroups(accessToken: string): Promise<ClassGroup[]|Error> {
+        try {
+            const { data } = await api(accessToken).get('/ficha');
+            return (data as []).map(function (data) {
+                return classGroupFromJson(data);
+            });
+        } catch (error : any) {
+            throw new ServerException({code: error?.status , data: error});
+        }
+    }
+
+    async createClassGroup(accessToken: string, data: ClassGroup): Promise<ClassGroup> {
+        try {
+            const res = await api(accessToken).post('/ficha', classGroupToJson(data));
+            return classGroupFromJson(res.data['ficha']);
+        }  catch (error : any) {
+            console.log(error);
+            throw new ServerException({code: error?.status , data: error});
+        }
+    }
+
+    async deleteClassGroup(accessToken: string, number: number): Promise<string> {
+        try {
+            const res = await api(accessToken).delete('/ficha/'+number);
+            return res.data['message'];
+        } catch (error : any) {
+          throw new ServerException({code: error?.status , data: error});
+        }
+    }
+
+    async updateClassGroup(number: number, data: ClassGroup, accessToken:string): Promise<ClassGroup> {
+        try {
+          const res = await api(accessToken).put('/ficha/'+number, classGroupToJson(data));
+          return classGroupFromJson(res.data['ficha']);
+        } catch (error : any) {
+          console.log(error);
+          throw new ServerException({code: error?.status , data: error});
+        }
+    }
+
   }

@@ -57,11 +57,17 @@
 
 <script setup lang="ts">
 import StudentsDialog from './students/StudentsDialog.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Dialog } from 'quasar';
 
 import { ClassGroup } from '../../../data/models/classGroup';
 import { UserModel } from 'src/models/userModel';
+import {
+  getStudentsByClassGroup
+} from 'src/modules/settings/modules/user_management/display/store/actions';
+import { statusMessages } from 'src/core/helpers/generalHelpers';
+import { customNotify } from 'src/core/utils/notifications';
+import { useUsersManagementStore } from 'src/modules/settings/modules/user_management/display/store';
 
 const props = defineProps({
     classGroup: { type: ClassGroup, required: true }
@@ -70,24 +76,17 @@ const props = defineProps({
 const isShowingDialog = ref<boolean>(false);
 const currentClassGroup = ref(new ClassGroup({}));
 const filter = ref<string>('');
+const userManagementStore = useUsersManagementStore();
+const exampleStudentList = ref<UserModel[]>([]);
 
-const exampleStudentList = ref([
-    new UserModel({ id: 1, names: 'John', lastNames: 'Doe', documentType: 'Cedula de ciudadania', documentNumber: '123456789', email: 'john.doe@example.com', rol: 3, classGroupCode: 101 }),
-    new UserModel({ id: 2, names: 'Jane', lastNames: 'Smith', documentType: 'Cedula de ciudadania', documentNumber: '987654321', email: 'jane.smith@example.com', rol: 3, classGroupCode: 102 }),
-    new UserModel({ id: 3, names: 'Emily', lastNames: 'Johnson', documentType: 'Passport', documentNumber: '12345675', email: 'emily.johnson@example.com', rol: 3, classGroupCode: 103 }),
-    new UserModel({ id: 4, names: 'Michael', lastNames: 'Williams', documentType: 'Cedula de ciudadania', documentNumber: '765432109', email: 'michael.williams@example.com', rol: 3, classGroupCode: 104 }),
-    new UserModel({ id: 5, names: 'Sarah', lastNames: 'Brown', documentType: 'Passport', documentNumber: '7654321', email: 'sarah.brown@example.com', rol: 3, classGroupCode: 101 }),
-    new UserModel({ id: 6, names: 'David', lastNames: 'Jones', documentType: 'Cedula de ciudadania', documentNumber: '456789123', email: 'david.jones@example.com', rol: 3, classGroupCode: 102 }),
-    new UserModel({ id: 7, names: 'Sophia', lastNames: 'Garcia', documentType: 'Cedula de ciudadania', documentNumber: '321654987', email: 'sophia.garcia@example.com', rol: 3, classGroupCode: 103 }),
-    new UserModel({ id: 8, names: 'James', lastNames: 'Martinez', documentType: 'Passport', documentNumber: '9876543', email: 'james.martinez@example.com', rol: 3, classGroupCode: 104 }),
-    new UserModel({ id: 9, names: 'Olivia', lastNames: 'Rodriguez', documentType: 'Cedula de ciudadania', documentNumber: '654321987', email: 'olivia.rodriguez@example.com', rol: 3, classGroupCode: 101 }),
-    new UserModel({ id: 10, names: 'Daniel', lastNames: 'Hernandez', documentType: 'Passport', documentNumber: '6543210', email: 'daniel.hernandez@example.com', rol: 3, classGroupCode: 102 }),
-    new UserModel({ id: 11, names: 'Lucas', lastNames: 'Lopez', documentType: 'Cedula de ciudadania', documentNumber: '789012345', email: 'lucas.lopez@example.com', rol: 3, classGroupCode: 103 }),
-    new UserModel({ id: 12, names: 'Ava', lastNames: 'Gonzalez', documentType: 'Passport', documentNumber: '1234567', email: 'ava.gonzalez@example.com', rol: 3, classGroupCode: 104 }),
-    new UserModel({ id: 13, names: 'Alexander', lastNames: 'Perez', documentType: 'Cedula de ciudadania', documentNumber: '159753486', email: 'alexander.perez@example.com', rol: 3, classGroupCode: 101 }),
-    new UserModel({ id: 14, names: 'Isabella', lastNames: 'Sanchez', documentType: 'Passport', documentNumber: '7890123', email: 'isabella.sanchez@example.com', rol: 3, classGroupCode: 102 }),
-    new UserModel({ id: 15, names: 'Mason', lastNames: 'Ramirez', documentType: 'Cedula de ciudadania', documentNumber: '123789456', email: 'mason.ramirez@example.com', rol: 3, classGroupCode: 103 })
-]);
+onMounted(async () => {
+  const res = await getStudentsByClassGroup(props.classGroup?.number);
+  if (res.status === statusMessages.success) exampleStudentList.value = userManagementStore.studentsByClassGroup;
+  else customNotify({
+    status: res.status,
+    message: res.message
+  });
+});
 
 const showDialog = () => {
     currentClassGroup.value = new ClassGroup({ ...props.classGroup });
