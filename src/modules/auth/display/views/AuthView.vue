@@ -59,8 +59,8 @@ const logIn = async () => {
 <style scoped>
 .bg-image {
     background-image: linear-gradient(to bottom,
-            rgba(255, 255, 255, 0.5),
-            rgba(255, 255, 255, 0.25)),
+            rgba(255, 255, 255, 0.01),
+            rgba(255, 255, 255, 0.01)),
         url(../../../../assets/images/sena2.jpg);
     background-color: rgb(235, 235, 235);
     background-repeat: no-repeat;

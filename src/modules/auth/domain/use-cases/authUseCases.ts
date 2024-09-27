@@ -9,6 +9,6 @@ export class AuthUseCases{
 
     logIn= (data: any) => this.authRepository.logIn(data);
     getSignInUser= (acessToken: string) => this.authRepository.getSignInUser(acessToken);
-    getAllCompanies= (id: string, accessToken: string) => this.authRepository.logOut(id, accessToken);
     resetPassword= (data: any) => this.authRepository.resetPassword(data);
+    logOut= (accessToken: string) => this.authRepository.logOut(accessToken);
 }

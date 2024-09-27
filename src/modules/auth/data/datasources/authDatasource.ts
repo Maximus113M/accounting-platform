@@ -5,7 +5,7 @@ import { UserModel, userModelFromJson } from 'src/models/userModel';
 export abstract class AuthDatasource {
     abstract logIn(data: any): Promise<string>;
     abstract getSignInUser(acessToken: string): Promise<UserModel>;
-    abstract logOut(id: string, accessToken: string): Promise<void>;
+    abstract logOut(accessToken: string): Promise<void>;
     abstract resetPassword(data: any): Promise<void>;
   }
   
@@ -32,9 +32,9 @@ export abstract class AuthDatasource {
         throw new ServerException({code: error?.status , data: error});
       }
     }
-    async logOut(id: string, accessToken: string): Promise<void> {
+    async logOut(accessToken: string): Promise<void> {
       try {
-        await api(accessToken).get(`/logout/${id}`);
+        await api(accessToken).get('/logout');
 
       } catch (error: any) {
         throw new ServerException({code: error?.status , data: error});
