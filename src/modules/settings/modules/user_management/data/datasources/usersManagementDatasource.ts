@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ServerException } from 'src/core/helpers/exceptions';
-import { UserModel, userModelFromJson } from 'src/models/userModel';
+import { UserModel, userModelFromJson, userModelToJson } from 'src/models/userModel';
 import {
   ClassGroup,
   classGroupFromJson,
@@ -18,9 +18,9 @@ export abstract class UsersManagementDatasource {
     abstract getStudent(id: string): Promise<UserModel>;
     abstract getAllStudents(): Promise<UserModel[]>;
     abstract createStudent(data: any): Promise<void>;
-    abstract updateStudent(id: string, data: any): Promise<void>;
-    abstract deleteStudent(id: string): Promise<void>;
-    abstract getStudentsByClassGroup(number: number, acccessToken:string): Promise<UserModel[]>;
+    abstract updateStudent(data: UserModel, accessToken: string): Promise<UserModel>;
+    abstract deleteStudent(id: number, accessToken: string): Promise<string>;
+    abstract getStudentsByClassGroup(number: number, accessToken:string): Promise<UserModel[]>;
     abstract uploadStudents(formData: FormData, accessToken: string) : Promise<string>;
 
     abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error>;
@@ -98,17 +98,18 @@ export abstract class UsersManagementDatasource {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async updateStudent(id: string, data: any): Promise<void> {
+    async updateStudent(data: UserModel, accessToken: string): Promise<UserModel> {
         try {
-            id
-            data
+            const res = await api(accessToken).put('/update-aprendiz/'+data.id, userModelToJson(data));
+            return userModelFromJson(res.data['aprendiz']);
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async deleteStudent(id: string): Promise<void> {
+    async deleteStudent(id: number, accessToken: string): Promise<string> {
         try {
-            id
+            const res = await api(accessToken).delete('/delete-aprendiz/'+id);
+            return res.data['message'];
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }

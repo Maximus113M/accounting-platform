@@ -99,7 +99,7 @@
           <template v-slot:body-cell-actions="props">
             <q-td :props="props">
               <div class="row justify-center q-gutter-xs">
-                <StudentsDialog :student="props.row" />
+                <StudentsDialog @updated-students="onUpdatedStudents" :student="props.row" />
                 <q-btn
                   flat
                   dense
@@ -132,14 +132,15 @@
 
 <script setup lang="ts">
 import StudentsDialog from './students/StudentsDialog.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, } from 'vue';
 import { Dialog } from 'quasar';
 
 import { ClassGroup } from '../../../data/models/classGroup';
 import { UserModel } from 'src/models/userModel';
 import {
+  deleteStudent,
   getStudentsByClassGroup,
-  uploadStudents,
+  uploadStudents
 } from 'src/modules/settings/modules/user_management/display/store/actions';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
@@ -160,6 +161,7 @@ const isLoading = ref(false);
 onMounted(async () => {
   await loadStudents();
 });
+
 
 const loadStudents = async () => {
   const res = await getStudentsByClassGroup(props.classGroup?.number);
@@ -290,6 +292,13 @@ const columns: any = [
   },
 ];
 
+const onUpdatedStudents = (updatedStudent: UserModel) => {
+  const index = exampleStudentList.value.findIndex(function(student: UserModel) {
+    return student.id === updatedStudent?.id
+  });
+  exampleStudentList.value[index] = updatedStudent;
+}
+
 const deleteDialog = (student: UserModel) => {
   Dialog.create({
     title: '<div class="text-red-7">Eliminar aprendiz</div>',
@@ -304,9 +313,18 @@ const deleteDialog = (student: UserModel) => {
     },
     html: true,
   })
-    .onOk(async (data) => {
-      data;
-      console.log('>>>> OK, received', student);
+    .onOk(async () => {
+      const res = await deleteStudent(student.id);
+      customNotify({
+        status: res.status,
+        message: res.message,
+      });
+      if (res.status === statusMessages.success) {
+        exampleStudentList.value = exampleStudentList.value.filter(function(_student: UserModel) {
+          return _student.id !== student.id;
+        });
+        userManagementStore.studentsByClassGroup = exampleStudentList.value;
+      }
     })
     .onCancel(() => {});
 };

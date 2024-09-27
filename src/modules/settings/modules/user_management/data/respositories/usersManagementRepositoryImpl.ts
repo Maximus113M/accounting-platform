@@ -45,9 +45,7 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository 
 
   async updateInstructor(id: string, data: any): Promise<void> {
     try {
-
       return await this.usersManagementDatasource.updateInstructor(id, data);
-
     } catch (err) {
       const error = err as ServerException;
       throw new ServerException({ ...error });
@@ -90,18 +88,18 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository 
     }
   }
 
-  async updateStudent(id: string, data: any): Promise<void> {
+  async updateStudent(data: UserModel, accessToken: string): Promise<UserModel> {
     try {
-      return await this.usersManagementDatasource.updateStudent(id, data);
+      return await this.usersManagementDatasource.updateStudent(data, accessToken);
     } catch (err) {
       const error = err as ServerException;
       throw new ServerException({ ...error });
     }
   }
 
-  async deleteStudent(id: string): Promise<void> {
+  async deleteStudent(id: number, accessToken: string): Promise<string> {
     try {
-      return await this.usersManagementDatasource.deleteStudent(id);
+      return this.usersManagementDatasource.deleteStudent(id, accessToken);
     } catch (err) {
       const error = err as ServerException;
       throw new ServerException({ ...error });
