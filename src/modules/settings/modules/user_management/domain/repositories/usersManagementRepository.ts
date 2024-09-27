@@ -12,9 +12,10 @@ export abstract class UsersManagementRepository{
     abstract getStudent(id: string): Promise<UserModel>;
     abstract getAllStudents(): Promise<UserModel[]>;
     abstract createStudent(data: any): Promise<void>;
-    abstract updateStudent(id: string, data: any): Promise<void>;
-    abstract deleteStudent(id: string): Promise<void>;
+    abstract updateStudent(data: UserModel, accessToken: string): Promise<UserModel>;
+    abstract deleteStudent(id: number, accessToken: string): Promise<string>;
     abstract getStudentsByClassGroup(number: number, accessToken: string): Promise<UserModel[]>;
+    abstract uploadStudents(formData: FormData, accessToken: string) : Promise<string>;
 
     abstract getClassGroups(accessToken: string): Promise<ClassGroup[] | Error>;
     abstract createClassGroup(accessToken:string, data: ClassGroup): Promise<ClassGroup>;

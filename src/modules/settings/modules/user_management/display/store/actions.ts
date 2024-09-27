@@ -5,6 +5,7 @@ import { UsersManagementUseCases } from '../../domain/use-cases/usersManagementU
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { exceptiosResponseHandler } from 'src/core/helpers/exceptions';
 import { ClassGroup } from 'src/modules/settings/modules/user_management/data/models/classGroup';
+import { UserModel } from 'src/models/userModel';
 
 const usersManagementRepositoryImp = new UsersManagementRepositoryImpl(
   new UsersManagementDatasourceImpl()
@@ -23,16 +24,47 @@ const createStudent = async () => {
   }
 };
 
+const updateStudent = async (data: UserModel) => {
+  try {
+    const token = sessionStorage.getItem('token');
+    const res = await usersManagementUseCases.updateStudent(data, token!);
+    return { status: statusMessages.success, message: 'Aprendiz actualizado correctamente', student: res};
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
+
+const deleteStudent = async (id: number) => {
+  try {
+    const token = sessionStorage.getItem('token');
+    const res = await usersManagementUseCases.deleteStudent(id, token!);
+    return { status: statusMessages.success, message: res,};
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
+
 const getStudentsByClassGroup = async (number: number) => {
   try {
     const userManagementStore = useUsersManagementStore();
 
     const token = sessionStorage.getItem('token');
     userManagementStore.studentsByClassGroup = await usersManagementUseCases.getStudentsByClassGroup(number, token!);
-
     return { status: statusMessages.success, message: 'Aprendices obtenidos'};
   } catch (error: any) {
     console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
+
+const uploadStudents = async (formData: FormData,) => {
+  try {
+    const token= sessionStorage.getItem('token');
+    const res = await usersManagementUseCases.uploadStudents(formData, token!);
+    return { status: statusMessages.success, message: res};
+  } catch (error: any) {
     return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
   }
 }
@@ -84,4 +116,7 @@ const updateClassGroup = async (number: number, data: ClassGroup) => {
   }
 }
 
-export { createStudent, getClassGroups, createClassGroup, getStudentsByClassGroup, deleteClassGroup, updateClassGroup };
+
+
+export { createStudent, getClassGroups, createClassGroup, getStudentsByClassGroup, deleteClassGroup, updateClassGroup, uploadStudents,
+  updateStudent, deleteStudent };
