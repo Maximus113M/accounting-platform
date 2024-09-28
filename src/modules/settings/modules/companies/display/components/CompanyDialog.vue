@@ -39,7 +39,20 @@
                                     val="Empresa" />
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4">
+                        <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
+                            class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre</div>
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.names"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                        </div>
+                        <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
+                            class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellido</div>
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.lastnames"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                        </div>
+                        <div v-if="currentCompany.basicData.businessTypeName !== 'Personal Natural'"
+                            class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Razón social</div>
                             <q-input outlined dense type="text" v-model="currentCompany.basicData.businessName"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
@@ -69,13 +82,20 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Ciudad</div>
-                            <q-select outlined dense v-model="currentCompany.basicData.city.name" :options="cities"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.address"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-select outlined dense fill-input use-input hide-selected :model-value="getCityName()"
+                                :options="filteredCities" @filter="filterCityFn" @input-value="onSelectedCity">
+                                <template v-slot:append>
+                                    <q-icon v-if="selectedCity" class="cursor-pointer" name="cancel"
+                                        @click.stop.prevent="selectedCity = undefined" />
+                                </template>
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
@@ -94,7 +114,7 @@
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo contacto</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre contacto</div>
                             <q-input outlined dense type="text" v-model="currentCompany.nameContact"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
@@ -270,17 +290,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { CompanyModel } from '../../data/models/companyModel';
 import { useCompaniesStore } from '../store';
 import { UserModel } from 'src/models/userModel';
 import { EconomicActivity, FiscalResponsibilities } from '../../data/models/taxData';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
-import { getEconomicActivities } from '../store/actions';
+import { CityModel } from 'src/models/cityModel';
+import { GeneralServices } from 'src/services/generalServices';
 
 const companiesStore = useCompaniesStore();
-
+const generalServices = new GeneralServices();
 const props = defineProps({
     company: { type: CompanyModel },
     signInUser: { type: UserModel, required: true }
@@ -296,14 +317,19 @@ const tabsMenu = [
 const isShowingDialog = ref<boolean>(false);
 const currentCompany = ref(new CompanyModel({}));
 const selectedTab = ref(0);
-
+//Economic Activity
 const selectedEconomicActivity = ref<EconomicActivity | undefined>(undefined);
 const filteredEconomicActivities = ref<string[]>([]);
 const filteredEconomicActivitiesCopy: string[] = [];
-
+//FiscalResponsability
 const selectedFiscalResponsability = ref<FiscalResponsibilities | undefined>(undefined);
 const filteredFiscalResponsabilities = ref<string[]>([]);
 const filteredFiscalResponsabilitiesCopy: string[] = [];
+//Cities
+const citiesList: CityModel[] = [];
+const selectedCity = ref<CityModel | undefined>(undefined);
+const filteredCities = ref<string[]>([]);
+const filteredCitiesCopy: string[] = [];
 
 
 const initData = async () => {
@@ -328,9 +354,21 @@ const initData = async () => {
         filteredFiscalResponsabilitiesCopy.length = 0;
         filteredFiscalResponsabilitiesCopy.push(...filteredFiscalResponsabilities.value);
     });
+    const citiesPromise = generalServices.getCities(props.signInUser.accessToken).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+        citiesList.length = 0;
+        citiesList.push(...resp.data!);
+        filteredCities.value = [...citiesList.map((item) => `${item.dianCode} - ${item.name}`)];
+        filteredCitiesCopy.length = 0;
+        filteredCitiesCopy.push(...filteredCities.value);
+    });
 
     promiseList.push(economicActivitiesPromise);
     promiseList.push(fiscalResponsabilitiesPromise);
+    promiseList.push(citiesPromise);
 
     await Promise.all(promiseList);
     customNotify({ status: statusMessages.success, message: 'Información obtenida ...' });
@@ -338,6 +376,8 @@ const initData = async () => {
 }
 
 const showDialog = async () => {
+    isShowingDialog.value = true;
+
     await initData();
 
     if (props.company) {
@@ -346,7 +386,6 @@ const showDialog = async () => {
         currentCompany.value = new CompanyModel({});
     }
 
-    isShowingDialog.value = true;
 }
 
 
@@ -355,8 +394,8 @@ const getEconomicActivityName = () => {
     return selectedEconomicActivity.value ?
         `${selectedEconomicActivity.value.key} - ${selectedEconomicActivity.value.value}` : 'Buscar'
 }
-const filterEconomicActivitiesFn = (val: string, update: Function) => {
-    if (val === "") {
+const filterEconomicActivitiesFn = (val: string, update: any) => {
+    if (val === '') {
         update(() => {
             filteredEconomicActivities.value = [...filteredEconomicActivitiesCopy];
         });
@@ -385,8 +424,8 @@ const getFiscalResponsabilityName = () => {
     return selectedFiscalResponsability.value ?
         `${selectedFiscalResponsability.value.key} - ${selectedFiscalResponsability.value.value}` : 'Buscar'
 }
-const filterFiscalResponsabilitiesFn = (val: string, update: Function) => {
-    if (val === "") {
+const filterFiscalResponsabilitiesFn = (val: string, update: any) => {
+    if (val === '') {
         update(() => {
             filteredFiscalResponsabilities.value = [...filteredFiscalResponsabilitiesCopy];
         });
@@ -406,6 +445,36 @@ const onSelectedFiscalResponsability = (val: any) => {
         selectedFiscalResponsability.value = new FiscalResponsibilities({
             key: foundFiscalResponsability.key,
             value: foundFiscalResponsability.value
+        });
+    }
+}
+
+//cities
+const getCityName = () => {
+    return selectedCity.value ?
+        `${selectedCity.value.dianCode} - ${selectedCity.value.name}` : 'Buscar'
+}
+const filterCityFn = (val: string, update: any) => {
+    if (val === '') {
+        update(() => {
+            filteredCities.value = [...filteredCitiesCopy];
+        });
+        return;
+    }
+    const needle = val.toLowerCase();
+    update(() => {
+        filteredCities.value = filteredCitiesCopy.filter((v) => v.toLocaleLowerCase().includes(needle));
+    });
+};
+const onSelectedCity = (val: any) => {
+    if (!val) return;
+    const foundCity = citiesList.find((item) =>
+        `${item.dianCode} - ${item.name}`.toLocaleLowerCase() === val.toLocaleLowerCase());
+
+    if (foundCity) {
+        selectedCity.value = new CityModel({
+            dianCode: foundCity.dianCode,
+            name: foundCity.name
         });
     }
 }
@@ -434,12 +503,6 @@ const documentTypes = [
     'Nit de otro pais/Sin identificación del exterior (43 medios magnéticos)',
     'Salvoconducto de permanencia'
 ];
-const cities = [
-    'Bucaramanga (002)',
-    'Floridablanca (052)',
-    'Piedecuesta (285)',
-    'Giron (351)',
-];
 const regimeTypeOptions = [
     '001 Gran Contribuyente',
     '002 Responsable de IVA',
@@ -458,13 +521,19 @@ const regimeTypeOptions = [
 //     '0114 Cultivo de tabaco',
 //     '0115 Cultivo de plantas textiles',
 // ];
-const fiscalResponsibilities = [
-    'Gran contribuyente',
-    'Autorretenedor',
-    'Agente de retención IVA',
-    'Régimen simple de tributación',
-    'No aplica - Otros',
-];
+// const fiscalResponsibilities = [
+//     'Gran contribuyente',
+//     'Autorretenedor',
+//     'Agente de retención IVA',
+//     'Régimen simple de tributación',
+//     'No aplica - Otros',
+// ];
+// const cities = [
+//     'Bucaramanga (002)',
+//     'Floridablanca (052)',
+//     'Piedecuesta (285)',
+//     'Giron (351)',
+// ];
 </script>
 
 <style scoped>
