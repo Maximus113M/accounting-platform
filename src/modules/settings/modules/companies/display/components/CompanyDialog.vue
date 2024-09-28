@@ -131,11 +131,23 @@
 
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Código actividad económica</div>
-                            <q-select outlined dense v-model="currentCompany.taxData.economicActivity"
-                                :options="economicActivities"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                            <q-select outlined dense fill-input use-input hide-selected
+                                :model-value="getEconomicActivityName()" :options="filteredEconomicActivities"
+                                @filter="filterEconomicActivitiesFn" @input-value="onSelectedEconomicActivity">
+                                <template v-slot:append>
+                                    <q-icon v-if="selectedEconomicActivity" class="cursor-pointer" name="cancel"
+                                        @click.stop.prevent="selectedEconomicActivity = undefined" />
+                                </template>
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
                             </q-select>
                         </div>
+
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tarifa ICA</div>
                             <q-input outlined dense type="number" v-model.number="currentCompany.taxData.icaRate"
@@ -143,9 +155,21 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Responsabilidades fiscales</div>
-                            <q-select outlined dense v-model="currentCompany.taxData.fiscalResponsibilities"
-                                :options="fiscalResponsibilities"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-select outlined dense fill-input use-input hide-selected
+                                :model-value="getFiscalResponsabilityName()" :options="filteredFiscalResponsabilities"
+                                @filter="filterFiscalResponsabilitiesFn" @input-value="onSelectedFiscalResponsability">
+                                <template v-slot:append>
+                                    <q-icon v-if="selectedFiscalResponsability" class="cursor-pointer" name="cancel"
+                                        @click.stop.prevent="selectedFiscalResponsability = undefined" />
+                                </template>
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tributos</div>
@@ -246,16 +270,154 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { CompanyModel } from '../../data/models/companyModel';
+import { useCompaniesStore } from '../store';
+import { UserModel } from 'src/models/userModel';
+import { EconomicActivity, FiscalResponsibilities } from '../../data/models/taxData';
+import { statusMessages } from 'src/core/helpers/generalHelpers';
+import { customNotify } from 'src/core/utils/notifications';
+import { getEconomicActivities } from '../store/actions';
+
+const companiesStore = useCompaniesStore();
 
 const props = defineProps({
-    company: { type: CompanyModel }
+    company: { type: CompanyModel },
+    signInUser: { type: UserModel, required: true }
 });
+
+const tabsMenu = [
+    { name: 'General', value: 0 },
+    { name: 'Tributario', value: 1 },
+    { name: 'Representante', value: 2 },
+    { name: 'Logo', value: 3 },
+];
 
 const isShowingDialog = ref<boolean>(false);
 const currentCompany = ref(new CompanyModel({}));
 const selectedTab = ref(0);
+
+const selectedEconomicActivity = ref<EconomicActivity | undefined>(undefined);
+const filteredEconomicActivities = ref<string[]>([]);
+const filteredEconomicActivitiesCopy: string[] = [];
+
+const selectedFiscalResponsability = ref<FiscalResponsibilities | undefined>(undefined);
+const filteredFiscalResponsabilities = ref<string[]>([]);
+const filteredFiscalResponsabilitiesCopy: string[] = [];
+
+
+const initData = async () => {
+    console.log('HERE')
+    const promiseList: Promise<void>[] = [];
+
+    const economicActivitiesPromise = companiesStore.getEconomicActivities(props.signInUser.accessToken).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+        filteredEconomicActivities.value = [...companiesStore.economicActivities.map((item) => `${item.key} - ${item.value}`)];
+        filteredEconomicActivitiesCopy.length = 0;
+        filteredEconomicActivitiesCopy.push(...filteredEconomicActivities.value);
+    });
+    const fiscalResponsabilitiesPromise = companiesStore.getFiscalResponsabilities(props.signInUser.accessToken).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+        filteredFiscalResponsabilities.value = [...companiesStore.fiscalResponsalities.map((item) => `${item.key} - ${item.value}`)];
+        filteredFiscalResponsabilitiesCopy.length = 0;
+        filteredFiscalResponsabilitiesCopy.push(...filteredFiscalResponsabilities.value);
+    });
+
+    promiseList.push(economicActivitiesPromise);
+    promiseList.push(fiscalResponsabilitiesPromise);
+
+    await Promise.all(promiseList);
+    customNotify({ status: statusMessages.success, message: 'Información obtenida ...' });
+    console.log('HERE 2')
+}
+
+const showDialog = async () => {
+    await initData();
+
+    if (props.company) {
+        currentCompany.value = new CompanyModel({ ...props.company });
+    } else {
+        currentCompany.value = new CompanyModel({});
+    }
+
+    isShowingDialog.value = true;
+}
+
+
+//Economic Activity
+const getEconomicActivityName = () => {
+    return selectedEconomicActivity.value ?
+        `${selectedEconomicActivity.value.key} - ${selectedEconomicActivity.value.value}` : 'Buscar'
+}
+const filterEconomicActivitiesFn = (val: string, update: Function) => {
+    if (val === "") {
+        update(() => {
+            filteredEconomicActivities.value = [...filteredEconomicActivitiesCopy];
+        });
+        return;
+    }
+    const needle = val.toLowerCase();
+    update(() => {
+        filteredEconomicActivities.value = filteredEconomicActivitiesCopy.filter((v) => v.toLocaleLowerCase().includes(needle));
+    });
+};
+const onSelectedEconomicActivity = (val: any) => {
+    if (!val) return;
+    const foundEconomicActivity = companiesStore.economicActivities.find((item) =>
+        `${item.key} - ${item.value}`.toLocaleLowerCase() === val.toLocaleLowerCase());
+
+    if (foundEconomicActivity) {
+        selectedEconomicActivity.value = new EconomicActivity({
+            key: foundEconomicActivity.key,
+            value: foundEconomicActivity.value
+        });
+    }
+}
+
+//Fiscal Responsabilities
+const getFiscalResponsabilityName = () => {
+    return selectedFiscalResponsability.value ?
+        `${selectedFiscalResponsability.value.key} - ${selectedFiscalResponsability.value.value}` : 'Buscar'
+}
+const filterFiscalResponsabilitiesFn = (val: string, update: Function) => {
+    if (val === "") {
+        update(() => {
+            filteredFiscalResponsabilities.value = [...filteredFiscalResponsabilitiesCopy];
+        });
+        return;
+    }
+    const needle = val.toLowerCase();
+    update(() => {
+        filteredFiscalResponsabilities.value = filteredFiscalResponsabilitiesCopy.filter((v) => v.toLocaleLowerCase().includes(needle));
+    });
+};
+const onSelectedFiscalResponsability = (val: any) => {
+    if (!val) return;
+    const foundFiscalResponsability = companiesStore.fiscalResponsalities.find((item) =>
+        `${item.key} - ${item.value}`.toLocaleLowerCase() === val.toLocaleLowerCase());
+
+    if (foundFiscalResponsability) {
+        selectedFiscalResponsability.value = new FiscalResponsibilities({
+            key: foundFiscalResponsability.key,
+            value: foundFiscalResponsability.value
+        });
+    }
+}
+
+const onSubmit = () => {
+    hideDialog();
+}
+
+const hideDialog = () => {
+    isShowingDialog.value = false;
+}
+
 const documentTypes = [
     'Registro civil',
     'Tarjeta de identidad',
@@ -284,18 +446,18 @@ const regimeTypeOptions = [
     '003 No responsable de IVA',
     '004 Empresa del Estado',
 ];
-const economicActivities = [
-    '0010 Asalariado',
-    '0020 Pensionados',
-    '0081 Personas naturales y sucesiones ilíquidas sin actividad económica',
-    '0082 Personas naturales subsidiadas por terceros',
-    '0090 Rentistas de Capital, solo para personas naturales',
-    '0111 Cultivo de cereales (excepto arroz), legumbres y semillas oleaginosas',
-    '0112 Cultivo de arroz',
-    '0113 Cultivo de hortalizas, raíces y tuberculos',
-    '0114 Cultivo de tabaco',
-    '0115 Cultivo de plantas textiles',
-];
+// const economicActivities = [
+//     '0010 Asalariado',
+//     '0020 Pensionados',
+//     '0081 Personas naturales y sucesiones ilíquidas sin actividad económica',
+//     '0082 Personas naturales subsidiadas por terceros',
+//     '0090 Rentistas de Capital, solo para personas naturales',
+//     '0111 Cultivo de cereales (excepto arroz), legumbres y semillas oleaginosas',
+//     '0112 Cultivo de arroz',
+//     '0113 Cultivo de hortalizas, raíces y tuberculos',
+//     '0114 Cultivo de tabaco',
+//     '0115 Cultivo de plantas textiles',
+// ];
 const fiscalResponsibilities = [
     'Gran contribuyente',
     'Autorretenedor',
@@ -303,32 +465,6 @@ const fiscalResponsibilities = [
     'Régimen simple de tributación',
     'No aplica - Otros',
 ];
-
-const tabsMenu = [
-    { name: 'General', value: 0 },
-    { name: 'Tributario', value: 1 },
-    { name: 'Representante', value: 2 },
-    { name: 'Logo', value: 3 },
-];
-
-const showDialog = () => {
-    if (props.company) {
-        currentCompany.value = new CompanyModel({ ...props.company });
-    } else {
-        currentCompany.value = new CompanyModel({});
-    }
-
-    isShowingDialog.value = true;
-}
-
-const onSubmit = () => {
-    hideDialog();
-}
-
-const hideDialog = () => {
-    isShowingDialog.value = false;
-}
-
 </script>
 
 <style scoped>

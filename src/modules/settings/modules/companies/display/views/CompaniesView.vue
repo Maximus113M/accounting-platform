@@ -10,7 +10,7 @@
             </div>
             <!-- New and Search -->
             <div class="row justify-between items-center q-px-md q-mt-sm">
-                <CompanyDialog />
+                <CompanyDialog :sign-in-user="authStore.signInUser" />
                 <q-input v-model="filter" rounded outlined dense type="text" debounce="100" placeholder="Buscar"
                     clearable color="grey-8">
                     <template v-slot:prepend>
@@ -20,15 +20,16 @@
             </div>
             <!-- TABLE -->
             <div>
-                <q-table :grid="$q.screen.lt.sm" class="q-mt-sm q-px-sm" color="black" flat :rows="exampleGroupList"
-                    :columns="columns" row-key="id" :filter="filter" rows-per-page-label="Filas por página"
-                    :rows-per-page-options="[10, 20, 30, 40]" no-data-label="No se encontraron resultados"
-                    no-results-label="No se encontraron resultados">
+                <q-table :grid="$q.screen.lt.sm" class="q-mt-sm q-px-sm" color="black" flat
+                    :rows="companiesStore.companiesList" :columns="columns" row-key="id" :filter="filter"
+                    rows-per-page-label="Filas por página" :rows-per-page-options="[2, 10, 20, 30, 40]"
+                    no-data-label="No se encontraron resultados" no-results-label="No se encontraron resultados"
+                    :loading="isLoading">
 
                     <template v-slot:body-cell-actions="props">
                         <q-td :props="props">
                             <div class="row justify-center q-gutter-xs">
-                                <CompanyDialog :company="props.row" />
+                                <CompanyDialog :company="props.row" :sign-in-user="authStore.signInUser" />
 
                                 <q-btn flat dense icon="delete" @click="deleteDialog(props.row)">
                                     <q-tooltip :offset="[0, 10]" transition-show="scale" transition-hide="scale"
@@ -47,24 +48,36 @@
 </template>
 <script setup lang="ts">
 import CompanyDialog from '../components/CompanyDialog.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Dialog } from 'quasar';
 import { useRouter } from 'vue-router';
-
 import { CompanyModel } from '../../data/models/companyModel';
+import { useCompaniesStore } from '../store';
+import { useAuthStore } from 'src/modules/auth/display/store';
+import { customNotify } from 'src/core/utils/notifications';
 
 const router = useRouter();
-const filter = ref<string>('');
+const authStore = useAuthStore();
+const companiesStore = useCompaniesStore();
 
-const exampleGroupList: CompanyModel[] = [
-    new CompanyModel({ serial: 1 }),
-    new CompanyModel({ serial: 2 }),
-    new CompanyModel({ serial: 3 }),
-    new CompanyModel({ serial: 4 }),
-    new CompanyModel({ serial: 5 }),
-    new CompanyModel({ serial: 6 }),
-    new CompanyModel({ serial: 7 }),
-];
+let filter = ref('');
+const isLoading = ref(false);
+onMounted(async () => {
+    isLoading.value = true;
+    const resp = await companiesStore.getCompanies(authStore.signInUser.accessToken);
+    isLoading.value = false;
+    customNotify({ status: resp.status, message: resp.message });
+});
+
+// const exampleGroupList: CompanyModel[] = [
+//     new CompanyModel({ serial: 1 }),
+//     new CompanyModel({ serial: 2 }),
+//     new CompanyModel({ serial: 3 }),
+//     new CompanyModel({ serial: 4 }),
+//     new CompanyModel({ serial: 5 }),
+//     new CompanyModel({ serial: 6 }),
+//     new CompanyModel({ serial: 7 }),
+// ];
 
 const columns: any = [
     {
@@ -130,4 +143,42 @@ const deleteDialog = (company: CompanyModel) => {
     }).onCancel(() => {
     });
 }
+
+// class DashData {
+//     userCounter: UsersCounter
+//     genereData: GenereData
+//     constructor(userCounter: UsersCounter,
+//         genereData: GenereData) {
+//         this.genereData = genereData;
+//         this.userCounter = userCounter;
+//     }
+// }
+
+// class UsersCounter {
+//     a: string;
+//     b: string;
+
+//     constructor(a: string, b: string) {
+//         this.a = a;
+//         this.b = b;
+//     }
+// }
+
+// class GenereData {
+//     c: string;
+//     d: string;
+
+//     constructor({ c, d }: { c?: string, d?: string }) {
+//         this.c = c ?? '';
+//         this.d = d ?? '';
+//     }
+// }
+
+// const getData = () => {
+//     const data = new DashData(new UsersCounter('Hola', 'Marly'), new GenereData({}))
+
+//     //Consulta DATA USERCOUNTER=>
+//     console.log(data.userCounter.a)
+//     console.log(data.userCounter.b)
+// }
 </script>

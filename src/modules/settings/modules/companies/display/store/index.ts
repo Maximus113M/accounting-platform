@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { useSettingsState } from './state';
+import { useCompaniesState } from './state';
 import * as actions from './actions';
-export const useSettingsStore = defineStore('settings-store', {
-  state: () => ({ ...useSettingsState() }),
+export const useCompaniesStore = defineStore('companies-store', {
+  state: () => ({ ...useCompaniesState() }),
   actions: { ...actions },
   getters: {},
 });
