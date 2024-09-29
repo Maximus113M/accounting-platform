@@ -11,7 +11,7 @@ class CompanyModel{
     pageUrl: string;
     isConsortium: boolean;
     debtCollector: number;
-    logo: string;
+    logo: File | null;
     relatedUser: UserModel;
     taxData: TaxData;
     legalRepresentative: LegalRepresentative;
@@ -38,7 +38,7 @@ class CompanyModel{
         pageUrl?: string;
         isConsortium?: boolean;
         debtCollector?: number;
-        logo?: string;
+        logo?: File | null;
         relatedUser?: UserModel;
         taxData?: TaxData;
         legalRepresentative?: LegalRepresentative;
@@ -51,7 +51,7 @@ class CompanyModel{
         this.pageUrl= pageUrl?? '';
         this.isConsortium= isConsortium?? false;
         this.debtCollector= debtCollector?? 0;
-        this.logo= logo?? '';
+        this.logo= logo?? null;
         this.relatedUser= relatedUser?? new UserModel({});
         this.taxData= taxData?? new TaxData({});
         this.legalRepresentative= legalRepresentative?? new LegalRepresentative({});

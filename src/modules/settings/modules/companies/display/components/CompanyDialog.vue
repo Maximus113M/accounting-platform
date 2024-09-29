@@ -6,7 +6,7 @@
     </q-btn>
     <q-btn v-else no-caps label="Nuevo +" rounded color="primary" text-color="white" class="q-px-lg"
         @click="showDialog" />
-    <q-dialog v-model="isShowingDialog" backdrop-filter="blur(1px)">
+    <q-dialog v-model="isShowingDialog" backdrop-filter="blur(1px)" persistent>
         <q-card style="min-width: 620px; width: 85%; max-width: 1400px;">
             <q-card-section>
                 <div class="row justify-between q-pb-sm">
@@ -82,8 +82,9 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Ciudad</div>
-                            <q-select outlined dense fill-input use-input hide-selected :model-value="getCityName()"
-                                :options="filteredCities" @filter="filterCityFn" @input-value="onSelectedCity">
+                            <q-select outlined dense fill-input use-input hide-selected label="Buscar"
+                                :model-value="getCityName()" :options="filteredCities" @filter="filterCityFn"
+                                @input-value="onSelectedCity">
                                 <template v-slot:append>
                                     <q-icon v-if="selectedCity" class="cursor-pointer" name="cancel"
                                         @click.stop.prevent="selectedCity = undefined" />
@@ -131,13 +132,13 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Es consorcio o unión temporal</div>
                             <div class="row justify-around radio-border">
-                                <q-radio v-model="currentCompany.basicData.businessTypeName" label="Si" :val="true" />
-                                <q-radio v-model="currentCompany.basicData.businessTypeName" label="No" :val="false" />
+                                <q-radio v-model="currentCompany.isConsortium" label="Si" :val="true" />
+                                <q-radio v-model="currentCompany.isConsortium" label="No" :val="false" />
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Cobrador por defecto</div>
-                            <q-select outlined dense type="text" v-model="currentCompany.regimeType"
+                            <q-select outlined dense type="text" v-model="selectedDebtCollector"
                                 :options="['Camilo', 'Daniel', 'Freddy']"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
@@ -151,7 +152,7 @@
 
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Código actividad económica</div>
-                            <q-select outlined dense fill-input use-input hide-selected
+                            <q-select outlined dense fill-input use-input hide-selected label="Buscar"
                                 :model-value="getEconomicActivityName()" :options="filteredEconomicActivities"
                                 @filter="filterEconomicActivitiesFn" @input-value="onSelectedEconomicActivity">
                                 <template v-slot:append>
@@ -175,12 +176,19 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Responsabilidades fiscales</div>
-                            <q-select outlined dense fill-input use-input hide-selected
-                                :model-value="getFiscalResponsabilityName()" :options="filteredFiscalResponsabilities"
-                                @filter="filterFiscalResponsabilitiesFn" @input-value="onSelectedFiscalResponsability">
-                                <template v-slot:append>
-                                    <q-icon v-if="selectedFiscalResponsability" class="cursor-pointer" name="cancel"
-                                        @click.stop.prevent="selectedFiscalResponsability = undefined" />
+                            <q-select outlined dense multiple clearable v-model="selectedFiscalResponsabilities"
+                                :options="companiesStore.fiscalResponsalities"
+                                :display-value="getFiscalResponsabilitiesNames()">
+                                <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                                    <q-item v-bind="itemProps">
+                                        <q-item-section>
+                                            <strong>{{ opt.key }}</strong>
+                                            {{ opt.value }}
+                                        </q-item-section>
+                                        <q-item-section side>
+                                            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                                        </q-item-section>
+                                    </q-item>
                                 </template>
                                 <template v-slot:no-option>
                                     <q-item>
@@ -299,6 +307,7 @@ import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
 import { CityModel } from 'src/models/cityModel';
 import { GeneralServices } from 'src/services/generalServices';
+import { deepClone } from 'src/core/utils/general';
 
 const companiesStore = useCompaniesStore();
 const generalServices = new GeneralServices();
@@ -322,15 +331,14 @@ const selectedEconomicActivity = ref<EconomicActivity | undefined>(undefined);
 const filteredEconomicActivities = ref<string[]>([]);
 const filteredEconomicActivitiesCopy: string[] = [];
 //FiscalResponsability
-const selectedFiscalResponsability = ref<FiscalResponsibilities | undefined>(undefined);
-const filteredFiscalResponsabilities = ref<string[]>([]);
-const filteredFiscalResponsabilitiesCopy: string[] = [];
+const selectedFiscalResponsabilities = ref<FiscalResponsibilities[]>([]);
 //Cities
 const citiesList: CityModel[] = [];
 const selectedCity = ref<CityModel | undefined>(undefined);
 const filteredCities = ref<string[]>([]);
 const filteredCitiesCopy: string[] = [];
-
+//Debt Collectors Users
+const selectedDebtCollector = ref<UserModel | undefined>(undefined);
 
 const initData = async () => {
     console.log('HERE')
@@ -350,9 +358,6 @@ const initData = async () => {
             customNotify({ status: resp.status, message: resp.message });
             return;
         }
-        filteredFiscalResponsabilities.value = [...companiesStore.fiscalResponsalities.map((item) => `${item.key} - ${item.value}`)];
-        filteredFiscalResponsabilitiesCopy.length = 0;
-        filteredFiscalResponsabilitiesCopy.push(...filteredFiscalResponsabilities.value);
     });
     const citiesPromise = generalServices.getCities(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
@@ -376,9 +381,10 @@ const initData = async () => {
 }
 
 const showDialog = async () => {
+    selectedCity.value = undefined;
+    selectedEconomicActivity.value = undefined;
+    selectedFiscalResponsabilities.value = [];
     isShowingDialog.value = true;
-
-    await initData();
 
     if (props.company) {
         currentCompany.value = new CompanyModel({ ...props.company });
@@ -386,13 +392,16 @@ const showDialog = async () => {
         currentCompany.value = new CompanyModel({});
     }
 
+    await initData();
+
+
 }
 
 
 //Economic Activity
 const getEconomicActivityName = () => {
     return selectedEconomicActivity.value ?
-        `${selectedEconomicActivity.value.key} - ${selectedEconomicActivity.value.value}` : 'Buscar'
+        `${selectedEconomicActivity.value.key} - ${selectedEconomicActivity.value.value}` : ''
 }
 const filterEconomicActivitiesFn = (val: string, update: any) => {
     if (val === '') {
@@ -420,39 +429,13 @@ const onSelectedEconomicActivity = (val: any) => {
 }
 
 //Fiscal Responsabilities
-const getFiscalResponsabilityName = () => {
-    return selectedFiscalResponsability.value ?
-        `${selectedFiscalResponsability.value.key} - ${selectedFiscalResponsability.value.value}` : 'Buscar'
-}
-const filterFiscalResponsabilitiesFn = (val: string, update: any) => {
-    if (val === '') {
-        update(() => {
-            filteredFiscalResponsabilities.value = [...filteredFiscalResponsabilitiesCopy];
-        });
-        return;
-    }
-    const needle = val.toLowerCase();
-    update(() => {
-        filteredFiscalResponsabilities.value = filteredFiscalResponsabilitiesCopy.filter((v) => v.toLocaleLowerCase().includes(needle));
-    });
-};
-const onSelectedFiscalResponsability = (val: any) => {
-    if (!val) return;
-    const foundFiscalResponsability = companiesStore.fiscalResponsalities.find((item) =>
-        `${item.key} - ${item.value}`.toLocaleLowerCase() === val.toLocaleLowerCase());
+const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.value.map((item) => item.key).join(', ');
 
-    if (foundFiscalResponsability) {
-        selectedFiscalResponsability.value = new FiscalResponsibilities({
-            key: foundFiscalResponsability.key,
-            value: foundFiscalResponsability.value
-        });
-    }
-}
 
 //cities
 const getCityName = () => {
     return selectedCity.value ?
-        `${selectedCity.value.dianCode} - ${selectedCity.value.name}` : 'Buscar'
+        `${selectedCity.value.dianCode} - ${selectedCity.value.name}` : ''
 }
 const filterCityFn = (val: string, update: any) => {
     if (val === '') {
@@ -480,7 +463,19 @@ const onSelectedCity = (val: any) => {
 }
 
 const onSubmit = () => {
-    hideDialog();
+    console.log(selectedFiscalResponsabilities.value)
+    if (props.company) {
+        const newCompany = deepClone(props.company)
+        console.log(newCompany);
+    } else {
+        const newCompany = deepClone(currentCompany.value);
+        newCompany.basicData.city = selectedCity.value ?? newCompany.basicData.city;
+        newCompany.taxData.economicActivity = selectedEconomicActivity.value ?? newCompany.taxData.economicActivity;
+        newCompany.taxData.fiscalResponsibilities = selectedFiscalResponsabilities.value ?? newCompany.taxData.fiscalResponsibilities;
+
+        console.log(newCompany);
+    }
+    //hideDialog();
 }
 
 const hideDialog = () => {
