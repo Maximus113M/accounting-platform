@@ -7,6 +7,7 @@ export class GeneralServices{
 
     async getCities (accessToken: string){
         try {
+            //No need accesToken by now
             const apiResp= await api(accessToken).get('/cities');
             const cities: CityModel[]= (apiResp.data as any[]).map((item)=> cityFromJson(item));
 

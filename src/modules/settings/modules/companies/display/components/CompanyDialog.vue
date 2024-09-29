@@ -67,6 +67,13 @@
                             <q-select outlined dense v-model="currentCompany.basicData.documentType"
                                 :options="documentTypes"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
                             </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
@@ -105,9 +112,16 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo de Regimen</div>
-                            <q-select outlined dense type="text" v-model="currentCompany.regimeType"
-                                :options="regimeTypeOptions"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-select outlined dense v-model="currentCompany.regimeType" :options="regimeTypeOptions"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo contacto</div>
@@ -137,10 +151,44 @@
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Usuario cobrador</div>
+                            <q-select outlined dense v-model="debtCollectorType" :options="debtCollectorTypeOptions">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Cobrador por defecto</div>
-                            <q-select outlined dense type="text" v-model="selectedDebtCollector"
-                                :options="['Camilo', 'Daniel', 'Freddy']"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-select outlined dense fill-input use-input hide-selected label="Buscar"
+                                v-model="selectedDebtCollector" :options="debtCollectorsOptions"
+                                @filter="filterDebtCollertorsFn">
+                                <template v-slot:append>
+                                    <q-icon v-if="selectedDebtCollector" class="cursor-pointer" name="cancel"
+                                        @click.stop.prevent="selectedDebtCollector = undefined" />
+                                </template>
+                                <template v-slot:option="{ itemProps, opt }">
+                                    <q-item v-bind="itemProps">
+                                        <q-item-section>
+                                            <strong>
+                                                {{ opt.label }}
+                                            </strong>
+                                            {{ opt.value?.documentType + ', ' + opt.value?.documentNumber }}
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
 
                     </div>
@@ -202,7 +250,15 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tributos</div>
                             <q-select outlined dense v-model="currentCompany.taxData.taxes" :options="[]"
-                                class="q-mb-md" />
+                                class="q-mb-md">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 ">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Maneja AIU</div>
@@ -260,6 +316,13 @@
                             <q-select outlined dense v-model="currentCompany.legalRepresentative.documentType"
                                 :options="documentTypes"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
                             </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
@@ -298,7 +361,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { CompanyModel } from '../../data/models/companyModel';
 import { useCompaniesStore } from '../store';
 import { UserModel } from 'src/models/userModel';
@@ -308,8 +371,10 @@ import { customNotify } from 'src/core/utils/notifications';
 import { CityModel } from 'src/models/cityModel';
 import { GeneralServices } from 'src/services/generalServices';
 import { deepClone } from 'src/core/utils/general';
+import { useUsersManagementStore } from '../../../user_management/display/store';
 
 const companiesStore = useCompaniesStore();
+const usersManagementStore = useUsersManagementStore();
 const generalServices = new GeneralServices();
 const props = defineProps({
     company: { type: CompanyModel },
@@ -338,10 +403,34 @@ const selectedCity = ref<CityModel | undefined>(undefined);
 const filteredCities = ref<string[]>([]);
 const filteredCitiesCopy: string[] = [];
 //Debt Collectors Users
-const selectedDebtCollector = ref<UserModel | undefined>(undefined);
+const debtCollectorType = ref<string | undefined>(undefined);
+const debtCollectorTypeOptions: string[] = ['Aprendiz', 'Instructor'];
+const selectedDebtCollector = ref<Record<string, any> | undefined>(undefined);
+const debtCollectorsOptions = ref<Record<string, any>[]>([]);
+
+watch(() => debtCollectorType.value, (type) => {
+    selectedDebtCollector.value = undefined;
+    if (type === 'Aprendiz') {
+        debtCollectorsOptions.value = [...usersManagementStore.studentsByClassGroup.map((user) => {
+            return {
+                label: user.names + ' ' + user.lastNames,
+                value: user
+            }
+        })];
+    } else {
+        debtCollectorsOptions.value = [...usersManagementStore.instructors.map((user) => {
+            return {
+                label: user.names + ' ' + user.lastNames,
+                value: user
+            }
+        })];
+    }
+});
 
 const initData = async () => {
-    console.log('HERE')
+    console.log('Start load...');
+    const inicio = performance.now();
+
     const promiseList: Promise<void>[] = [];
 
     const economicActivitiesPromise = companiesStore.getEconomicActivities(props.signInUser.accessToken).then((resp) => {
@@ -359,6 +448,7 @@ const initData = async () => {
             return;
         }
     });
+    //TODO: Move to start app??
     const citiesPromise = generalServices.getCities(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
@@ -370,14 +460,27 @@ const initData = async () => {
         filteredCitiesCopy.length = 0;
         filteredCitiesCopy.push(...filteredCities.value);
     });
+    //TODO: VERIFY HOW GET THE RELATED USERS
+    const studentsPromise = usersManagementStore.getStudentsByClassGroup(1).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+    });
 
     promiseList.push(economicActivitiesPromise);
     promiseList.push(fiscalResponsabilitiesPromise);
     promiseList.push(citiesPromise);
+    promiseList.push(studentsPromise);
 
     await Promise.all(promiseList);
+
+    const fin = performance.now();
+    const tiempoTranscurrido = fin - inicio;
+    console.log(`Tiempo transcurrido: ${tiempoTranscurrido.toFixed(2)} ms`);
+
     customNotify({ status: statusMessages.success, message: 'Información obtenida ...' });
-    console.log('HERE 2')
+    console.log('End load...');
 }
 
 const showDialog = async () => {
@@ -429,7 +532,7 @@ const onSelectedEconomicActivity = (val: any) => {
 }
 
 //Fiscal Responsabilities
-const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.value.map((item) => item.key).join(', ');
+const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.value?.map((item) => item.key).join(', ');
 
 
 //cities
@@ -460,6 +563,52 @@ const onSelectedCity = (val: any) => {
             name: foundCity.name
         });
     }
+}
+//debtCollertors
+const filterDebtCollertorsFn = (val: string, update: any) => {
+    if (!debtCollectorType.value) return;
+    if (val === '') {
+        debtCollectorType.value === 'Aprendiz' ?
+            update(() => {
+                debtCollectorsOptions.value = [...usersManagementStore.studentsByClassGroup.map((user) => {
+                    return {
+                        label: user.names + ' ' + user.lastNames,
+                        value: user
+                    }
+                })];
+            })
+            :
+            update(() => {
+                debtCollectorsOptions.value = [...usersManagementStore.instructors.map((user) => {
+                    return {
+                        label: user.names + ' ' + user.lastNames,
+                        value: user
+                    }
+                })];
+            });
+
+        return;
+    }
+
+    const needle = val.toLowerCase();
+    update(() => {
+        debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ?
+            usersManagementStore.studentsByClassGroup.filter((user) => `${user.names + ' ' + user.lastNames}`.toLocaleLowerCase().includes(needle))
+                .map((user) => {
+                    return {
+                        label: user.names + ' ' + user.lastNames,
+                        value: user
+                    }
+                })
+            :
+            usersManagementStore.instructors.filter((user) => `${user.names + ' ' + user.lastNames}`.toLocaleLowerCase().includes(needle))
+                .map((user) => {
+                    return {
+                        label: user.names + ' ' + user.lastNames,
+                        value: user
+                    }
+                });
+    });
 }
 
 const onSubmit = () => {
