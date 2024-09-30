@@ -21,7 +21,7 @@
               <img src="../assets/quasar-logo-vertical.svg" alt="">
             </q-avatar>
             <q-item-label class="q-mt-sm text-white text-bold text-subtitle2">
-              Camilo Mantilla
+              {{ authStore.signInUser.names + ' ' + authStore.signInUser.lastNames }}
             </q-item-label>
           </q-item-label>
 
@@ -88,7 +88,6 @@ const menuItemList = ref<SideBarItemProps[]>([
 ]);
 
 const logOutItem = {
-  //Cerrar sesión
   title: 'Salir',
   icon: 'logout',
   route: '/logout',

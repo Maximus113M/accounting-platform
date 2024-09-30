@@ -65,7 +65,7 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
                             <q-select outlined dense v-model="currentCompany.basicData.documentType"
-                                :options="documentTypes"
+                                :options="rootStore.documentTypes"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                                 <template v-slot:no-option>
                                     <q-item>
@@ -90,8 +90,7 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Ciudad</div>
                             <q-select outlined dense fill-input use-input hide-selected label="Buscar"
-                                :model-value="getCityName()" :options="filteredCities" @filter="filterCityFn"
-                                @input-value="onSelectedCity">
+                                v-model="selectedCity" :options="citiesOptions" @filter="filterCityFn">
                                 <template v-slot:append>
                                     <q-icon v-if="selectedCity" class="cursor-pointer" name="cancel"
                                         @click.stop.prevent="selectedCity = undefined" />
@@ -112,7 +111,8 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo de Regimen</div>
-                            <q-select outlined dense v-model="currentCompany.regimeType" :options="regimeTypeOptions"
+                            <q-select outlined dense v-model="currentCompany.regimeType"
+                                :options="rootStore.regimeTypes"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                                 <template v-slot:no-option>
                                     <q-item>
@@ -314,7 +314,7 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Identificación</div>
                             <q-select outlined dense v-model="currentCompany.legalRepresentative.documentType"
-                                :options="documentTypes"
+                                :options="rootStore.documentTypes"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                                 <template v-slot:no-option>
                                     <q-item>
@@ -361,21 +361,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { CompanyModel } from '../../data/models/companyModel';
 import { useCompaniesStore } from '../store';
 import { UserModel } from 'src/models/userModel';
 import { EconomicActivity, FiscalResponsibilities } from '../../data/models/taxData';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
-import { CityModel } from 'src/models/cityModel';
-import { GeneralServices } from 'src/services/generalServices';
 import { deepClone } from 'src/core/utils/general';
 import { useUsersManagementStore } from '../../../user_management/display/store';
+import { useRootStore } from 'src/stores/root-store';
+import { GeneralServices } from 'src/services/generalServices';
 
+const rootStore = useRootStore();
 const companiesStore = useCompaniesStore();
 const usersManagementStore = useUsersManagementStore();
-const generalServices = new GeneralServices();
 const props = defineProps({
     company: { type: CompanyModel },
     signInUser: { type: UserModel, required: true }
@@ -398,10 +398,9 @@ const filteredEconomicActivitiesCopy: string[] = [];
 //FiscalResponsability
 const selectedFiscalResponsabilities = ref<FiscalResponsibilities[]>([]);
 //Cities
-const citiesList: CityModel[] = [];
-const selectedCity = ref<CityModel | undefined>(undefined);
-const filteredCities = ref<string[]>([]);
-const filteredCitiesCopy: string[] = [];
+const selectedCity = ref<Record<string, any> | undefined>(undefined);
+const citiesOptions = ref<Record<string, any>[]>([]);
+const cities: Record<string, any>[] = [];
 //Debt Collectors Users
 const debtCollectorType = ref<string | undefined>(undefined);
 const debtCollectorTypeOptions: string[] = ['Aprendiz', 'Instructor'];
@@ -427,12 +426,32 @@ watch(() => debtCollectorType.value, (type) => {
     }
 });
 
+onMounted(async () => {
+    if (rootStore.cities.length === 0) {
+        console.log('LOAD CITIES FROM COMPANY DIALOG')
+        await GeneralServices.getCities().then((resp) => {
+            if (resp.status === statusMessages.fail) {
+                customNotify({ status: resp.status, message: resp.message });
+                return;
+            }
+            rootStore.cities = resp.data!;
+        })
+    }
+    cities.push(...rootStore.cities.map((city) => {
+        return {
+            label: city.dianCode + ' - ' + city.name,
+            value: city
+        }
+    }));
+})
+
 const initData = async () => {
     console.log('Start load...');
     const inicio = performance.now();
+    //Set cities
+    citiesOptions.value = [...cities];
 
     const promiseList: Promise<void>[] = [];
-
     const economicActivitiesPromise = companiesStore.getEconomicActivities(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
@@ -448,18 +467,6 @@ const initData = async () => {
             return;
         }
     });
-    //TODO: Move to start app??
-    const citiesPromise = generalServices.getCities(props.signInUser.accessToken).then((resp) => {
-        if (resp.status === statusMessages.fail) {
-            customNotify({ status: resp.status, message: resp.message });
-            return;
-        }
-        citiesList.length = 0;
-        citiesList.push(...resp.data!);
-        filteredCities.value = [...citiesList.map((item) => `${item.dianCode} - ${item.name}`)];
-        filteredCitiesCopy.length = 0;
-        filteredCitiesCopy.push(...filteredCities.value);
-    });
     //TODO: VERIFY HOW GET THE RELATED USERS
     const studentsPromise = usersManagementStore.getStudentsByClassGroup(1).then((resp) => {
         if (resp.status === statusMessages.fail) {
@@ -470,14 +477,13 @@ const initData = async () => {
 
     promiseList.push(economicActivitiesPromise);
     promiseList.push(fiscalResponsabilitiesPromise);
-    promiseList.push(citiesPromise);
     promiseList.push(studentsPromise);
 
     await Promise.all(promiseList);
 
     const fin = performance.now();
     const tiempoTranscurrido = fin - inicio;
-    console.log(`Tiempo transcurrido: ${tiempoTranscurrido.toFixed(2)} ms`);
+    console.log(`Time to resolve: ${tiempoTranscurrido.toFixed(2)} ms`);
 
     customNotify({ status: statusMessages.success, message: 'Información obtenida ...' });
     console.log('End load...');
@@ -534,37 +540,21 @@ const onSelectedEconomicActivity = (val: any) => {
 //Fiscal Responsabilities
 const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.value?.map((item) => item.key).join(', ');
 
-
-//cities
-const getCityName = () => {
-    return selectedCity.value ?
-        `${selectedCity.value.dianCode} - ${selectedCity.value.name}` : ''
-}
+//Cities
 const filterCityFn = (val: string, update: any) => {
     if (val === '') {
         update(() => {
-            filteredCities.value = [...filteredCitiesCopy];
+            citiesOptions.value = [...cities];
         });
         return;
     }
     const needle = val.toLowerCase();
     update(() => {
-        filteredCities.value = filteredCitiesCopy.filter((v) => v.toLocaleLowerCase().includes(needle));
+        citiesOptions.value = cities.filter((v) => v.label.toLocaleLowerCase().includes(needle));
     });
 };
-const onSelectedCity = (val: any) => {
-    if (!val) return;
-    const foundCity = citiesList.find((item) =>
-        `${item.dianCode} - ${item.name}`.toLocaleLowerCase() === val.toLocaleLowerCase());
 
-    if (foundCity) {
-        selectedCity.value = new CityModel({
-            dianCode: foundCity.dianCode,
-            name: foundCity.name
-        });
-    }
-}
-//debtCollertors
+//DebtCollertors
 const filterDebtCollertorsFn = (val: string, update: any) => {
     if (!debtCollectorType.value) return;
     if (val === '') {
@@ -618,7 +608,7 @@ const onSubmit = () => {
         console.log(newCompany);
     } else {
         const newCompany = deepClone(currentCompany.value);
-        newCompany.basicData.city = selectedCity.value ?? newCompany.basicData.city;
+        newCompany.basicData.city = selectedCity.value?.value ?? newCompany.basicData.city;
         newCompany.taxData.economicActivity = selectedEconomicActivity.value ?? newCompany.taxData.economicActivity;
         newCompany.taxData.fiscalResponsibilities = selectedFiscalResponsabilities.value ?? newCompany.taxData.fiscalResponsibilities;
 
@@ -631,47 +621,6 @@ const hideDialog = () => {
     isShowingDialog.value = false;
 }
 
-const documentTypes = [
-    'Registro civil',
-    'Tarjeta de identidad',
-    'Cédula de ciudadanía',
-    'Tarjeta de extranjería',
-    'tarjeta extranjera',
-    'NIT',
-    'Pasaporte',
-    'Documento de identificación extranjero',
-    'NUIP',
-    'No obligado a registrarse en el RUT PN',
-    'Permiso especial de permanencia PEP',
-    'Sin identificación del exterior o para uso definido por la DIAN',
-    'Nit de otro pais/Sin identificación del exterior (43 medios magnéticos)',
-    'Salvoconducto de permanencia'
-];
-const regimeTypeOptions = [
-    '001 Gran Contribuyente',
-    '002 Responsable de IVA',
-    '003 No responsable de IVA',
-    '004 Empresa del Estado',
-];
-// const economicActivities = [
-//     '0010 Asalariado',
-//     '0020 Pensionados',
-//     '0081 Personas naturales y sucesiones ilíquidas sin actividad económica',
-//     '0082 Personas naturales subsidiadas por terceros',
-//     '0090 Rentistas de Capital, solo para personas naturales',
-//     '0111 Cultivo de cereales (excepto arroz), legumbres y semillas oleaginosas',
-//     '0112 Cultivo de arroz',
-//     '0113 Cultivo de hortalizas, raíces y tuberculos',
-//     '0114 Cultivo de tabaco',
-//     '0115 Cultivo de plantas textiles',
-// ];
-// const fiscalResponsibilities = [
-//     'Gran contribuyente',
-//     'Autorretenedor',
-//     'Agente de retención IVA',
-//     'Régimen simple de tributación',
-//     'No aplica - Otros',
-// ];
 // const cities = [
 //     'Bucaramanga (002)',
 //     'Floridablanca (052)',

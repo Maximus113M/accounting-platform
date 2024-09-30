@@ -5,10 +5,12 @@ import { cityFromJson, CityModel } from 'src/models/cityModel';
 
 export class GeneralServices{
 
-    async getCities (accessToken: string){
+    private constructor(){}
+
+    static async getCities (){
         try {
-            //No need accesToken by now
-            const apiResp= await api(accessToken).get('/cities');
+            //Not need accesToken by now
+            const apiResp= await api('').get('/cities');
             const cities: CityModel[]= (apiResp.data as any[]).map((item)=> cityFromJson(item));
 
             return { status: statusMessages.success, message: 'Ciudades obtenidas!', data: cities };
