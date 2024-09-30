@@ -155,9 +155,13 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Cobrador por defecto</div>
+                            <q-tooltip v-if="!debtCollectorType" :offset="[0, 10]" transition-show="scale"
+                                transition-hide="scale" class="text-body2 text-white bg-warning">
+                                Debes seleccionar un tipo de usuario
+                            </q-tooltip>
                             <q-select outlined dense fill-input use-input hide-selected label="Buscar"
                                 v-model="selectedDebtCollector" :options="debtCollectorsOptions"
-                                @filter="filterDebtCollertorsFn">
+                                @filter="filterDebtCollertorsFn" :disable="debtCollectorType ? false : true">
                                 <template v-slot:append>
                                     <q-icon v-if="selectedDebtCollector" class="cursor-pointer" name="cancel"
                                         @click.stop.prevent="selectedDebtCollector = undefined" />
@@ -329,10 +333,27 @@
                         </div>
                     </div>
 
-                    <div v-else>
-                        <div class="col-12 text-h6 text-bold">
+                    <div v-else class="row q-col-gutter-x-xl justify-center">
+                        <div class="col-12 q-mb-sm text-h6 text-bold">
                             Logo
                         </div>
+                        <div class="col-12 row justify-center">
+                            <img v-if="imageURL !== ''" class="img-border" :src="imageURL" alt="Company-image">
+
+                            <img v-else class="img-border" src="../../../../../../assets/images/No_Image_Available.jpg"
+                                alt="No-image" height="450">
+
+                        </div>
+                        <q-file filled bottom-slots v-model="logo" label="Imagen" counter accept=".jpg, image/*, .gif"
+                            hint="jpeg, png, jpg, gif" @rejected="onRejectedFile" style="max-width: 650px;"
+                            class="col-12">
+                            <template v-slot:prepend>
+                                <q-icon name="cloud_upload" @click.stop.prevent />
+                            </template>
+                            <template v-slot:append>
+                                <q-icon name="close" @click.stop.prevent="cancelFile" class="cursor-pointer" />
+                            </template>
+                        </q-file>
                     </div>
 
                 </q-form>
@@ -352,9 +373,9 @@ import { onMounted, ref, watch } from 'vue';
 import { CompanyModel } from '../../data/models/companyModel';
 import { useCompaniesStore } from '../store';
 import { UserModel } from 'src/models/userModel';
-import { EconomicActivity, FiscalResponsibilities } from '../../data/models/taxData';
+import { FiscalResponsibilities } from '../../data/models/taxData';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
-import { customNotify } from 'src/core/utils/notifications';
+import { customNotify, spinnerType } from 'src/core/utils/notifications';
 import { deepClone } from 'src/core/utils/general';
 import { useUsersManagementStore } from '../../../user_management/display/store';
 import { useRootStore } from 'src/stores/root-store';
@@ -378,7 +399,6 @@ const tabsMenu = [
 const isShowingDialog = ref<boolean>(false);
 const currentCompany = ref(new CompanyModel({}));
 const selectedTab = ref(0);
-
 //Economic Activity
 const economicActivities: Record<string, any>[] = [];
 const selectedEconomicActivity = ref<Record<string, any> | undefined>(undefined);
@@ -389,7 +409,6 @@ const selectedFiscalResponsabilities = ref<FiscalResponsibilities[]>([]);
 const cities: Record<string, any>[] = [];
 const selectedCity = ref<Record<string, any> | undefined>(undefined);
 const citiesOptions = ref<Record<string, any>[]>([]);
-
 //Debt Collectors Options
 const debtCollectorType = ref<string | undefined>(undefined);
 const debtCollectorTypeOptions: string[] = ['Aprendiz', 'Instructor'];
@@ -399,6 +418,9 @@ const debtCollectorsOptions = ref<Record<string, any>[]>([]);
 //Users Collectors
 const studentList: Record<string, any>[] = [];
 const instructorList: Record<string, any>[] = [];
+//Files
+const logo = ref<File | null>(null);
+const imageURL = ref('');
 
 watch(() => debtCollectorType.value, (type) => {
     selectedDebtCollector.value = undefined;
@@ -406,6 +428,13 @@ watch(() => debtCollectorType.value, (type) => {
         debtCollectorsOptions.value = [...studentList];
     } else {
         debtCollectorsOptions.value = [...instructorList];
+    }
+});
+watch(() => logo.value, (file) => {
+    if (file) {
+        URL.revokeObjectURL(imageURL.value);
+        imageURL.value = URL.createObjectURL(file);
+        return;
     }
 });
 
@@ -429,6 +458,7 @@ onMounted(async () => {
 })
 
 const initData = async () => {
+    customNotify({ status: statusMessages.info, message: 'Obteniendo información...', spinner: spinnerType.Ios });
     console.log('Start load...');
     const inicio = performance.now();
     //Set cities
@@ -482,13 +512,20 @@ const initData = async () => {
     console.log(`Time to resolve: ${tiempoTranscurrido.toFixed(2)} ms`);
 
     customNotify({ status: statusMessages.success, message: 'Información obtenida ...' });
+
     console.log('End load...');
 }
 
 const showDialog = async () => {
     selectedCity.value = undefined;
+    debtCollectorType.value = undefined;
+    selectedDebtCollector.value = undefined;
     selectedEconomicActivity.value = undefined;
+    URL.revokeObjectURL(imageURL.value);
+    imageURL.value = '';
+    logo.value = null;
     selectedFiscalResponsabilities.value = [];
+
     isShowingDialog.value = true;
 
     if (props.company) {
@@ -498,7 +535,6 @@ const showDialog = async () => {
     }
 
     await initData();
-
 
 }
 
@@ -552,9 +588,22 @@ const filterDebtCollertorsFn = (val: string, update: any) => {
             instructorList.filter((instructor) => instructor.label.toLocaleLowerCase().includes(needle))
     });
 }
+//Logo
+const cancelFile = () => {
+    URL.revokeObjectURL(imageURL.value);
+    imageURL.value = '';
+    logo.value = null;
+}
 
+const onRejectedFile = () => {
+    customNotify({ status: statusMessages.warning, message: 'El archivo no es valido' })
+}
 
 const onSubmit = () => {
+    if (currentCompany.value.serial <= 1) {
+
+        return;
+    }
     console.log(selectedFiscalResponsabilities.value)
     if (props.company) {
         const newCompany = deepClone(props.company)
@@ -586,5 +635,14 @@ const hideDialog = () => {
 .radio-border {
     border-radius: 7px;
     border: 1px solid lightgray;
+}
+
+.img-border {
+    border-radius: 10px;
+    border: 8px solid lightgray;
+    min-width: 300px;
+    width: 600px;
+    max-width: 800px;
+    max-height: 800px;
 }
 </style>
