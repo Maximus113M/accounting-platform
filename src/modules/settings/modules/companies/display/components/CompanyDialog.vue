@@ -6,6 +6,7 @@
     </q-btn>
     <q-btn v-else no-caps label="Nuevo +" rounded color="primary" text-color="white" class="q-px-lg"
         @click="showDialog" />
+
     <q-dialog v-model="isShowingDialog" backdrop-filter="blur(1px)" persistent>
         <q-card style="min-width: 620px; width: 85%; max-width: 1400px;">
             <q-card-section>
@@ -24,6 +25,8 @@
             </div>
 
             <q-card-section>
+                <!-- :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" -->
+                <!-- :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" -->
                 <q-form @submit="onSubmit" id="company_form" class="q-px-md q-pb-md">
                     <div v-if="selectedTab === 0" class="row  q-col-gutter-x-xl">
                         <div class="col-12 text-h6 text-bold q-mb-sm">
@@ -42,31 +45,27 @@
                         <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.names"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.names" />
                         </div>
                         <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellido</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.lastnames"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.lastnames" />
                         </div>
                         <div v-if="currentCompany.basicData.businessTypeName !== 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Razón social</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.businessName"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.businessName" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Serial</div>
-                            <q-input outlined dense type="text" v-model.number="currentCompany.serial"
+                            <q-input outlined dense type="number" v-model.number="currentCompany.serial"
                                 :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
                             <q-select outlined dense v-model="currentCompany.basicData.documentType"
-                                :options="rootStore.documentTypes"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                                :options="rootStore.documentTypes">
                                 <template v-slot:no-option>
                                     <q-item>
                                         <q-item-section class="text-grey">
@@ -79,13 +78,11 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
                             <q-input outlined dense type="number"
-                                v-model.number="currentCompany.basicData.documentNumber"
-                                :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
+                                v-model.number="currentCompany.basicData.documentNumber" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre Comercial</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.companyName"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.companyName" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Ciudad</div>
@@ -106,14 +103,12 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.address"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.address" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo de Regimen</div>
                             <q-select outlined dense v-model="currentCompany.regimeType"
-                                :options="rootStore.regimeTypes"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                                :options="rootStore.regimeTypes">
                                 <template v-slot:no-option>
                                     <q-item>
                                         <q-item-section class="text-grey">
@@ -125,23 +120,19 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo contacto</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.emailContact"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.emailContact" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre contacto</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.nameContact"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.nameContact" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Página Web</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.pageUrl"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.pageUrl" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Teléfono</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.phone"
-                                :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.basicData.phone" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Es consorcio o unión temporal</div>
@@ -201,8 +192,8 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Código actividad económica</div>
                             <q-select outlined dense fill-input use-input hide-selected label="Buscar"
-                                :model-value="getEconomicActivityName()" :options="filteredEconomicActivities"
-                                @filter="filterEconomicActivitiesFn" @input-value="onSelectedEconomicActivity">
+                                v-model="selectedEconomicActivity" :options="economicActivityOptions"
+                                @filter="filterEconomicActivitiesFn">
                                 <template v-slot:append>
                                     <q-icon v-if="selectedEconomicActivity" class="cursor-pointer" name="cancel"
                                         @click.stop.prevent="selectedEconomicActivity = undefined" />
@@ -219,8 +210,7 @@
 
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tarifa ICA</div>
-                            <q-input outlined dense type="number" v-model.number="currentCompany.taxData.icaRate"
-                                :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.taxData.icaRate" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Responsabilidades fiscales</div>
@@ -303,19 +293,17 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombres</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.names"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.names" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.lastNames"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text"
+                                v-model="currentCompany.legalRepresentative.lastNames" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Identificación</div>
                             <q-select outlined dense v-model="currentCompany.legalRepresentative.documentType"
-                                :options="rootStore.documentTypes"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                                :options="rootStore.documentTypes">
                                 <template v-slot:no-option>
                                     <q-item>
                                         <q-item-section class="text-grey">
@@ -328,8 +316,7 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Identificación</div>
                             <q-input outlined dense type="number"
-                                v-model.number="currentCompany.legalRepresentative.documentNumber"
-                                :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
+                                v-model.number="currentCompany.legalRepresentative.documentNumber" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">¿Tienes socios en la empresa?</div>
@@ -391,38 +378,34 @@ const tabsMenu = [
 const isShowingDialog = ref<boolean>(false);
 const currentCompany = ref(new CompanyModel({}));
 const selectedTab = ref(0);
+
 //Economic Activity
-const selectedEconomicActivity = ref<EconomicActivity | undefined>(undefined);
-const filteredEconomicActivities = ref<string[]>([]);
-const filteredEconomicActivitiesCopy: string[] = [];
+const economicActivities: Record<string, any>[] = [];
+const selectedEconomicActivity = ref<Record<string, any> | undefined>(undefined);
+const economicActivityOptions = ref<Record<string, any>[]>([]);
 //FiscalResponsability
 const selectedFiscalResponsabilities = ref<FiscalResponsibilities[]>([]);
 //Cities
+const cities: Record<string, any>[] = [];
 const selectedCity = ref<Record<string, any> | undefined>(undefined);
 const citiesOptions = ref<Record<string, any>[]>([]);
-const cities: Record<string, any>[] = [];
-//Debt Collectors Users
+
+//Debt Collectors Options
 const debtCollectorType = ref<string | undefined>(undefined);
 const debtCollectorTypeOptions: string[] = ['Aprendiz', 'Instructor'];
+//Debt Collectors Users
 const selectedDebtCollector = ref<Record<string, any> | undefined>(undefined);
 const debtCollectorsOptions = ref<Record<string, any>[]>([]);
+//Users Collectors
+const studentList: Record<string, any>[] = [];
+const instructorList: Record<string, any>[] = [];
 
 watch(() => debtCollectorType.value, (type) => {
     selectedDebtCollector.value = undefined;
     if (type === 'Aprendiz') {
-        debtCollectorsOptions.value = [...usersManagementStore.studentsByClassGroup.map((user) => {
-            return {
-                label: user.names + ' ' + user.lastNames,
-                value: user
-            }
-        })];
+        debtCollectorsOptions.value = [...studentList];
     } else {
-        debtCollectorsOptions.value = [...usersManagementStore.instructors.map((user) => {
-            return {
-                label: user.names + ' ' + user.lastNames,
-                value: user
-            }
-        })];
+        debtCollectorsOptions.value = [...instructorList];
     }
 });
 
@@ -457,9 +440,14 @@ const initData = async () => {
             customNotify({ status: resp.status, message: resp.message });
             return;
         }
-        filteredEconomicActivities.value = [...companiesStore.economicActivities.map((item) => `${item.key} - ${item.value}`)];
-        filteredEconomicActivitiesCopy.length = 0;
-        filteredEconomicActivitiesCopy.push(...filteredEconomicActivities.value);
+        economicActivities.length = 0;
+        economicActivities.push(...companiesStore.economicActivities.map((item) => {
+            return {
+                label: `${item.key} - ${item.value}`,
+                value: item
+            }
+        }));
+        economicActivityOptions.value = [...economicActivities];
     });
     const fiscalResponsabilitiesPromise = companiesStore.getFiscalResponsabilities(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
@@ -467,13 +455,21 @@ const initData = async () => {
             return;
         }
     });
-    //TODO: VERIFY HOW GET THE RELATED USERS
+    //TODO: VERIFY HOW TO GET THE RELATED USERS
     const studentsPromise = usersManagementStore.getStudentsByClassGroup(1).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
             return;
         }
+        studentList.length = 0;
+        studentList.push(...usersManagementStore.studentsByClassGroup.map((student) => {
+            return {
+                label: student.names + ' ' + student.lastNames,
+                value: student
+            }
+        }));
     });
+    //MISSING INSTRUCTORS
 
     promiseList.push(economicActivitiesPromise);
     promiseList.push(fiscalResponsabilitiesPromise);
@@ -508,34 +504,18 @@ const showDialog = async () => {
 
 
 //Economic Activity
-const getEconomicActivityName = () => {
-    return selectedEconomicActivity.value ?
-        `${selectedEconomicActivity.value.key} - ${selectedEconomicActivity.value.value}` : ''
-}
 const filterEconomicActivitiesFn = (val: string, update: any) => {
     if (val === '') {
         update(() => {
-            filteredEconomicActivities.value = [...filteredEconomicActivitiesCopy];
+            economicActivityOptions.value = [...economicActivities];
         });
         return;
     }
     const needle = val.toLowerCase();
     update(() => {
-        filteredEconomicActivities.value = filteredEconomicActivitiesCopy.filter((v) => v.toLocaleLowerCase().includes(needle));
+        economicActivityOptions.value = economicActivities.filter((v) => v.label.toLocaleLowerCase().includes(needle));
     });
 };
-const onSelectedEconomicActivity = (val: any) => {
-    if (!val) return;
-    const foundEconomicActivity = companiesStore.economicActivities.find((item) =>
-        `${item.key} - ${item.value}`.toLocaleLowerCase() === val.toLocaleLowerCase());
-
-    if (foundEconomicActivity) {
-        selectedEconomicActivity.value = new EconomicActivity({
-            key: foundEconomicActivity.key,
-            value: foundEconomicActivity.value
-        });
-    }
-}
 
 //Fiscal Responsabilities
 const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.value?.map((item) => item.key).join(', ');
@@ -558,48 +538,21 @@ const filterCityFn = (val: string, update: any) => {
 const filterDebtCollertorsFn = (val: string, update: any) => {
     if (!debtCollectorType.value) return;
     if (val === '') {
-        debtCollectorType.value === 'Aprendiz' ?
-            update(() => {
-                debtCollectorsOptions.value = [...usersManagementStore.studentsByClassGroup.map((user) => {
-                    return {
-                        label: user.names + ' ' + user.lastNames,
-                        value: user
-                    }
-                })];
-            })
-            :
-            update(() => {
-                debtCollectorsOptions.value = [...usersManagementStore.instructors.map((user) => {
-                    return {
-                        label: user.names + ' ' + user.lastNames,
-                        value: user
-                    }
-                })];
-            });
-
+        update(() => {
+            debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ? [...studentList] : [...instructorList];
+        })
         return;
     }
 
     const needle = val.toLowerCase();
     update(() => {
         debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ?
-            usersManagementStore.studentsByClassGroup.filter((user) => `${user.names + ' ' + user.lastNames}`.toLocaleLowerCase().includes(needle))
-                .map((user) => {
-                    return {
-                        label: user.names + ' ' + user.lastNames,
-                        value: user
-                    }
-                })
+            studentList.filter((student) => student.label.toLocaleLowerCase().includes(needle))
             :
-            usersManagementStore.instructors.filter((user) => `${user.names + ' ' + user.lastNames}`.toLocaleLowerCase().includes(needle))
-                .map((user) => {
-                    return {
-                        label: user.names + ' ' + user.lastNames,
-                        value: user
-                    }
-                });
+            instructorList.filter((instructor) => instructor.label.toLocaleLowerCase().includes(needle))
     });
 }
+
 
 const onSubmit = () => {
     console.log(selectedFiscalResponsabilities.value)
@@ -609,7 +562,7 @@ const onSubmit = () => {
     } else {
         const newCompany = deepClone(currentCompany.value);
         newCompany.basicData.city = selectedCity.value?.value ?? newCompany.basicData.city;
-        newCompany.taxData.economicActivity = selectedEconomicActivity.value ?? newCompany.taxData.economicActivity;
+        newCompany.taxData.economicActivity = selectedEconomicActivity.value?.value ?? newCompany.taxData.economicActivity;
         newCompany.taxData.fiscalResponsibilities = selectedFiscalResponsabilities.value ?? newCompany.taxData.fiscalResponsibilities;
 
         console.log(newCompany);
