@@ -28,7 +28,7 @@
                 <!-- :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" -->
                 <!-- :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" -->
                 <q-form @submit="onSubmit" id="company_form" class="q-px-md q-pb-md">
-                    <div v-if="selectedTab === 0" class="row  q-col-gutter-x-xl">
+                    <div v-if="selectedTab === 0" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
                         <div class="col-12 text-h6 text-bold q-mb-sm">
                             Datos Generales
                         </div>
@@ -49,7 +49,7 @@
                         </div>
                         <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellido</div>
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
                             <q-input outlined dense type="text" v-model="currentCompany.basicData.lastnames" />
                         </div>
                         <div v-if="currentCompany.basicData.businessTypeName !== 'Personal Natural'"
@@ -59,8 +59,7 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Serial</div>
-                            <q-input outlined dense type="number" v-model.number="currentCompany.serial"
-                                :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.serial" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
@@ -188,7 +187,7 @@
 
                     </div>
 
-                    <div v-else-if="selectedTab === 1" class="row  q-col-gutter-x-xl">
+                    <div v-else-if="selectedTab === 1" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
                         <div class="col-12 text-h6 text-bold q-mb-sm">
                             Tributario
                         </div>
@@ -243,8 +242,18 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tributos</div>
-                            <q-select outlined dense v-model="currentCompany.taxData.taxes" :options="[]"
-                                class="q-mb-md">
+                            <q-select outlined dense multiple clearable v-model="selectedTaxes"
+                                :options="companiesStore.taxes" :display-value="getTaxesNames()" class="q-mb-md">
+                                <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                                    <q-item v-bind="itemProps">
+                                        <q-item-section>
+                                            {{ opt.value }}
+                                        </q-item-section>
+                                        <q-item-section side>
+                                            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
                                 <template v-slot:no-option>
                                     <q-item>
                                         <q-item-section class="text-grey">
@@ -291,7 +300,7 @@
                         </div>
                     </div>
 
-                    <div v-else-if="selectedTab === 2" class="row  q-col-gutter-x-xl">
+                    <div v-else-if="selectedTab === 2" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
                         <div class="col-12 text-h6 text-bold">
                             Representante Legal
                         </div>
@@ -325,11 +334,74 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">¿Tienes socios en la empresa?</div>
                             <div class="row justify-around radio-border">
-                                <q-radio v-model="currentCompany.legalRepresentative.hasPartners" label="Si"
-                                    :val="true" />
+                                <q-radio v-model="currentCompany.legalRepresentative.hasPartners" label="Si" :val="true"
+                                    @click="partnersEnable" />
                                 <q-radio v-model="currentCompany.legalRepresentative.hasPartners" label="No"
                                     :val="false" />
                             </div>
+                        </div>
+                        <div v-if="currentCompany.legalRepresentative.hasPartners" class="col-12 q-mt-md">
+                            <div class="row items-center">
+                                <div class="q-pb-xs text-subtitle1 text-bold">Agregar socios</div>
+                                <q-icon class="q-ml-sm" name="person_add" size="sm" />
+                            </div>
+
+                            <div v-for="(partner, index) of partnerList" :key="index"
+                                class="row q-col-gutter-sm q-pb-sm q-px-md q-my-md partner-card">
+                                <div class="col-12 row justify-between items-center">
+                                    <div class="text-bold text-subtitle1 text-primary">
+                                        Socio N. {{ index + 1 }}
+                                    </div>
+                                    <q-icon class="cursor-pointer" size="sm" name="cancel" color="red-8"
+                                        @click="removePartner(index)" />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombres</div>
+                                    <q-input outlined dense type="text" v-model="partner.names" />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
+                                    <q-input outlined dense type="text" v-model="partner.lastNames" />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
+                                    <q-select outlined dense v-model="partner.documentType"
+                                        :options="rootStore.documentTypes">
+                                        <template v-slot:no-option>
+                                            <q-item>
+                                                <q-item-section class="text-grey">
+                                                    Sin resultados
+                                                </q-item-section>
+                                            </q-item>
+                                        </template>
+                                    </q-select>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
+                                    <q-input outlined dense type="number" v-model.number="partner.documentNumber" />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">
+                                        ¿Persona expuesta públicamente?
+                                    </div>
+                                    <div class="row justify-around radio-border">
+                                        <q-radio v-model="partner.isPublicPerson" label="Si" :val="true" />
+                                        <q-radio v-model="partner.isPublicPerson" label="No" :val="false" />
+                                    </div>
+                                </div>
+
+                                <div class="col-12 row" style="border: 2 solid gray; height: 2px; width: 100%;"></div>
+                            </div>
+
+                            <div class="row items-center">
+                                <div class="row items-center add-new-partner-btn" @click="addNewPartner">
+                                    <div class="q-mr-sm text-primary ">
+                                        Agregar nuevo
+                                    </div>
+                                    <q-icon name="add_circle" color="primary" size="lg" />
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -373,13 +445,15 @@ import { onMounted, ref, watch } from 'vue';
 import { CompanyModel } from '../../data/models/companyModel';
 import { useCompaniesStore } from '../store';
 import { UserModel } from 'src/models/userModel';
-import { FiscalResponsibilities } from '../../data/models/taxData';
+import { FiscalResponsibilities, Tax } from '../../data/models/taxData';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify, spinnerType } from 'src/core/utils/notifications';
 import { deepClone } from 'src/core/utils/general';
 import { useUsersManagementStore } from '../../../user_management/display/store';
 import { useRootStore } from 'src/stores/root-store';
 import { GeneralServices } from 'src/services/generalServices';
+import { PartnerModel } from '../../data/models/partnerModel';
+import { Dialog } from 'quasar';
 
 const rootStore = useRootStore();
 const companiesStore = useCompaniesStore();
@@ -399,12 +473,7 @@ const tabsMenu = [
 const isShowingDialog = ref<boolean>(false);
 const currentCompany = ref(new CompanyModel({}));
 const selectedTab = ref(0);
-//Economic Activity
-const economicActivities: Record<string, any>[] = [];
-const selectedEconomicActivity = ref<Record<string, any> | undefined>(undefined);
-const economicActivityOptions = ref<Record<string, any>[]>([]);
-//FiscalResponsability
-const selectedFiscalResponsabilities = ref<FiscalResponsibilities[]>([]);
+
 //Cities
 const cities: Record<string, any>[] = [];
 const selectedCity = ref<Record<string, any> | undefined>(undefined);
@@ -418,6 +487,18 @@ const debtCollectorsOptions = ref<Record<string, any>[]>([]);
 //Users Collectors
 const studentList: Record<string, any>[] = [];
 const instructorList: Record<string, any>[] = [];
+
+//Economic Activity
+const economicActivities: Record<string, any>[] = [];
+const selectedEconomicActivity = ref<Record<string, any> | undefined>(undefined);
+const economicActivityOptions = ref<Record<string, any>[]>([]);
+//FiscalResponsability
+const selectedFiscalResponsabilities = ref<FiscalResponsibilities[] | null>([]);
+//Taxes
+const selectedTaxes = ref<Tax[] | null>([]);
+
+//Partners
+const partnerList = ref<PartnerModel[]>([]);
 //Files
 const logo = ref<File | null>(null);
 const imageURL = ref('');
@@ -485,6 +566,12 @@ const initData = async () => {
             return;
         }
     });
+    const taxesPromise = companiesStore.getTaxes(props.signInUser.accessToken).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+    });
     //TODO: VERIFY HOW TO GET THE RELATED USERS
     const studentsPromise = usersManagementStore.getStudentsByClassGroup(1).then((resp) => {
         if (resp.status === statusMessages.fail) {
@@ -503,6 +590,7 @@ const initData = async () => {
 
     promiseList.push(economicActivitiesPromise);
     promiseList.push(fiscalResponsabilitiesPromise);
+    promiseList.push(taxesPromise);
     promiseList.push(studentsPromise);
 
     await Promise.all(promiseList);
@@ -556,6 +644,9 @@ const filterEconomicActivitiesFn = (val: string, update: any) => {
 //Fiscal Responsabilities
 const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.value?.map((item) => item.key).join(', ');
 
+//Fiscal Responsabilities
+const getTaxesNames = () => selectedTaxes.value?.map((item) => item.value).join(', ');
+
 //Cities
 const filterCityFn = (val: string, update: any) => {
     if (val === '') {
@@ -588,6 +679,62 @@ const filterDebtCollertorsFn = (val: string, update: any) => {
             instructorList.filter((instructor) => instructor.label.toLocaleLowerCase().includes(needle))
     });
 }
+
+//Partners
+const partnersEnable = () => {
+    if (partnerList.value.length === 0) {
+        partnerList.value.push(new PartnerModel({}));
+    }
+}
+
+const addNewPartner = () => {
+    if (partnerList.value.length > 0) {
+        const partner = partnerList.value[partnerList.value.length - 1];
+        if (!validatePartnerFields(partner, true)) {
+            customNotify({ status: statusMessages.warning, message: 'Debes completar todos los campos antes de agregar otro socio' });
+            return;
+        }
+    }
+    partnerList.value.push(new PartnerModel({}));
+    customNotify({ status: statusMessages.success, message: 'Socio añadido', time: 1000 });
+}
+
+const removePartner = (index: number) => {
+    const partner = partnerList.value[index];
+    if (validatePartnerFields(partner)) {
+        Dialog.create({
+            title: '<div class="text-primary">Eliminar socio</div>',
+            message: '¿Deseas <strong>eliminar</strong> al <strong>socio</strong> seleccionado? Esta acción <strong>no puede</strong> revertirse.',
+            ok: {
+                push: true,
+                color: 'primary',
+            },
+            cancel: {
+                push: true,
+                color: 'red-5',
+            },
+            html: true,
+        })
+            .onOk(async () => {
+                partnerList.value.splice(index, 1);
+                customNotify({ status: statusMessages.success, message: 'Socio eliminado', time: 1000 });
+            });
+        return
+    }
+    partnerList.value.splice(index, 1);
+    customNotify({ status: statusMessages.success, message: 'Socio eliminado', time: 1000 });
+}
+
+const validatePartnerFields = (partner: PartnerModel, strict?: boolean) => {
+    let counter = 0;
+    if (partner.names === '') counter++;
+    if (partner.lastNames === '') counter++;
+    if (partner.documentType === '') counter++;
+    if (partner.documentNumber === 0) counter++;
+
+    return strict ? counter === 0 : counter <= 2;
+}
+
 //Logo
 const cancelFile = () => {
     URL.revokeObjectURL(imageURL.value);
@@ -598,6 +745,8 @@ const cancelFile = () => {
 const onRejectedFile = () => {
     customNotify({ status: statusMessages.warning, message: 'El archivo no es valido' })
 }
+
+
 
 const onSubmit = () => {
     if (currentCompany.value.serial <= 1) {
@@ -631,7 +780,7 @@ const hideDialog = () => {
 // ];
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .radio-border {
     border-radius: 7px;
     border: 1px solid lightgray;
@@ -644,5 +793,17 @@ const hideDialog = () => {
     width: 600px;
     max-width: 800px;
     max-height: 800px;
+}
+
+.add-new-partner-btn {
+    cursor: pointer;
+    border: 2px solid $primary;
+    border-radius: 12px;
+    padding: 2px 15px;
+}
+
+.partner-card {
+    border: 3px solid $grey-4;
+    border-radius: 15px;
 }
 </style>

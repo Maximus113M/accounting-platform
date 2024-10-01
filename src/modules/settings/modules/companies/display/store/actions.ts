@@ -44,3 +44,15 @@ export const getFiscalResponsabilities = async (accessToken: string) => {
     return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
   }
 };
+export const getTaxes = async (accessToken: string) => {
+  try {
+    const settingsStore= useCompaniesStore();
+    const resp = await companiesUseCases.getTaxes(accessToken);
+    settingsStore.taxes= [];
+    settingsStore.taxes= [...resp];
+    return { status: statusMessages.success, message: 'Tributos obtenidos!' };
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
+  }
+};

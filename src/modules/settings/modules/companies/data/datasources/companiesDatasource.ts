@@ -1,7 +1,7 @@
 import { CompanyModel, companyModelFromJson } from '../models/companyModel';
 import { ServerException } from 'src/core/helpers/exceptions';
 import { api } from 'src/boot/axios';
-import { EconomicActivity, FiscalResponsibilities } from '../models/taxData';
+import { EconomicActivity, FiscalResponsibilities, Tax } from '../models/taxData';
 
 export abstract class CompaniesDatasource {
     abstract getCompany(serial: string, accessToken: string): Promise<CompanyModel>;
@@ -13,6 +13,7 @@ export abstract class CompaniesDatasource {
     
     abstract getEconomicActivities(accessToken: string ): Promise<EconomicActivity[]>;
     abstract getFiscalResponsabilities(accessToken: string): Promise<FiscalResponsibilities[]>;
+    abstract getTaxes(accessToken: string): Promise<Tax[]>;
   }
   
   export class CompaniesDatasourceImpl implements CompaniesDatasource{
@@ -88,6 +89,14 @@ export abstract class CompaniesDatasource {
         try {
           const apiResp= await api(accessToken).get('/resp-fiscal');
           return (apiResp.data as any[]).map((item)=> new FiscalResponsibilities({key: item.codigo, value: item.descripcion }));
+        } catch (error: any) {
+          throw new ServerException({code: error?.status , data: error});
+        }
+      }
+      async getTaxes(accessToken: string): Promise<Tax[]> {
+        try {
+          const apiResp= await api(accessToken).get('/tributos');
+          return (apiResp.data as any[]).map((item)=> new Tax({key: item.id, value: item.nombre }));
         } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }

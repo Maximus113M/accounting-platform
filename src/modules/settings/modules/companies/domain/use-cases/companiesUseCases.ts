@@ -15,5 +15,7 @@ export class CompaniesUseCases{
     
     getEconomicActivities= (accessToken: string ) => this.companiesRepository.getEconomicActivities(accessToken);
     getFiscalResponsabilities= (accessToken: string) => this.companiesRepository.getFiscalResponsabilities(accessToken);
+    getTaxes= (accessToken: string) => this.companiesRepository.getTaxes(accessToken);
+
 
 }
