@@ -6,7 +6,8 @@
     </q-btn>
     <q-btn v-else no-caps label="Nuevo +" rounded color="primary" text-color="white" class="q-px-lg"
         @click="showDialog" />
-    <q-dialog v-model="isShowingDialog" backdrop-filter="blur(1px)">
+
+    <q-dialog v-model="isShowingDialog" backdrop-filter="blur(1px)" persistent>
         <q-card style="min-width: 620px; width: 85%; max-width: 1400px;">
             <q-card-section>
                 <div class="row justify-between q-pb-sm">
@@ -24,8 +25,10 @@
             </div>
 
             <q-card-section>
+                <!-- :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" -->
+                <!-- :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" -->
                 <q-form @submit="onSubmit" id="company_form" class="q-px-md q-pb-md">
-                    <div v-if="selectedTab === 0" class="row  q-col-gutter-x-xl">
+                    <div v-if="selectedTab === 0" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
                         <div class="col-12 text-h6 text-bold q-mb-sm">
                             Datos Generales
                         </div>
@@ -39,101 +42,161 @@
                                     val="Empresa" />
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4">
+                        <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
+                            class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre</div>
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.names" />
+                        </div>
+                        <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
+                            class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.lastnames" />
+                        </div>
+                        <div v-if="currentCompany.basicData.businessTypeName !== 'Personal Natural'"
+                            class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Razón social</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.businessName"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.businessName" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Serial</div>
-                            <q-input outlined dense type="text" v-model.number="currentCompany.serial"
-                                :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.serial" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
                             <q-select outlined dense v-model="currentCompany.basicData.documentType"
-                                :options="documentTypes"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                                :options="rootStore.documentTypes">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
                             </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
                             <q-input outlined dense type="number"
-                                v-model.number="currentCompany.basicData.documentNumber"
-                                :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
+                                v-model.number="currentCompany.basicData.documentNumber" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre Comercial</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.companyName"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.companyName" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Ciudad</div>
-                            <q-select outlined dense v-model="currentCompany.basicData.city.name" :options="cities"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-select outlined dense fill-input use-input hide-selected label="Buscar"
+                                v-model="selectedCity" :options="citiesOptions" @filter="filterCityFn">
+                                <template v-slot:append>
+                                    <q-icon v-if="selectedCity" class="cursor-pointer" name="cancel"
+                                        @click.stop.prevent="selectedCity = undefined" />
+                                </template>
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.address"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.address"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.address" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo de Regimen</div>
-                            <q-select outlined dense type="text" v-model="currentCompany.regimeType"
-                                :options="regimeTypeOptions"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-select outlined dense v-model="currentCompany.regimeType"
+                                :options="rootStore.regimeTypes">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo contacto</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.emailContact"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.emailContact" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
-                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo contacto</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.nameContact"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre contacto</div>
+                            <q-input outlined dense type="text" v-model="currentCompany.nameContact" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Página Web</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.pageUrl"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.pageUrl" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Teléfono</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.phone"
-                                :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.basicData.phone" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Es consorcio o unión temporal</div>
                             <div class="row justify-around radio-border">
-                                <q-radio v-model="currentCompany.basicData.businessTypeName" label="Si" :val="true" />
-                                <q-radio v-model="currentCompany.basicData.businessTypeName" label="No" :val="false" />
+                                <q-radio v-model="currentCompany.isConsortium" label="Si" :val="true" />
+                                <q-radio v-model="currentCompany.isConsortium" label="No" :val="false" />
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
+                            <div class="q-pb-xs text-subtitle2 text-weight-medium">Usuario cobrador</div>
+                            <q-select outlined dense v-model="debtCollectorType" :options="debtCollectorTypeOptions">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Cobrador por defecto</div>
-                            <q-select outlined dense type="text" v-model="currentCompany.regimeType"
-                                :options="['Camilo', 'Daniel', 'Freddy']"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-tooltip v-if="!debtCollectorType" :offset="[0, 10]" transition-show="scale"
+                                transition-hide="scale" class="text-body2 text-white bg-warning">
+                                Debes seleccionar un tipo de usuario
+                            </q-tooltip>
+                            <q-select outlined dense fill-input use-input hide-selected label="Buscar"
+                                v-model="selectedDebtCollector" :options="debtCollectorsOptions"
+                                @filter="filterDebtCollertorsFn" :disable="debtCollectorType ? false : true">
+                                <template v-slot:append>
+                                    <q-icon v-if="selectedDebtCollector" class="cursor-pointer" name="cancel"
+                                        @click.stop.prevent="selectedDebtCollector = undefined" />
+                                </template>
+                                <template v-slot:option="{ itemProps, opt }">
+                                    <q-item v-bind="itemProps">
+                                        <q-item-section>
+                                            <strong>
+                                                {{ opt.label }}
+                                            </strong>
+                                            {{ opt.value?.documentType + ', ' + opt.value?.documentNumber }}
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
 
                     </div>
 
-                    <div v-else-if="selectedTab === 1" class="row  q-col-gutter-x-xl">
+                    <div v-else-if="selectedTab === 1" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
                         <div class="col-12 text-h6 text-bold q-mb-sm">
                             Tributario
                         </div>
 
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Código actividad económica</div>
-                            <q-select outlined dense fill-input use-input hide-selected
-                                :model-value="getEconomicActivityName()" :options="filteredEconomicActivities"
-                                @filter="filterEconomicActivitiesFn" @input-value="onSelectedEconomicActivity">
+                            <q-select outlined dense fill-input use-input hide-selected label="Buscar"
+                                v-model="selectedEconomicActivity" :options="economicActivityOptions"
+                                @filter="filterEconomicActivitiesFn">
                                 <template v-slot:append>
                                     <q-icon v-if="selectedEconomicActivity" class="cursor-pointer" name="cancel"
                                         @click.stop.prevent="selectedEconomicActivity = undefined" />
@@ -150,17 +213,23 @@
 
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tarifa ICA</div>
-                            <q-input outlined dense type="number" v-model.number="currentCompany.taxData.icaRate"
-                                :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.taxData.icaRate" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Responsabilidades fiscales</div>
-                            <q-select outlined dense fill-input use-input hide-selected
-                                :model-value="getFiscalResponsabilityName()" :options="filteredFiscalResponsabilities"
-                                @filter="filterFiscalResponsabilitiesFn" @input-value="onSelectedFiscalResponsability">
-                                <template v-slot:append>
-                                    <q-icon v-if="selectedFiscalResponsability" class="cursor-pointer" name="cancel"
-                                        @click.stop.prevent="selectedFiscalResponsability = undefined" />
+                            <q-select outlined dense multiple clearable v-model="selectedFiscalResponsabilities"
+                                :options="companiesStore.fiscalResponsalities"
+                                :display-value="getFiscalResponsabilitiesNames()">
+                                <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                                    <q-item v-bind="itemProps">
+                                        <q-item-section>
+                                            <strong>{{ opt.key }}</strong>
+                                            {{ opt.value }}
+                                        </q-item-section>
+                                        <q-item-section side>
+                                            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                                        </q-item-section>
+                                    </q-item>
                                 </template>
                                 <template v-slot:no-option>
                                     <q-item>
@@ -173,8 +242,26 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tributos</div>
-                            <q-select outlined dense v-model="currentCompany.taxData.taxes" :options="[]"
-                                class="q-mb-md" />
+                            <q-select outlined dense multiple clearable v-model="selectedTaxes"
+                                :options="companiesStore.taxes" :display-value="getTaxesNames()" class="q-mb-md">
+                                <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                                    <q-item v-bind="itemProps">
+                                        <q-item-section>
+                                            {{ opt.value }}
+                                        </q-item-section>
+                                        <q-item-section side>
+                                            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                            </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 ">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Maneja AIU</div>
@@ -213,48 +300,132 @@
                         </div>
                     </div>
 
-                    <div v-else-if="selectedTab === 2" class="row  q-col-gutter-x-xl">
+                    <div v-else-if="selectedTab === 2" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
                         <div class="col-12 text-h6 text-bold">
                             Representante Legal
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombres</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.names"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.names" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.lastNames"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
+                            <q-input outlined dense type="text"
+                                v-model="currentCompany.legalRepresentative.lastNames" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Identificación</div>
                             <q-select outlined dense v-model="currentCompany.legalRepresentative.documentType"
-                                :options="documentTypes"
-                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
+                                :options="rootStore.documentTypes">
+                                <template v-slot:no-option>
+                                    <q-item>
+                                        <q-item-section class="text-grey">
+                                            Sin resultados
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
                             </q-select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Identificación</div>
                             <q-input outlined dense type="number"
-                                v-model.number="currentCompany.legalRepresentative.documentNumber"
-                                :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
+                                v-model.number="currentCompany.legalRepresentative.documentNumber" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">¿Tienes socios en la empresa?</div>
                             <div class="row justify-around radio-border">
-                                <q-radio v-model="currentCompany.legalRepresentative.hasPartners" label="Si"
-                                    :val="true" />
+                                <q-radio v-model="currentCompany.legalRepresentative.hasPartners" label="Si" :val="true"
+                                    @click="partnersEnable" />
                                 <q-radio v-model="currentCompany.legalRepresentative.hasPartners" label="No"
                                     :val="false" />
                             </div>
                         </div>
+                        <div v-if="currentCompany.legalRepresentative.hasPartners" class="col-12 q-mt-md">
+                            <div class="row items-center">
+                                <div class="q-pb-xs text-subtitle1 text-bold">Agregar socios</div>
+                                <q-icon class="q-ml-sm" name="person_add" size="sm" />
+                            </div>
+
+                            <div v-for="(partner, index) of partnerList" :key="index"
+                                class="row q-col-gutter-sm q-pb-sm q-px-md q-my-md partner-card">
+                                <div class="col-12 row justify-between items-center">
+                                    <div class="text-bold text-subtitle1 text-primary">
+                                        Socio N. {{ index + 1 }}
+                                    </div>
+                                    <q-icon class="cursor-pointer" size="sm" name="cancel" color="red-8"
+                                        @click="removePartner(index)" />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombres</div>
+                                    <q-input outlined dense type="text" v-model="partner.names" />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
+                                    <q-input outlined dense type="text" v-model="partner.lastNames" />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
+                                    <q-select outlined dense v-model="partner.documentType"
+                                        :options="rootStore.documentTypes">
+                                        <template v-slot:no-option>
+                                            <q-item>
+                                                <q-item-section class="text-grey">
+                                                    Sin resultados
+                                                </q-item-section>
+                                            </q-item>
+                                        </template>
+                                    </q-select>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
+                                    <q-input outlined dense type="number" v-model.number="partner.documentNumber" />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="q-pb-xs text-subtitle2 text-weight-medium">
+                                        ¿Persona expuesta públicamente?
+                                    </div>
+                                    <div class="row justify-around radio-border">
+                                        <q-radio v-model="partner.isPublicPerson" label="Si" :val="true" />
+                                        <q-radio v-model="partner.isPublicPerson" label="No" :val="false" />
+                                    </div>
+                                </div>
+
+                                <div class="col-12 row" style="border: 2 solid gray; height: 2px; width: 100%;"></div>
+                            </div>
+
+                            <div class="row items-center">
+                                <div class="row items-center add-new-partner-btn" @click="addNewPartner">
+                                    <div class="q-mr-sm text-primary ">
+                                        Agregar nuevo
+                                    </div>
+                                    <q-icon name="add_circle" color="primary" size="lg" />
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
 
-                    <div v-else>
-                        <div class="col-12 text-h6 text-bold">
+                    <div v-else class="row q-col-gutter-x-xl justify-center">
+                        <div class="col-12 q-mb-sm text-h6 text-bold">
                             Logo
                         </div>
+                        <div class="col-12 row justify-center">
+                            <img v-if="imageURL !== ''" class="img-border" :src="imageURL" alt="Company-image">
+
+                            <img v-else class="img-border" src="../../../../../../assets/images/No_Image_Available.jpg"
+                                alt="No-image" height="450">
+
+                        </div>
+                        <q-file filled bottom-slots v-model="logo" label="Imagen" counter accept=".jpg, image/*, .gif"
+                            hint="jpeg, png, jpg, gif" @rejected="onRejectedFile" style="max-width: 650px;"
+                            class="col-12">
+                            <template v-slot:prepend>
+                                <q-icon name="cloud_upload" @click.stop.prevent />
+                            </template>
+                            <template v-slot:append>
+                                <q-icon name="close" @click.stop.prevent="cancelFile" class="cursor-pointer" />
+                            </template>
+                        </q-file>
                     </div>
 
                 </q-form>
@@ -270,17 +441,25 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { CompanyModel } from '../../data/models/companyModel';
-import { useCompaniesStore } from '../store';
-import { UserModel } from 'src/models/userModel';
-import { EconomicActivity, FiscalResponsibilities } from '../../data/models/taxData';
+import { Dialog } from 'quasar';
+import { onMounted, ref, watch } from 'vue';
+import { deepClone } from 'src/core/utils/general';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
-import { customNotify } from 'src/core/utils/notifications';
-import { getEconomicActivities } from '../store/actions';
+import { customNotify, spinnerType } from 'src/core/utils/notifications';
+import { GeneralServices } from 'src/services/generalServices';
 
+import { UserModel } from 'src/models/userModel';
+import { PartnerModel } from '../../data/models/partnerModel';
+import { CompanyModel } from '../../data/models/companyModel';
+import { FiscalResponsibilities, Tax } from '../../data/models/taxData';
+
+import { useRootStore } from 'src/stores/root-store';
+import { useCompaniesStore } from '../store';
+import { useUsersManagementStore } from '../../../user_management/display/store';
+
+const rootStore = useRootStore();
 const companiesStore = useCompaniesStore();
-
+const usersManagementStore = useUsersManagementStore();
 const props = defineProps({
     company: { type: CompanyModel },
     signInUser: { type: UserModel, required: true }
@@ -297,179 +476,427 @@ const isShowingDialog = ref<boolean>(false);
 const currentCompany = ref(new CompanyModel({}));
 const selectedTab = ref(0);
 
-const selectedEconomicActivity = ref<EconomicActivity | undefined>(undefined);
-const filteredEconomicActivities = ref<string[]>([]);
-const filteredEconomicActivitiesCopy: string[] = [];
+//Cities
+const cities: Record<string, any>[] = [];
+const selectedCity = ref<Record<string, any> | undefined>(undefined);
+const citiesOptions = ref<Record<string, any>[]>([]);
+//Debt Collectors Options
+const debtCollectorType = ref<string | undefined>(undefined);
+const debtCollectorTypeOptions: string[] = ['Aprendiz', 'Instructor'];
+//Debt Collectors Users
+const selectedDebtCollector = ref<Record<string, any> | undefined>(undefined);
+const debtCollectorsOptions = ref<Record<string, any>[]>([]);
+//Users Collectors
+const studentList: Record<string, any>[] = [];
+const instructorList: Record<string, any>[] = [];
 
-const selectedFiscalResponsability = ref<FiscalResponsibilities | undefined>(undefined);
-const filteredFiscalResponsabilities = ref<string[]>([]);
-const filteredFiscalResponsabilitiesCopy: string[] = [];
+//Economic Activity
+const economicActivities: Record<string, any>[] = [];
+const selectedEconomicActivity = ref<Record<string, any> | undefined>(undefined);
+const economicActivityOptions = ref<Record<string, any>[]>([]);
+//FiscalResponsability
+const selectedFiscalResponsabilities = ref<FiscalResponsibilities[] | null>([]);
+//Taxes
+const selectedTaxes = ref<Tax[] | null>([]);
 
+//Partners
+const partnerList = ref<PartnerModel[]>([]);
+//Files
+const logo = ref<File | null>(null);
+const imageURL = ref('');
+
+watch(() => debtCollectorType.value, (type) => {
+    selectedDebtCollector.value = undefined;
+    if (type === 'Aprendiz') {
+        debtCollectorsOptions.value = [...studentList];
+    } else {
+        debtCollectorsOptions.value = [...instructorList];
+    }
+});
+watch(() => logo.value, (file) => {
+    if (file) {
+        URL.revokeObjectURL(imageURL.value);
+        imageURL.value = URL.createObjectURL(file);
+        return;
+    }
+});
+
+onMounted(async () => {
+    if (rootStore.cities.length === 0) {
+        console.log('LOAD CITIES FROM COMPANY DIALOG')
+        await GeneralServices.getCities().then((resp) => {
+            if (resp.status === statusMessages.fail) {
+                customNotify({ status: resp.status, message: resp.message });
+                return;
+            }
+            rootStore.cities = resp.data!;
+        })
+    }
+    cities.push(...rootStore.cities.map((city) => {
+        return {
+            label: city.dianCode + ' - ' + city.name,
+            value: city
+        }
+    }));
+})
 
 const initData = async () => {
-    console.log('HERE')
-    const promiseList: Promise<void>[] = [];
+    customNotify({ status: statusMessages.info, message: 'Obteniendo información...', spinner: spinnerType.Ios });
+    console.log('Start load...');
+    const inicio = performance.now();
+    //Set cities
+    citiesOptions.value = [...cities];
 
+    const promiseList: Promise<void>[] = [];
     const economicActivitiesPromise = companiesStore.getEconomicActivities(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
             return;
         }
-        filteredEconomicActivities.value = [...companiesStore.economicActivities.map((item) => `${item.key} - ${item.value}`)];
-        filteredEconomicActivitiesCopy.length = 0;
-        filteredEconomicActivitiesCopy.push(...filteredEconomicActivities.value);
+        economicActivities.length = 0;
+        economicActivities.push(...companiesStore.economicActivities.map((item) => {
+            return {
+                label: `${item.key} - ${item.value}`,
+                value: item
+            }
+        }));
+        economicActivityOptions.value = [...economicActivities];
     });
     const fiscalResponsabilitiesPromise = companiesStore.getFiscalResponsabilities(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
             return;
         }
-        filteredFiscalResponsabilities.value = [...companiesStore.fiscalResponsalities.map((item) => `${item.key} - ${item.value}`)];
-        filteredFiscalResponsabilitiesCopy.length = 0;
-        filteredFiscalResponsabilitiesCopy.push(...filteredFiscalResponsabilities.value);
     });
+    const taxesPromise = companiesStore.getTaxes(props.signInUser.accessToken).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+    });
+    //TODO: VERIFY HOW TO GET THE RELATED USERS
+    const studentsPromise = usersManagementStore.getStudentsByClassGroup(1).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+        studentList.length = 0;
+        studentList.push(...usersManagementStore.studentsByClassGroup.map((student) => {
+            return {
+                label: student.names + ' ' + student.lastNames,
+                value: student
+            }
+        }));
+    });
+    //MISSING INSTRUCTORS
 
     promiseList.push(economicActivitiesPromise);
     promiseList.push(fiscalResponsabilitiesPromise);
+    promiseList.push(taxesPromise);
+    promiseList.push(studentsPromise);
 
     await Promise.all(promiseList);
+
+    const fin = performance.now();
+    const tiempoTranscurrido = fin - inicio;
+    console.log(`Time to resolve: ${tiempoTranscurrido.toFixed(2)} ms`);
+
     customNotify({ status: statusMessages.success, message: 'Información obtenida ...' });
-    console.log('HERE 2')
+
+    console.log('End load...');
 }
 
 const showDialog = async () => {
-    await initData();
+    selectedCity.value = undefined;
+    debtCollectorType.value = undefined;
+    selectedDebtCollector.value = undefined;
+    selectedEconomicActivity.value = undefined;
+
+    URL.revokeObjectURL(imageURL.value);
+    imageURL.value = '';
+    logo.value = null;
+
+    selectedFiscalResponsabilities.value = [];
+    selectedTaxes.value = [];
+
+    isShowingDialog.value = true;
 
     if (props.company) {
         currentCompany.value = new CompanyModel({ ...props.company });
+        //Set city
+        if (currentCompany.value.basicData.city.dianCode !== '') {
+            selectedCity.value = {
+                label: currentCompany.value.basicData.city.dianCode + ' - ' + currentCompany.value.basicData.city.name,
+                value: currentCompany.value.basicData.city
+            };
+        }
+        //Set debtCollector
+        if (currentCompany.value.debtCollector !== 0) {
+            let user = studentList.find((student) => student.value.id === currentCompany.value.debtCollector);
+            if (user) {
+                debtCollectorType.value = 'Aprendiz';
+                selectedDebtCollector.value = {
+                    label: user.label,
+                    value: user.value
+                };
+                currentCompany.value.relatedUser = new UserModel({ ...user.value });
+            } else {
+                user = instructorList.find((instructor) => instructor.value.id === currentCompany.value.debtCollector);
+                if (user) {
+                    debtCollectorType.value = 'Instructor';
+                    selectedDebtCollector.value = {
+                        label: user.label,
+                        value: user.value
+                    };
+                    currentCompany.value.relatedUser = new UserModel({ ...user.value });
+                }
+            }
+        }
+        //Set economic Activity
+        if (currentCompany.value.taxData.economicActivity.key !== '') {
+            selectedEconomicActivity.value = {
+                label: currentCompany.value.taxData.economicActivity.key + ' - ' + currentCompany.value.taxData.economicActivity.value,
+                value: currentCompany.value.taxData.economicActivity
+            }
+        }
+        //Set Fiscal Responsabilities
+        selectedFiscalResponsabilities.value = [...currentCompany.value.taxData.fiscalResponsibilities];
+        //Set taxes
+        selectedTaxes.value = currentCompany.value.taxData.taxes;
+        //Set partners
+        partnerList.value = [...currentCompany.value.legalRepresentative.partnersList];
+        //Set logo
+        if (currentCompany.value.logo) {
+            logo.value = currentCompany.value.logo;
+            imageURL.value = URL.createObjectURL(logo.value);
+        }
     } else {
         currentCompany.value = new CompanyModel({});
     }
 
-    isShowingDialog.value = true;
+    await initData();
+
 }
 
 
 //Economic Activity
-const getEconomicActivityName = () => {
-    return selectedEconomicActivity.value ?
-        `${selectedEconomicActivity.value.key} - ${selectedEconomicActivity.value.value}` : 'Buscar'
-}
-const filterEconomicActivitiesFn = (val: string, update: Function) => {
-    if (val === "") {
+const filterEconomicActivitiesFn = (val: string, update: any) => {
+    if (val === '') {
         update(() => {
-            filteredEconomicActivities.value = [...filteredEconomicActivitiesCopy];
+            economicActivityOptions.value = [...economicActivities];
         });
         return;
     }
     const needle = val.toLowerCase();
     update(() => {
-        filteredEconomicActivities.value = filteredEconomicActivitiesCopy.filter((v) => v.toLocaleLowerCase().includes(needle));
+        economicActivityOptions.value = economicActivities.filter((v) => v.label.toLocaleLowerCase().includes(needle));
     });
 };
-const onSelectedEconomicActivity = (val: any) => {
-    if (!val) return;
-    const foundEconomicActivity = companiesStore.economicActivities.find((item) =>
-        `${item.key} - ${item.value}`.toLocaleLowerCase() === val.toLocaleLowerCase());
-
-    if (foundEconomicActivity) {
-        selectedEconomicActivity.value = new EconomicActivity({
-            key: foundEconomicActivity.key,
-            value: foundEconomicActivity.value
-        });
-    }
-}
 
 //Fiscal Responsabilities
-const getFiscalResponsabilityName = () => {
-    return selectedFiscalResponsability.value ?
-        `${selectedFiscalResponsability.value.key} - ${selectedFiscalResponsability.value.value}` : 'Buscar'
-}
-const filterFiscalResponsabilitiesFn = (val: string, update: Function) => {
-    if (val === "") {
+const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.value?.map((item) => item.key).join(', ');
+
+//Taxes
+const getTaxesNames = () => selectedTaxes.value?.map((item) => item.value).join(', ');
+
+//Cities
+const filterCityFn = (val: string, update: any) => {
+    if (val === '') {
         update(() => {
-            filteredFiscalResponsabilities.value = [...filteredFiscalResponsabilitiesCopy];
+            citiesOptions.value = [...cities];
         });
         return;
     }
     const needle = val.toLowerCase();
     update(() => {
-        filteredFiscalResponsabilities.value = filteredFiscalResponsabilitiesCopy.filter((v) => v.toLocaleLowerCase().includes(needle));
+        citiesOptions.value = cities.filter((v) => v.label.toLocaleLowerCase().includes(needle));
     });
 };
-const onSelectedFiscalResponsability = (val: any) => {
-    if (!val) return;
-    const foundFiscalResponsability = companiesStore.fiscalResponsalities.find((item) =>
-        `${item.key} - ${item.value}`.toLocaleLowerCase() === val.toLocaleLowerCase());
 
-    if (foundFiscalResponsability) {
-        selectedFiscalResponsability.value = new FiscalResponsibilities({
-            key: foundFiscalResponsability.key,
-            value: foundFiscalResponsability.value
-        });
+//DebtCollertors
+const filterDebtCollertorsFn = (val: string, update: any) => {
+    if (!debtCollectorType.value) return;
+    if (val === '') {
+        update(() => {
+            debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ? [...studentList] : [...instructorList];
+        })
+        return;
+    }
+
+    const needle = val.toLowerCase();
+    update(() => {
+        debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ?
+            studentList.filter((student) => student.label.toLocaleLowerCase().includes(needle))
+            :
+            instructorList.filter((instructor) => instructor.label.toLocaleLowerCase().includes(needle))
+    });
+}
+
+//Partners
+const partnersEnable = () => {
+    if (partnerList.value.length === 0) {
+        partnerList.value.push(new PartnerModel({}));
     }
 }
 
-const onSubmit = () => {
-    hideDialog();
+const addNewPartner = () => {
+    if (partnerList.value.length > 0) {
+        const partner = partnerList.value[partnerList.value.length - 1];
+        if (!validatePartnerFields(partner, true)) {
+            customNotify({ status: statusMessages.warning, message: 'Debes completar todos los campos antes de agregar otro socio' });
+            return;
+        }
+    }
+    partnerList.value.push(new PartnerModel({}));
+    customNotify({ status: statusMessages.success, message: 'Socio añadido', time: 1000 });
+}
+
+const removePartner = (index: number) => {
+    const partner = partnerList.value[index];
+    if (validatePartnerFields(partner)) {
+        Dialog.create({
+            title: '<div class="text-primary">Eliminar socio</div>',
+            message: '¿Deseas <strong>eliminar</strong> al <strong>socio</strong> seleccionado? Esta acción <strong>no puede</strong> revertirse.',
+            ok: {
+                push: true,
+                color: 'primary',
+            },
+            cancel: {
+                push: true,
+                color: 'red-5',
+            },
+            html: true,
+        })
+            .onOk(async () => {
+                partnerList.value.splice(index, 1);
+                customNotify({ status: statusMessages.success, message: 'Socio eliminado', time: 1000 });
+            });
+        return
+    }
+    partnerList.value.splice(index, 1);
+    customNotify({ status: statusMessages.success, message: 'Socio eliminado', time: 1000 });
+}
+
+const validatePartnerFields = (partner: PartnerModel, strict?: boolean) => {
+    let counter = 0;
+    if (partner.names === '') counter++;
+    if (partner.lastNames === '') counter++;
+    if (partner.documentType === '') counter++;
+    if (partner.documentNumber === 0) counter++;
+
+    return strict ? counter === 0 : counter <= 2;
+}
+
+//Logo
+const cancelFile = () => {
+    URL.revokeObjectURL(imageURL.value);
+    imageURL.value = '';
+    logo.value = null;
+}
+
+const onRejectedFile = () => {
+    customNotify({ status: statusMessages.warning, message: 'El archivo no es valido' })
+}
+
+
+
+const onSubmit = async () => {
+    //VALIDATIONS
+    //Serial
+    if (currentCompany.value.serial < 1) {
+        customNotify({ status: statusMessages.warning, message: 'Debes completar el serial de la empresa' });
+        return;
+    }
+    //Partners
+    if (currentCompany.value.legalRepresentative.hasPartners) {
+        const incompletePartner = partnerList.value.find((partner) => !validatePartnerFields(partner, true));
+        if (incompletePartner) {
+            customNotify({ status: statusMessages.warning, message: 'Debes completar los datos de todos los socios' });
+            return;
+        }
+    }
+
+    const newCompany = deepClone(currentCompany.value);
+    //Business Type Name
+    if (currentCompany.value.basicData.businessTypeName === 'Empresa') {
+        currentCompany.value.basicData.names = null;
+        currentCompany.value.basicData.lastnames = null;
+    } else {
+        currentCompany.value.basicData.businessName = null;
+    }
+    //Related dectCollector
+    if (selectedDebtCollector.value) {
+        newCompany.relatedUser = props.signInUser;
+        newCompany.debtCollector = selectedDebtCollector.value.value.id;
+    }
+    //City
+    newCompany.basicData.city = selectedCity.value?.value ?? newCompany.basicData.city;
+    //REQUIRED AN Ec.Ac REVIEW
+    newCompany.taxData.economicActivity = selectedEconomicActivity.value?.value ?? newCompany.taxData.economicActivity;
+    //Fiscal Responsibilities
+    newCompany.taxData.fiscalResponsibilities = selectedFiscalResponsabilities.value ?? newCompany.taxData.fiscalResponsibilities;
+    //Taxes
+    newCompany.taxData.taxes = selectedTaxes.value ?? newCompany.taxData.taxes;
+    //Partners
+    if (newCompany.legalRepresentative.hasPartners) {
+        if (partnerList.value.length > 0) {
+            newCompany.legalRepresentative.partnersList = [...partnerList.value];
+        } else {
+            newCompany.legalRepresentative.hasPartners = false;
+            newCompany.legalRepresentative.partnersList = [];
+        }
+    }
+    //Logo
+    newCompany.logo = logo.value;
+
+    // console.log(newCompany);
+    // debugger;
+
+    await companiesStore.createCompany(newCompany, props.signInUser.accessToken).then((resp) => {
+        customNotify({ status: resp.status, message: resp.message });
+        if (resp.status === statusMessages.success) {
+            hideDialog();
+        }
+    });
+
 }
 
 const hideDialog = () => {
     isShowingDialog.value = false;
 }
 
-const documentTypes = [
-    'Registro civil',
-    'Tarjeta de identidad',
-    'Cédula de ciudadanía',
-    'Tarjeta de extranjería',
-    'tarjeta extranjera',
-    'NIT',
-    'Pasaporte',
-    'Documento de identificación extranjero',
-    'NUIP',
-    'No obligado a registrarse en el RUT PN',
-    'Permiso especial de permanencia PEP',
-    'Sin identificación del exterior o para uso definido por la DIAN',
-    'Nit de otro pais/Sin identificación del exterior (43 medios magnéticos)',
-    'Salvoconducto de permanencia'
-];
-const cities = [
-    'Bucaramanga (002)',
-    'Floridablanca (052)',
-    'Piedecuesta (285)',
-    'Giron (351)',
-];
-const regimeTypeOptions = [
-    '001 Gran Contribuyente',
-    '002 Responsable de IVA',
-    '003 No responsable de IVA',
-    '004 Empresa del Estado',
-];
-// const economicActivities = [
-//     '0010 Asalariado',
-//     '0020 Pensionados',
-//     '0081 Personas naturales y sucesiones ilíquidas sin actividad económica',
-//     '0082 Personas naturales subsidiadas por terceros',
-//     '0090 Rentistas de Capital, solo para personas naturales',
-//     '0111 Cultivo de cereales (excepto arroz), legumbres y semillas oleaginosas',
-//     '0112 Cultivo de arroz',
-//     '0113 Cultivo de hortalizas, raíces y tuberculos',
-//     '0114 Cultivo de tabaco',
-//     '0115 Cultivo de plantas textiles',
+// const cities = [
+//     'Bucaramanga (002)',
+//     'Floridablanca (052)',
+//     'Piedecuesta (285)',
+//     'Giron (351)',
 // ];
-const fiscalResponsibilities = [
-    'Gran contribuyente',
-    'Autorretenedor',
-    'Agente de retención IVA',
-    'Régimen simple de tributación',
-    'No aplica - Otros',
-];
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .radio-border {
     border-radius: 7px;
     border: 1px solid lightgray;
+}
+
+.img-border {
+    border-radius: 10px;
+    border: 8px solid lightgray;
+    min-width: 300px;
+    width: 600px;
+    max-width: 800px;
+    max-height: 800px;
+}
+
+.add-new-partner-btn {
+    cursor: pointer;
+    border: 2px solid $primary;
+    border-radius: 12px;
+    padding: 2px 15px;
+}
+
+.partner-card {
+    border: 3px solid $grey-4;
+    border-radius: 15px;
 }
 </style>

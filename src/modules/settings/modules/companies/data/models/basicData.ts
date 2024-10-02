@@ -1,15 +1,21 @@
+import { CityModel } from 'src/models/cityModel';
+
 class BasicData{
     businessTypeName: string;
     documentType: string;
     documentNumber: number;
-    businessName: string;
+    names: string | null;
+    lastnames: string | null;
+    businessName: string | null;
     companyName: string;
     address: string;
     phone: number;
-    city: City;
+    city: CityModel;
 
     constructor({
         businessTypeName,
+        names,
+        lastnames,
         documentType,
         documentNumber,
         businessName,
@@ -21,39 +27,27 @@ class BasicData{
         businessTypeName?: string;
         documentType?: string;
         documentNumber?: number;
-        businessName?: string;
+        names?: string | null;
+        lastnames?: string | null;
+        businessName?: string | null;
         companyName?: string;
         address?: string;
         phone?: number;
-        city?: City;
+        city?: CityModel;
     }){
-        this.businessTypeName= businessTypeName?? '';
+        this.businessTypeName= businessTypeName?? 'Empresa';
         this.documentType= documentType?? '';
         this.documentNumber= documentNumber?? 0;
-        this.businessName= businessName?? '';
+        this.names= names?? null;
+        this.lastnames= lastnames?? null;
+        this.businessName= businessName?? null;
         this.companyName= companyName?? '';
         this.address= address?? '';
         this.phone= phone?? 0;
-        this.city= city?? new City({});
+        this.city= city?? new CityModel({});
     }
 }
 
-
-class City{
-    code: number;
-    name: string;
-
-    constructor({
-        code,
-        name,
-    }:{
-        code?: number;
-        name?: string;
-    }){
-        this.code= code?? 0;
-        this.name= name?? '';
-    }
-}
 
 const basicDataFromJson = (json: any)=>{
     return new BasicData({
@@ -65,9 +59,7 @@ const basicDataFromJson = (json: any)=>{
         address: json.direccion,
         phone: json.telefono,
         //TODO REVISAR
-        city: new City({
-            code: json.ciudad_codigo_dian?.ciudad_codigo_dian, 
-        }),
+        city: new CityModel({dianCode: json.ciudad_codigo_dian}),
     });
 }
 
@@ -77,11 +69,13 @@ const basicDataToJson = (basicData: BasicData)=>{
         tipo_identificacion: basicData.documentType,
         numero_identificacion: basicData.documentNumber,
         razon_social: basicData.businessName,
+        nombres: basicData.names,
+        apellidos: basicData.lastnames,
         nombre_comercial: basicData.companyName,
         direccion: basicData.address,
         telefono: basicData.phone,
-        ciudad_codigo_dian: basicData.city.code,
+        ciudad_codigo_dian: Number(basicData.city.dianCode),
     };
 }
 
-export{ BasicData, City, basicDataFromJson, basicDataToJson }
+export{ BasicData, basicDataFromJson, basicDataToJson }

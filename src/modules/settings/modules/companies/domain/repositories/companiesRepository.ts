@@ -1,5 +1,5 @@
 import { CompanyModel } from '../../data/models/companyModel';
-import { EconomicActivity, FiscalResponsibilities } from '../../data/models/taxData';
+import { EconomicActivity, FiscalResponsibilities, Tax } from '../../data/models/taxData';
 
 export abstract class CompaniesRepository{
     abstract getCompany(serial: string, accessToken: string): Promise<CompanyModel>;
@@ -11,4 +11,5 @@ export abstract class CompaniesRepository{
     
     abstract getEconomicActivities(accessToken: string ): Promise<EconomicActivity[]>;
     abstract getFiscalResponsabilities(accessToken: string): Promise<FiscalResponsibilities[]>;
+    abstract getTaxes(accessToken: string): Promise<Tax[]>;
 }
