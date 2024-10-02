@@ -42,7 +42,13 @@ export abstract class CompaniesDatasource {
       async createCompany(data: any, accessToken: string): Promise<void> {
         try {
           //TODO REVIEW THIS
-          await api(accessToken).post('/create-company', data);
+          const header= {
+            ContentType: 'multipart/form-data',
+
+          }
+          console.log(data);
+          await api(accessToken, header).post('/company', data);
+
           
         } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});

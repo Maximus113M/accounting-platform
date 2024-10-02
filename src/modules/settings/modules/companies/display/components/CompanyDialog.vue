@@ -441,19 +441,21 @@
 </template>
 
 <script setup lang="ts">
+import { Dialog } from 'quasar';
 import { onMounted, ref, watch } from 'vue';
-import { CompanyModel } from '../../data/models/companyModel';
-import { useCompaniesStore } from '../store';
-import { UserModel } from 'src/models/userModel';
-import { FiscalResponsibilities, Tax } from '../../data/models/taxData';
+import { deepClone } from 'src/core/utils/general';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify, spinnerType } from 'src/core/utils/notifications';
-import { deepClone } from 'src/core/utils/general';
-import { useUsersManagementStore } from '../../../user_management/display/store';
-import { useRootStore } from 'src/stores/root-store';
 import { GeneralServices } from 'src/services/generalServices';
+
+import { UserModel } from 'src/models/userModel';
 import { PartnerModel } from '../../data/models/partnerModel';
-import { Dialog } from 'quasar';
+import { CompanyModel } from '../../data/models/companyModel';
+import { FiscalResponsibilities, Tax } from '../../data/models/taxData';
+
+import { useRootStore } from 'src/stores/root-store';
+import { useCompaniesStore } from '../store';
+import { useUsersManagementStore } from '../../../user_management/display/store';
 
 const rootStore = useRootStore();
 const companiesStore = useCompaniesStore();
@@ -609,15 +611,65 @@ const showDialog = async () => {
     debtCollectorType.value = undefined;
     selectedDebtCollector.value = undefined;
     selectedEconomicActivity.value = undefined;
+
     URL.revokeObjectURL(imageURL.value);
     imageURL.value = '';
     logo.value = null;
+
     selectedFiscalResponsabilities.value = [];
+    selectedTaxes.value = [];
 
     isShowingDialog.value = true;
 
     if (props.company) {
         currentCompany.value = new CompanyModel({ ...props.company });
+        //Set city
+        if (currentCompany.value.basicData.city.dianCode !== '') {
+            selectedCity.value = {
+                label: currentCompany.value.basicData.city.dianCode + ' - ' + currentCompany.value.basicData.city.name,
+                value: currentCompany.value.basicData.city
+            };
+        }
+        //Set debtCollector
+        if (currentCompany.value.debtCollector !== 0) {
+            let user = studentList.find((student) => student.value.id === currentCompany.value.debtCollector);
+            if (user) {
+                debtCollectorType.value = 'Aprendiz';
+                selectedDebtCollector.value = {
+                    label: user.label,
+                    value: user.value
+                };
+                currentCompany.value.relatedUser = new UserModel({ ...user.value });
+            } else {
+                user = instructorList.find((instructor) => instructor.value.id === currentCompany.value.debtCollector);
+                if (user) {
+                    debtCollectorType.value = 'Instructor';
+                    selectedDebtCollector.value = {
+                        label: user.label,
+                        value: user.value
+                    };
+                    currentCompany.value.relatedUser = new UserModel({ ...user.value });
+                }
+            }
+        }
+        //Set economic Activity
+        if (currentCompany.value.taxData.economicActivity.key !== '') {
+            selectedEconomicActivity.value = {
+                label: currentCompany.value.taxData.economicActivity.key + ' - ' + currentCompany.value.taxData.economicActivity.value,
+                value: currentCompany.value.taxData.economicActivity
+            }
+        }
+        //Set Fiscal Responsabilities
+        selectedFiscalResponsabilities.value = [...currentCompany.value.taxData.fiscalResponsibilities];
+        //Set taxes
+        selectedTaxes.value = currentCompany.value.taxData.taxes;
+        //Set partners
+        partnerList.value = [...currentCompany.value.legalRepresentative.partnersList];
+        //Set logo
+        if (currentCompany.value.logo) {
+            logo.value = currentCompany.value.logo;
+            imageURL.value = URL.createObjectURL(logo.value);
+        }
     } else {
         currentCompany.value = new CompanyModel({});
     }
@@ -644,7 +696,7 @@ const filterEconomicActivitiesFn = (val: string, update: any) => {
 //Fiscal Responsabilities
 const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.value?.map((item) => item.key).join(', ');
 
-//Fiscal Responsabilities
+//Taxes
 const getTaxesNames = () => selectedTaxes.value?.map((item) => item.value).join(', ');
 
 //Cities
@@ -748,24 +800,65 @@ const onRejectedFile = () => {
 
 
 
-const onSubmit = () => {
-    if (currentCompany.value.serial <= 1) {
-
+const onSubmit = async () => {
+    //VALIDATIONS
+    //Serial
+    if (currentCompany.value.serial < 1) {
+        customNotify({ status: statusMessages.warning, message: 'Debes completar el serial de la empresa' });
         return;
     }
-    console.log(selectedFiscalResponsabilities.value)
-    if (props.company) {
-        const newCompany = deepClone(props.company)
-        console.log(newCompany);
-    } else {
-        const newCompany = deepClone(currentCompany.value);
-        newCompany.basicData.city = selectedCity.value?.value ?? newCompany.basicData.city;
-        newCompany.taxData.economicActivity = selectedEconomicActivity.value?.value ?? newCompany.taxData.economicActivity;
-        newCompany.taxData.fiscalResponsibilities = selectedFiscalResponsabilities.value ?? newCompany.taxData.fiscalResponsibilities;
-
-        console.log(newCompany);
+    //Partners
+    if (currentCompany.value.legalRepresentative.hasPartners) {
+        const incompletePartner = partnerList.value.find((partner) => !validatePartnerFields(partner, true));
+        if (incompletePartner) {
+            customNotify({ status: statusMessages.warning, message: 'Debes completar los datos de todos los socios' });
+            return;
+        }
     }
-    //hideDialog();
+
+    const newCompany = deepClone(currentCompany.value);
+    //Business Type Name
+    if (currentCompany.value.basicData.businessTypeName === 'Empresa') {
+        currentCompany.value.basicData.names = null;
+        currentCompany.value.basicData.lastnames = null;
+    } else {
+        currentCompany.value.basicData.businessName = null;
+    }
+    //Related dectCollector
+    if (selectedDebtCollector.value) {
+        newCompany.relatedUser = props.signInUser;
+        newCompany.debtCollector = selectedDebtCollector.value.value.id;
+    }
+    //City
+    newCompany.basicData.city = selectedCity.value?.value ?? newCompany.basicData.city;
+    //REQUIRED AN Ec.Ac REVIEW
+    newCompany.taxData.economicActivity = selectedEconomicActivity.value?.value ?? newCompany.taxData.economicActivity;
+    //Fiscal Responsibilities
+    newCompany.taxData.fiscalResponsibilities = selectedFiscalResponsabilities.value ?? newCompany.taxData.fiscalResponsibilities;
+    //Taxes
+    newCompany.taxData.taxes = selectedTaxes.value ?? newCompany.taxData.taxes;
+    //Partners
+    if (newCompany.legalRepresentative.hasPartners) {
+        if (partnerList.value.length > 0) {
+            newCompany.legalRepresentative.partnersList = [...partnerList.value];
+        } else {
+            newCompany.legalRepresentative.hasPartners = false;
+            newCompany.legalRepresentative.partnersList = [];
+        }
+    }
+    //Logo
+    newCompany.logo = logo.value;
+
+    // console.log(newCompany);
+    // debugger;
+
+    await companiesStore.createCompany(newCompany, props.signInUser.accessToken).then((resp) => {
+        customNotify({ status: resp.status, message: resp.message });
+        if (resp.status === statusMessages.success) {
+            hideDialog();
+        }
+    });
+
 }
 
 const hideDialog = () => {

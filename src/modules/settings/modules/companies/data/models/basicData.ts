@@ -35,7 +35,7 @@ class BasicData{
         phone?: number;
         city?: CityModel;
     }){
-        this.businessTypeName= businessTypeName?? '';
+        this.businessTypeName= businessTypeName?? 'Empresa';
         this.documentType= documentType?? '';
         this.documentNumber= documentNumber?? 0;
         this.names= names?? null;
@@ -74,7 +74,7 @@ const basicDataToJson = (basicData: BasicData)=>{
         nombre_comercial: basicData.companyName,
         direccion: basicData.address,
         telefono: basicData.phone,
-        ciudad_codigo_dian: basicData.city.dianCode,
+        ciudad_codigo_dian: Number(basicData.city.dianCode),
     };
 }
 
