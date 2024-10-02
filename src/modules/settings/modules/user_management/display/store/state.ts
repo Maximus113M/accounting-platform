@@ -5,5 +5,6 @@ export const useUsersManagementState = () => {
   return {
     classGroups: [] as ClassGroup[],
     studentsByClassGroup: [] as UserModel[],
+    instructors: [] as UserModel[],
   };
 };

@@ -1,7 +1,15 @@
-import { Notify } from 'quasar';
+import { Notify, QSpinnerGears, QSpinnerComment, QSpinnerCube, QSpinnerDots, QSpinnerFacebook, QSpinnerGrid, QSpinnerHourglass, QSpinnerIos, 
+    QSpinnerOval, QSpinnerPuff, QSpinnerTail} from 'quasar';
 import { statusMessages } from '../helpers/generalHelpers';
+import { ref } from 'vue';
 
-export const customNotify= ({status, message, position}:{status: statusMessages, message: string, position?: string})=>{
+const globalNotify= ref<any | undefined>(undefined);
+
+export const customNotify= ({status, message, position, progress, time= 3000, spinner}:{status: statusMessages, message: string, position?: string, progress?: boolean, time?: number, spinner?: spinnerType})=>{
+    if(globalNotify.value){
+        globalNotify.value()
+    }
+    
     position;
     let color=''
     let icon=''
@@ -30,10 +38,68 @@ export const customNotify= ({status, message, position}:{status: statusMessages,
     // actions: [
     //     { icon: 'close', color: 'white', round: true, handler: () => {} }
     //   ]
-
-    return Notify.create({
+    globalNotify.value= Notify.create({
         color: color,
         icon: icon,
-        message: message,   
+        message: message,
+        progress: progress,
+        spinner: getSpinnerType(spinner),
+        timeout: time 
     });
+    return globalNotify.value;
+}
+
+export enum spinnerType { 
+    None,
+    Gears,
+    Comment,
+    Cube,
+    Dots,
+    Facebook,
+    Grid,
+    Hourglass,
+    Ios,
+    Oval,
+    Puff,
+    Tail
+}
+
+const getSpinnerType= (type: spinnerType | undefined)=>{
+    switch (type) {
+        case spinnerType.Comment:
+            return QSpinnerComment;
+
+        case spinnerType.Cube:
+            return QSpinnerCube;
+
+        case spinnerType.Dots:
+            return QSpinnerDots;
+
+        case spinnerType.Facebook: 
+            return QSpinnerFacebook;
+
+        case spinnerType.Gears:    
+            return QSpinnerGears;
+
+        case spinnerType.Grid:
+            return QSpinnerGrid;
+
+        case spinnerType.Hourglass: 
+            return QSpinnerHourglass;
+
+        case spinnerType.Ios:
+            return QSpinnerIos;
+
+        case spinnerType.Oval:      
+            return QSpinnerOval;
+
+        case spinnerType.Puff:    
+            return QSpinnerPuff;
+
+        case spinnerType.Tail:     
+            return QSpinnerTail;
+    
+        default:
+            return false;
+    }
 }

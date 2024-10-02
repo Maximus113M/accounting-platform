@@ -25,9 +25,9 @@ export class AuthRepositoryImpl implements AuthRepository{
             throw new ServerException({...error});
         }
     }
-    async logOut(id: string, accessToken: string): Promise<void> {
+    async logOut(accessToken: string): Promise<void> {
         try {
-            return await this.authDatasource.logOut(id, accessToken);
+            return await this.authDatasource.logOut(accessToken);
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});

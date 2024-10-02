@@ -2,6 +2,7 @@ import { ServerException } from 'src/core/helpers/exceptions';
 import { CompaniesRepository } from '../../domain/repositories/companiesRepository';
 import { CompaniesDatasource } from '../datasources/companiesDatasource';
 import { CompanyModel } from '../models/companyModel';
+import { EconomicActivity, FiscalResponsibilities, Tax } from '../models/taxData';
 
 export class CompaniesRepositoryImpl implements CompaniesRepository{
     private companiesDatasource: CompaniesDatasource;
@@ -55,5 +56,29 @@ export class CompaniesRepositoryImpl implements CompaniesRepository{
             const error= err as ServerException;
             throw new ServerException({...error});
         }
+    }
+    async getEconomicActivities(accessToken: string): Promise<EconomicActivity[]> {
+        try {
+            return await this.companiesDatasource.getEconomicActivities(accessToken); 
+        } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }
+    }
+    async getFiscalResponsabilities(accessToken: string): Promise<FiscalResponsibilities[]> {
+        try {
+            return await this.companiesDatasource.getFiscalResponsabilities(accessToken); 
+        } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }
+    }
+    async getTaxes(accessToken: string): Promise<Tax[]> {
+        try {
+            return await this.companiesDatasource.getTaxes(accessToken); 
+        } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }    
     }
 }

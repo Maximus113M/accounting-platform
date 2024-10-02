@@ -27,9 +27,13 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../store/index';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
+import { GeneralServices } from 'src/services/generalServices';
+import { useRootStore } from 'src/stores/root-store';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const rootStore = useRootStore();
+
 const logInData = ref({ email: '', password: '' });
 const isLoading = ref(false);
 
@@ -43,7 +47,6 @@ const logIn = async () => {
         isLoading.value = false;
         return;
     }
-    //const value = sessionStorage.getItem('token');
 
     const getUserResp = await authStore.getSignInUser(resp.data!);
     if (getUserResp.status === statusMessages.fail) {
@@ -51,6 +54,14 @@ const logIn = async () => {
         isLoading.value = false;
         return;
     }
+    //Get cities
+    await GeneralServices.getCities().then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+        rootStore.cities = resp.data!
+    });
     router.push('/main/');
     console.log(authStore.signInUser);
     isLoading.value = false;
@@ -59,8 +70,8 @@ const logIn = async () => {
 <style scoped>
 .bg-image {
     background-image: linear-gradient(to bottom,
-            rgba(255, 255, 255, 0.5),
-            rgba(255, 255, 255, 0.25)),
+            rgba(255, 255, 255, 0.01),
+            rgba(255, 255, 255, 0.01)),
         url(../../../../assets/images/sena2.jpg);
     background-color: rgb(235, 235, 235);
     background-repeat: no-repeat;
