@@ -1,15 +1,15 @@
 import { CompanyModel, companyModelFromJson } from '../models/companyModel';
 import { ServerException } from 'src/core/helpers/exceptions';
-import { api } from 'src/boot/axios';
+import { _headers, api } from 'src/boot/axios';
 import { EconomicActivity, FiscalResponsibilities, Tax } from '../models/taxData';
 
 export abstract class CompaniesDatasource {
-    abstract getCompany(serial: string, accessToken: string): Promise<CompanyModel>;
+    abstract getCompany(serial: number, accessToken: string): Promise<CompanyModel>;
     abstract getAllCompanies(accessToken: string): Promise<CompanyModel[]>;
     abstract createCompany(data: any, accessToken: string): Promise<void>;
-    abstract updateCompany(serial: string, data: any, accessToken: string): Promise<void>;
-    abstract deleteCompany(serial: string, accessToken: string): Promise<void>;
-    abstract cloneCompany(serial: string, groupNumber: number, accessToken: string ): Promise<any>;
+    abstract updateCompany(serial: number, data: any, accessToken: string): Promise<void>;
+    abstract deleteCompany(serial: number, accessToken: string): Promise<void>;
+    abstract cloneCompany(serial: number, groupNumber: number, accessToken: string ): Promise<any>;
     
     abstract getEconomicActivities(accessToken: string ): Promise<EconomicActivity[]>;
     abstract getFiscalResponsabilities(accessToken: string): Promise<FiscalResponsibilities[]>;
@@ -17,7 +17,7 @@ export abstract class CompaniesDatasource {
   }
   
   export class CompaniesDatasourceImpl implements CompaniesDatasource{
-      async getCompany(serial: string, accessToken: string): Promise<CompanyModel> {
+      async getCompany(serial: number, accessToken: string): Promise<CompanyModel> {
         try {
             const resp= await api(accessToken).get(`/company/${serial}`);
             
@@ -41,8 +41,7 @@ export abstract class CompaniesDatasource {
       }
       async createCompany(data: any, accessToken: string): Promise<void> {
         try {
-          //TODO REVIEW THIS
-          const header= {
+          const header:_headers = {
             ContentType: 'multipart/form-data',
 
           }
@@ -54,7 +53,7 @@ export abstract class CompaniesDatasource {
           throw new ServerException({code: error?.status , data: error});
         }
       }
-      async updateCompany(serial: string, data: any, accessToken: string): Promise<void> {
+      async updateCompany(serial: number, data: any, accessToken: string): Promise<void> {
         try {
             //TODO REVIEW THIS
             await api(accessToken).put(`/update-company/${serial}`, data);
@@ -63,7 +62,7 @@ export abstract class CompaniesDatasource {
           throw new ServerException({code: error?.status , data: error});
         }
       }
-      async deleteCompany(serial: string, accessToken: string): Promise<void> {
+      async deleteCompany(serial: number, accessToken: string): Promise<void> {
         try {
           await api(accessToken).delete(`/delete-company/${serial}`);
           
@@ -72,7 +71,7 @@ export abstract class CompaniesDatasource {
         }
       }
 
-      async cloneCompany(serial: string, groupNumber: number, accessToken: string): Promise<any> {
+      async cloneCompany(serial: number, groupNumber: number, accessToken: string): Promise<any> {
         try {
           await api(accessToken).post('/clone-company',
             {empresa_serial: serial, numero_ficha: groupNumber} 

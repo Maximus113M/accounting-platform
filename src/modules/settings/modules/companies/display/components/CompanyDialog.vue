@@ -28,7 +28,7 @@
                 <!-- :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" -->
                 <!-- :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" -->
                 <q-form @submit="onSubmit" id="company_form" class="q-px-md q-pb-md">
-                    <div v-if="selectedTab === 0" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
+                    <div v-if="selectedTab === 0" class="row  q-col-gutter-x-xl">
                         <div class="col-12 text-h6 text-bold q-mb-sm">
                             Datos Generales
                         </div>
@@ -45,26 +45,30 @@
                         <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.names" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.names"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div v-if="currentCompany.basicData.businessTypeName === 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.lastnames" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.lastnames"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div v-if="currentCompany.basicData.businessTypeName !== 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Razón social</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.businessName" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.businessName"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Serial</div>
-                            <q-input outlined dense type="number" v-model.number="currentCompany.serial" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.serial" readonly />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
                             <q-select outlined dense v-model="currentCompany.basicData.documentType"
-                                :options="rootStore.documentTypes">
+                                :options="rootStore.documentTypes"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                                 <template v-slot:no-option>
                                     <q-item>
                                         <q-item-section class="text-grey">
@@ -77,16 +81,19 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
                             <q-input outlined dense type="number"
-                                v-model.number="currentCompany.basicData.documentNumber" />
+                                v-model.number="currentCompany.basicData.documentNumber"
+                                :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre Comercial</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.companyName" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.companyName"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Ciudad</div>
                             <q-select outlined dense fill-input use-input hide-selected label="Buscar"
-                                v-model="selectedCity" :options="citiesOptions" @filter="filterCityFn">
+                                v-model="selectedCity" :options="citiesOptions" @filter="filterCityFn"
+                                :rules="[(val: any) => (val) || 'Debes completar este campo']">
                                 <template v-slot:append>
                                     <q-icon v-if="selectedCity" class="cursor-pointer" name="cancel"
                                         @click.stop.prevent="selectedCity = undefined" />
@@ -102,12 +109,14 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.basicData.address" />
+                            <q-input outlined dense type="text" v-model="currentCompany.basicData.address"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo de Regimen</div>
                             <q-select outlined dense v-model="currentCompany.regimeType"
-                                :options="rootStore.regimeTypes">
+                                :options="rootStore.regimeTypes"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                                 <template v-slot:no-option>
                                     <q-item>
                                         <q-item-section class="text-grey">
@@ -119,11 +128,13 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo contacto</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.emailContact" />
+                            <q-input outlined dense type="text" v-model="currentCompany.emailContact"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre contacto</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.nameContact" />
+                            <q-input outlined dense type="text" v-model="currentCompany.nameContact"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Página Web</div>
@@ -131,7 +142,8 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Teléfono</div>
-                            <q-input outlined dense type="number" v-model.number="currentCompany.basicData.phone" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.basicData.phone"
+                                :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Es consorcio o unión temporal</div>
@@ -160,7 +172,8 @@
                             </q-tooltip>
                             <q-select outlined dense fill-input use-input hide-selected label="Buscar"
                                 v-model="selectedDebtCollector" :options="debtCollectorsOptions"
-                                @filter="filterDebtCollertorsFn" :disable="debtCollectorType ? false : true">
+                                @filter="filterDebtCollertorsFn" :disable="debtCollectorType ? false : true"
+                                :rules="[(val: any) => (val) || 'Debes completar este campo']">
                                 <template v-slot:append>
                                     <q-icon v-if="selectedDebtCollector" class="cursor-pointer" name="cancel"
                                         @click.stop.prevent="selectedDebtCollector = undefined" />
@@ -187,7 +200,7 @@
 
                     </div>
 
-                    <div v-else-if="selectedTab === 1" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
+                    <div v-else-if="selectedTab === 1" class="row  q-col-gutter-x-xl">
                         <div class="col-12 text-h6 text-bold q-mb-sm">
                             Tributario
                         </div>
@@ -196,7 +209,8 @@
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Código actividad económica</div>
                             <q-select outlined dense fill-input use-input hide-selected label="Buscar"
                                 v-model="selectedEconomicActivity" :options="economicActivityOptions"
-                                @filter="filterEconomicActivitiesFn">
+                                @filter="filterEconomicActivitiesFn"
+                                :rules="[(val: any) => (val) || 'Debes completar este campo']">
                                 <template v-slot:append>
                                     <q-icon v-if="selectedEconomicActivity" class="cursor-pointer" name="cancel"
                                         @click.stop.prevent="selectedEconomicActivity = undefined" />
@@ -213,13 +227,15 @@
 
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tarifa ICA</div>
-                            <q-input outlined dense type="number" v-model.number="currentCompany.taxData.icaRate" />
+                            <q-input outlined dense type="number" v-model.number="currentCompany.taxData.icaRate"
+                                :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Responsabilidades fiscales</div>
                             <q-select outlined dense multiple clearable v-model="selectedFiscalResponsabilities"
                                 :options="companiesStore.fiscalResponsalities"
-                                :display-value="getFiscalResponsabilitiesNames()">
+                                :display-value="getFiscalResponsabilitiesNames()"
+                                :rules="[(val: any) => (val) || 'Debes completar este campo']">
                                 <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                                     <q-item v-bind="itemProps">
                                         <q-item-section>
@@ -243,7 +259,8 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tributos</div>
                             <q-select outlined dense multiple clearable v-model="selectedTaxes"
-                                :options="companiesStore.taxes" :display-value="getTaxesNames()" class="q-mb-md">
+                                :options="companiesStore.taxes" :display-value="getTaxesNames()" class="q-mb-md"
+                                :rules="[(val: any | null) => (val && val.length > 0) || 'Debes completar este campo']">
                                 <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                                     <q-item v-bind="itemProps">
                                         <q-item-section>
@@ -300,23 +317,25 @@
                         </div>
                     </div>
 
-                    <div v-else-if="selectedTab === 2" class="row  q-col-gutter-x-xl q-col-gutter-y-sm">
+                    <div v-else-if="selectedTab === 2" class="row  q-col-gutter-x-xl">
                         <div class="col-12 text-h6 text-bold">
                             Representante Legal
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombres</div>
-                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.names" />
+                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.names"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
-                            <q-input outlined dense type="text"
-                                v-model="currentCompany.legalRepresentative.lastNames" />
+                            <q-input outlined dense type="text" v-model="currentCompany.legalRepresentative.lastNames"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Identificación</div>
                             <q-select outlined dense v-model="currentCompany.legalRepresentative.documentType"
-                                :options="rootStore.documentTypes">
+                                :options="rootStore.documentTypes"
+                                :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                                 <template v-slot:no-option>
                                     <q-item>
                                         <q-item-section class="text-grey">
@@ -329,7 +348,8 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Identificación</div>
                             <q-input outlined dense type="number"
-                                v-model.number="currentCompany.legalRepresentative.documentNumber" />
+                                v-model.number="currentCompany.legalRepresentative.documentNumber"
+                                :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">¿Tienes socios en la empresa?</div>
@@ -357,16 +377,19 @@
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombres</div>
-                                    <q-input outlined dense type="text" v-model="partner.names" />
+                                    <q-input outlined dense type="text" v-model="partner.names"
+                                        :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
-                                    <q-input outlined dense type="text" v-model="partner.lastNames" />
+                                    <q-input outlined dense type="text" v-model="partner.lastNames"
+                                        :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
                                     <q-select outlined dense v-model="partner.documentType"
-                                        :options="rootStore.documentTypes">
+                                        :options="rootStore.documentTypes"
+                                        :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                                         <template v-slot:no-option>
                                             <q-item>
                                                 <q-item-section class="text-grey">
@@ -378,7 +401,8 @@
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
-                                    <q-input outlined dense type="number" v-model.number="partner.documentNumber" />
+                                    <q-input outlined dense type="number" v-model.number="partner.documentNumber"
+                                        :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">
@@ -442,7 +466,7 @@
 
 <script setup lang="ts">
 import { Dialog } from 'quasar';
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { deepClone } from 'src/core/utils/general';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify, spinnerType } from 'src/core/utils/notifications';
@@ -456,6 +480,7 @@ import { FiscalResponsibilities, Tax } from '../../data/models/taxData';
 import { useRootStore } from 'src/stores/root-store';
 import { useCompaniesStore } from '../store';
 import { useUsersManagementStore } from '../../../user_management/display/store';
+import { baseUrl } from 'src/boot/axios';
 
 const rootStore = useRootStore();
 const companiesStore = useCompaniesStore();
@@ -521,33 +546,49 @@ watch(() => logo.value, (file) => {
     }
 });
 
-onMounted(async () => {
+const initData = async () => {
+    customNotify({ status: statusMessages.info, message: 'Obteniendo información...', spinner: spinnerType.Ios });
+    console.log('Start load...');
+    const inicio = performance.now();
+    const promiseList: Promise<void>[] = [];
+    //Get company
+    if (props.company) {
+        const companyPromise = companiesStore.getCompany(props.company.serial, props.signInUser.accessToken).then((resp) => {
+            if (resp.status === statusMessages.success) {
+                currentCompany.value = deepClone(resp.data!);
+            } else {
+                customNotify({ status: resp.status, message: resp.message });
+            }
+        });
+        promiseList.push(companyPromise);
+    }
+    //Get cities
     if (rootStore.cities.length === 0) {
-        console.log('LOAD CITIES FROM COMPANY DIALOG')
-        await GeneralServices.getCities().then((resp) => {
+        const citiesPromise = GeneralServices.getCities().then((resp) => {
             if (resp.status === statusMessages.fail) {
                 customNotify({ status: resp.status, message: resp.message });
                 return;
             }
             rootStore.cities = resp.data!;
-        })
+            cities.push(...rootStore.cities.map((city) => {
+                return {
+                    label: city.dianCode + ' - ' + city.name,
+                    value: city
+                }
+            }));
+            citiesOptions.value = [...cities];
+        });
+        promiseList.push(citiesPromise);
+    } else {
+        cities.push(...rootStore.cities.map((city) => {
+            return {
+                label: city.dianCode + ' - ' + city.name,
+                value: city
+            }
+        }));
+        citiesOptions.value = [...cities];
     }
-    cities.push(...rootStore.cities.map((city) => {
-        return {
-            label: city.dianCode + ' - ' + city.name,
-            value: city
-        }
-    }));
-})
-
-const initData = async () => {
-    customNotify({ status: statusMessages.info, message: 'Obteniendo información...', spinner: spinnerType.Ios });
-    console.log('Start load...');
-    const inicio = performance.now();
-    //Set cities
-    citiesOptions.value = [...cities];
-
-    const promiseList: Promise<void>[] = [];
+    //Get economicActivities
     const economicActivitiesPromise = companiesStore.getEconomicActivities(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
@@ -562,12 +603,14 @@ const initData = async () => {
         }));
         economicActivityOptions.value = [...economicActivities];
     });
+    //Get fiscalResponsabilities
     const fiscalResponsabilitiesPromise = companiesStore.getFiscalResponsabilities(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
             return;
         }
     });
+    //Get taxes
     const taxesPromise = companiesStore.getTaxes(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
@@ -575,6 +618,7 @@ const initData = async () => {
         }
     });
     //TODO: VERIFY HOW TO GET THE RELATED USERS
+    //Students
     const studentsPromise = usersManagementStore.getStudentsByClassGroup(1).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
@@ -588,12 +632,26 @@ const initData = async () => {
             }
         }));
     });
-    //MISSING INSTRUCTORS
+    //Instructors
+    const instructorsPromise = usersManagementStore.getInstructors().then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+        instructorList.length = 0;
+        instructorList.push(...usersManagementStore.instructors.map((instructor) => {
+            return {
+                label: instructor.names + ' ' + instructor.lastNames,
+                value: instructor
+            }
+        }));
+    });
 
     promiseList.push(economicActivitiesPromise);
     promiseList.push(fiscalResponsabilitiesPromise);
     promiseList.push(taxesPromise);
     promiseList.push(studentsPromise);
+    promiseList.push(instructorsPromise);
 
     await Promise.all(promiseList);
 
@@ -607,6 +665,8 @@ const initData = async () => {
 }
 
 const showDialog = async () => {
+    await initData();
+
     selectedCity.value = undefined;
     debtCollectorType.value = undefined;
     selectedDebtCollector.value = undefined;
@@ -622,14 +682,7 @@ const showDialog = async () => {
     isShowingDialog.value = true;
 
     if (props.company) {
-        currentCompany.value = new CompanyModel({ ...props.company });
-        //Set city
-        if (currentCompany.value.basicData.city.dianCode !== '') {
-            selectedCity.value = {
-                label: currentCompany.value.basicData.city.dianCode + ' - ' + currentCompany.value.basicData.city.name,
-                value: currentCompany.value.basicData.city
-            };
-        }
+        //currentCompany.value = new CompanyModel({ ...props.company });
         //Set debtCollector
         if (currentCompany.value.debtCollector !== 0) {
             let user = studentList.find((student) => student.value.id === currentCompany.value.debtCollector);
@@ -639,7 +692,6 @@ const showDialog = async () => {
                     label: user.label,
                     value: user.value
                 };
-                currentCompany.value.relatedUser = new UserModel({ ...user.value });
             } else {
                 user = instructorList.find((instructor) => instructor.value.id === currentCompany.value.debtCollector);
                 if (user) {
@@ -648,34 +700,58 @@ const showDialog = async () => {
                         label: user.label,
                         value: user.value
                     };
-                    currentCompany.value.relatedUser = new UserModel({ ...user.value });
                 }
             }
         }
+        //Set relatedUser
+        const foundRelatedUser = instructorList.find((instructor) => instructor.value.id === currentCompany.value.relatedUser.id)
+        if (foundRelatedUser) {
+            currentCompany.value.relatedUser = new UserModel({ ...foundRelatedUser.value });
+        }
+        //Set city
+        const foundCity = cities.find((city) => city.value.dianCode === currentCompany.value.basicData.city.dianCode);
+        selectedCity.value = foundCity;
         //Set economic Activity
-        if (currentCompany.value.taxData.economicActivity.key !== '') {
-            selectedEconomicActivity.value = {
-                label: currentCompany.value.taxData.economicActivity.key + ' - ' + currentCompany.value.taxData.economicActivity.value,
-                value: currentCompany.value.taxData.economicActivity
+        const foundEconomicActivity = economicActivities.find((economicAct) => economicAct.value.key === currentCompany.value.taxData.economicActivity.key);
+        selectedEconomicActivity.value = foundEconomicActivity;
+        //Set Fiscal Responsabilities
+        for (let FisRes of currentCompany.value.taxData.fiscalResponsibilities) {
+            const foundFiscalResponsability = companiesStore.fiscalResponsalities.find((item) => item.key === FisRes.key);
+            if (foundFiscalResponsability) {
+                selectedFiscalResponsabilities.value.push(foundFiscalResponsability);
             }
         }
-        //Set Fiscal Responsabilities
-        selectedFiscalResponsabilities.value = [...currentCompany.value.taxData.fiscalResponsibilities];
         //Set taxes
-        selectedTaxes.value = currentCompany.value.taxData.taxes;
+        for (let tax of currentCompany.value.taxData.taxes) {
+            const foundTax = companiesStore.taxes.find((item) => item.key === tax.key);
+            if (foundTax) {
+                selectedTaxes.value.push(foundTax);
+            }
+        }
+
         //Set partners
         partnerList.value = [...currentCompany.value.legalRepresentative.partnersList];
         //Set logo
         if (currentCompany.value.logo) {
-            logo.value = currentCompany.value.logo;
-            imageURL.value = URL.createObjectURL(logo.value);
+            imageURL.value = baseUrl + currentCompany.value.logo as string;
+            console.log(imageURL.value)
         }
     } else {
         currentCompany.value = new CompanyModel({});
+        //Set city
+        const foundCity = cities.find((city) => city.value.name.toLowerCase() === 'floridablanca');
+        selectedCity.value = foundCity;
+        //Set economic Activity
+        selectedEconomicActivity.value = economicActivities.length > 0 ? economicActivities[0] : undefined;
+        //Set Fiscal Responsabilities
+        if (companiesStore.fiscalResponsalities.length > 0) {
+            selectedFiscalResponsabilities.value.push(companiesStore.fiscalResponsalities[0]);
+        }
+        //Set taxes
+        if (companiesStore.taxes.length > 0) {
+            selectedTaxes.value.push(companiesStore.taxes[0]);
+        }
     }
-
-    await initData();
-
 }
 
 
@@ -802,11 +878,6 @@ const onRejectedFile = () => {
 
 const onSubmit = async () => {
     //VALIDATIONS
-    //Serial
-    if (currentCompany.value.serial < 1) {
-        customNotify({ status: statusMessages.warning, message: 'Debes completar el serial de la empresa' });
-        return;
-    }
     //Partners
     if (currentCompany.value.legalRepresentative.hasPartners) {
         const incompletePartner = partnerList.value.find((partner) => !validatePartnerFields(partner, true));

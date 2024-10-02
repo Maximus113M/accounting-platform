@@ -21,13 +21,33 @@ export const getCompanies = async (accessToken: string) => {
     return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
   }
 };
+export const getCompany = async (serial: number, accessToken: string) => {
+  try {
+    const resp = await companiesUseCases.getCompany(serial, accessToken);
+    return { status: statusMessages.success, message: 'Empresa obtenida!', data: resp };
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
+  }
+};
 export const createCompany = async (company: CompanyModel, accessToken: string) => {
   try {
-    //const companiesStore= useCompaniesStore();
    
     await companiesUseCases.createCompany(companyModelToJson(company) ,accessToken);
     
     return { status: statusMessages.success, message: 'Empresa creada!' };
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
+  }
+};
+export const deleteCompany = async (companyId: number, accessToken: string) => {
+  try {
+    //const companiesStore= useCompaniesStore();
+   
+    await companiesUseCases.deleteCompany(companyId ,accessToken);
+    
+    return { status: statusMessages.success, message: 'Empresa eliminada' };
   } catch (error: any) {
     console.log(error);
     return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };

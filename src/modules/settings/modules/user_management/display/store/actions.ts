@@ -12,15 +12,16 @@ const usersManagementRepositoryImp = new UsersManagementRepositoryImpl(
 );
 const usersManagementUseCases = new UsersManagementUseCases(usersManagementRepositoryImp);
 
-const createStudent = async () => {
+export const getInstructors = async () => {
   try {
-    useUsersManagementStore
-    await usersManagementUseCases.createStudent({});
+    const userManagementStore = useUsersManagementStore();
 
-    return { status: 'success', message: 'success' };
+    userManagementStore.instructors= await usersManagementUseCases.getAllInstructors();
+
+    return { status: statusMessages.success, message: 'Información actualizada!'};
   } catch (error: any) {
-     //const { code, message, details } = "response" in error ? error.r  esponse.data.error : error;
-     //return { status: statusMessages.fail, error: new CustomError(code, message, details) };
+    console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
   }
 };
 
@@ -118,5 +119,5 @@ const updateClassGroup = async (number: number, data: ClassGroup) => {
 
 
 
-export { createStudent, getClassGroups, createClassGroup, getStudentsByClassGroup, deleteClassGroup, updateClassGroup, uploadStudents,
+export { getClassGroups, createClassGroup, getStudentsByClassGroup, deleteClassGroup, updateClassGroup, uploadStudents,
   updateStudent, deleteStudent };

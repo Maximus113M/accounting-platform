@@ -14,6 +14,9 @@ declare module 'vue' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
+
+//Change when platform is in relase
+const baseUrl= 'http://127.0.0.1:8000/api';
 const api = (accessToken: string, _headers: _headers | null = null) =>{
 
   const headers: _headers = {
@@ -21,7 +24,7 @@ const api = (accessToken: string, _headers: _headers | null = null) =>{
     Authorization:'Bearer '+ accessToken,
     Accept: _headers && _headers.Accept ? _headers.Accept  :'application/json'
   }
-  return axios.create({ baseURL: 'http://127.0.0.1:8000/api',
+  return axios.create({ baseURL: baseUrl,
     headers: headers
   });
 }
@@ -45,5 +48,5 @@ export default boot(({ app }) => {
   //       so you can easily perform requests against your app's API
 });
 
-export { api };
+export { api, baseUrl };
 export type { _headers }

@@ -55,6 +55,7 @@ import { CompanyModel } from '../../data/models/companyModel';
 import { useCompaniesStore } from '../store';
 import { useAuthStore } from 'src/modules/auth/display/store';
 import { customNotify } from 'src/core/utils/notifications';
+import { statusMessages } from 'src/core/helpers/generalHelpers';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -68,16 +69,6 @@ onMounted(async () => {
     isLoading.value = false;
     customNotify({ status: resp.status, message: resp.message });
 });
-
-// const exampleGroupList: CompanyModel[] = [
-//     new CompanyModel({ serial: 1 }),
-//     new CompanyModel({ serial: 2 }),
-//     new CompanyModel({ serial: 3 }),
-//     new CompanyModel({ serial: 4 }),
-//     new CompanyModel({ serial: 5 }),
-//     new CompanyModel({ serial: 6 }),
-//     new CompanyModel({ serial: 7 }),
-// ];
 
 const columns: any = [
     {
@@ -137,9 +128,15 @@ const deleteDialog = (company: CompanyModel) => {
             color: 'red-5'
         },
         html: true,
-    }).onOk(async (data) => {
-        data;
-        console.log('>>>> OK, received', company)
+    }).onOk(async () => {
+        const resp = await companiesStore.deleteCompany(company.serial, authStore.signInUser.accessToken);
+        if (resp.status === statusMessages.success) {
+            const resp2 = await companiesStore.getCompanies(authStore.signInUser.accessToken);
+            customNotify({ status: resp2.status, message: resp.message + ', ' + 'información actualiazada!' });
+        } else {
+            customNotify({ status: resp.status, message: resp.message });
+        }
+        console.log('>>>> OK, received', resp.message);
     }).onCancel(() => {
     });
 }
