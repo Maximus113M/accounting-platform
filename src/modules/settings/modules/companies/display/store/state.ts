@@ -3,7 +3,7 @@ import { EconomicActivity, FiscalResponsibilities, Tax } from '../../data/models
 
 export const useCompaniesState = () => {
   return {
-    companiesList: [] as CompanyModel[],
+    companyList: [] as CompanyModel[],
     fiscalResponsalities: [] as FiscalResponsibilities[],
     economicActivities: [] as EconomicActivity[],
     taxes: [] as Tax[],

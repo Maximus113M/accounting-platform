@@ -12,7 +12,7 @@ const companiesUseCases = new CompaniesUseCases(companiesRepositoryImp);
 export const getCompanies = async (accessToken: string) => {
   try {
     const companiesStore= useCompaniesStore();
-    companiesStore.companiesList= await companiesUseCases.getAllCompanies(accessToken);
+    companiesStore.companyList= await companiesUseCases.getAllCompanies(accessToken);
     return { status: statusMessages.success, message: 'Empresas obtenidas!' };
   } catch (error: any) {
     console.log(error);
@@ -48,10 +48,18 @@ export const updateCompany = async (company: CompanyModel, accessToken: string) 
     return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
   }
 };
+export const cloneCompany = async ({serial, groupNumber, accessToken}:{serial: number, groupNumber: number, accessToken: string}) => {
+  try {
+    await companiesUseCases.cloneCompany(serial, groupNumber  ,accessToken);
+    
+    return { status: statusMessages.success, message: 'Empresa clonada!' };
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
+  }
+};
 export const deleteCompany = async (companyId: number, accessToken: string) => {
   try {
-    //const companiesStore= useCompaniesStore();
-   
     await companiesUseCases.deleteCompany(companyId ,accessToken);
     
     return { status: statusMessages.success, message: 'Empresa eliminada' };

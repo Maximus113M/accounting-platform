@@ -34,7 +34,9 @@
                             <div class="row justify-center q-gutter-xs">
                                 <ClassGroupDialog :class-group="props.row" />
                                 <ManagementStudentsDialog :class-group="props.row" />
-                                <q-btn flat dense icon="delete" @click="deleteDialog(props.row)">
+                                <CloneCompanyDialog :class-group="props.row" :sign-in-user="authStore.signInUser" />
+
+                                <q-btn flat dense icon="delete" @click="deleteGroupDialog(props.row)">
                                     <q-tooltip :offset="[0, 10]" transition-show="scale" transition-hide="scale"
                                         class="text-caption">
                                         Eliminar
@@ -51,6 +53,7 @@
 <script setup lang="ts">
 import ClassGroupDialog from '../components/group/ClassGroupDialog.vue';
 import ManagementStudentsDialog from '../components/group/ManagementStudentsDialog.vue';
+import CloneCompanyDialog from '../components/group/CloneCompanyDialog.vue';
 
 import { onMounted, ref } from 'vue';
 import { Dialog } from 'quasar';
@@ -61,18 +64,21 @@ import { useUsersManagementStore } from 'src/modules/settings/modules/user_manag
 import { deleteClassGroup, getClassGroups } from 'src/modules/settings/modules/user_management/display/store/actions';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
+import { useCompaniesStore } from '../../../companies/display/store';
+import { useAuthStore } from 'src/modules/auth/display/store';
 
 const router = useRouter();
 const filter = ref<string>('');
 const userManagementStore = useUsersManagementStore();
+const companiesStore = useCompaniesStore();
+const authStore = useAuthStore();
 
 onMounted(async () => {
-    const res = await getClassGroups();
-    // if (res.status === statusMessages.success);
-    // else
-    customNotify({
-        status: res.status,
-        message: res.message
+    await getClassGroups().then((resp) => {
+        customNotify({
+            status: resp.status,
+            message: resp.message
+        });
     });
 });
 
@@ -114,13 +120,40 @@ const columns: any = [
     },
 ];
 
-const deleteDialog = (group: ClassGroup) => {
+const cloneCompanyDialog = (group: ClassGroup) => {
     Dialog.create({
-        title: '<div class="text-red-7">Eliminar ficha</div>',
+        title: '<div class="primary">Eliminar ficha</div>',
         message: `¿<strong>Deseas eliminar</strong> a la ficha seleccionada <strong>"${group.name}"</strong> ? Se eliminará la información y aprendices con sus empresas asociadas.`,
         ok: {
             push: true,
-            color: 'light-blue-4',
+            color: 'primary',
+        },
+        cancel: {
+            push: true,
+            color: 'red-5',
+        },
+        html: true,
+    })
+        .onOk(async () => {
+            // const res = await companiesStore.cloneCompany({serial: group.number});
+            // customNotify({
+            //     status: res.status,
+            //     message: res.message
+            // });
+            // if (res.status === statusMessages.success) {
+            //     userManagementStore.classGroups = userManagementStore.classGroups.filter((classGroup: ClassGroup) =>
+            //         classGroup.number !== group.number
+            //     );
+            // }
+        });
+};
+const deleteGroupDialog = (group: ClassGroup) => {
+    Dialog.create({
+        title: '<div class="primary">Eliminar ficha</div>',
+        message: `¿<strong>Deseas eliminar</strong> a la ficha seleccionada <strong>"${group.name}"</strong> ? Se eliminará la información y aprendices con sus empresas asociadas.`,
+        ok: {
+            push: true,
+            color: 'primary',
         },
         cancel: {
             push: true,
@@ -139,8 +172,7 @@ const deleteDialog = (group: ClassGroup) => {
                     classGroup.number !== group.number
                 );
             }
-        })
-        .onCancel(() => { });
+        });
 };
 
 </script>
