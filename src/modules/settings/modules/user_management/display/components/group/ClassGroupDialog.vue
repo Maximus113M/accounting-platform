@@ -21,19 +21,19 @@
       <q-card-section>
         <q-form @submit="onSubmit" id="class_group_form" class="row q-col-gutter-sm q-px-lg q-pb-md">
           <div class="col-12 col-sm-6 col-md-2">
-            <div class="text-subtitle text-weight-medium">Codigo</div>
+            <div class="text-subtitle1 text-weight-medium">Codigo</div>
             <q-input outlined dense type="number" v-model.number="currentClassGroup.code"
               :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
           </div>
           <div class="col-12 col-sm-6 col-md-4">
-            <div class="text-subtitle text-weight-medium">
+            <div class="text-subtitle1 text-weight-medium">
               Numero de ficha
             </div>
             <q-input outlined dense type="number" v-model.number="currentClassGroup.number"
               :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" />
           </div>
           <div class="col-12 col-sm-12 col-md-6">
-            <div class="text-subtitle text-weight-medium">Nombre del programa</div>
+            <div class="text-subtitle1 text-weight-medium">Nombre del programa</div>
             <q-input outlined dense type="text" v-model="currentClassGroup.name"
               :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
           </div>
@@ -52,7 +52,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { ClassGroup } from '../../../data/models/classGroup';
-//import { createClassGroup } from 'src/modules/settings/modules/user_management/display/store/actions';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
 import { useUsersManagementStore } from 'src/modules/settings/modules/user_management/display/store';

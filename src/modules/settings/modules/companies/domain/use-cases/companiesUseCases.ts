@@ -7,11 +7,12 @@ export class CompaniesUseCases{
         this.companiesRepository = companiesRepository;
     }
 
-    getCompany= (id: string, accessToken: string) => this.companiesRepository.getCompany(id, accessToken);
+    getCompany= (serial: number, accessToken: string) => this.companiesRepository.getCompany(serial, accessToken);
     getAllCompanies= (accessToken: string) => this.companiesRepository.getAllCompanies(accessToken);
     createCompany= (data: any, accessToken: string) => this.companiesRepository.createCompany(data, accessToken);
-    updateCompany= (id: string, data: any, accessToken: string) => this.companiesRepository.updateCompany(id, data, accessToken);
-    deleteCompany= (id: string, accessToken: string) => this.companiesRepository.deleteCompany(id, accessToken);
+    updateCompany= (serial: number, data: any, accessToken: string) => this.companiesRepository.updateCompany(serial, data, accessToken);
+    deleteCompany= (serial: number, accessToken: string) => this.companiesRepository.deleteCompany(serial, accessToken);
+    cloneCompany= (serial: number, groupNumber: number, accessToken: string) => this.companiesRepository.cloneCompany(serial, groupNumber, accessToken);
     
     getEconomicActivities= (accessToken: string ) => this.companiesRepository.getEconomicActivities(accessToken);
     getFiscalResponsabilities= (accessToken: string) => this.companiesRepository.getFiscalResponsabilities(accessToken);

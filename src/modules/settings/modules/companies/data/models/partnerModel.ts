@@ -29,21 +29,21 @@ class PartnerModel{
 const partnerModelFromJson = (json: any) =>{
     return new PartnerModel({
         names: json.names,
-        lastNames: json.last_names,
-        documentType: json.document_type,
-        documentNumber: json.document_number,
-        isPublicPerson: json.is_public_person
+        lastNames: json.lastNames,
+        documentType: json.documentType,
+        documentNumber: json.documentNumber,
+        isPublicPerson: json.isPublicPerson
     });
 }
+//TO FIX, IS NOT USE
+// const partnerModelToJson = (partner: PartnerModel) =>{
+//     return {
+//         names: partner.names,
+//         last_names: partner.lastNames,
+//         document_type: partner.documentType,
+//         document_number: partner.documentNumber,
+//         is_public_person: partner.isPublicPerson
+//     };
+// }
 
-const partnerModelToJson = (partner: PartnerModel) =>{
-    return {
-        names: partner.names,
-        last_names: partner.lastNames,
-        document_type: partner.documentType,
-        document_number: partner.documentNumber,
-        is_public_person: partner.isPublicPerson
-    };
-}
-
-export { PartnerModel, partnerModelFromJson, partnerModelToJson }
+export { PartnerModel, partnerModelFromJson, /*partnerModelToJson*/ }

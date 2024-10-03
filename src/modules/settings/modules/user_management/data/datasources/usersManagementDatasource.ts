@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ServerException } from 'src/core/helpers/exceptions';
 import { UserModel, userModelFromJson, userModelToJson } from 'src/models/userModel';
 import {
@@ -9,11 +8,11 @@ import {
 import { _headers, api } from 'boot/axios';
 
 export abstract class UsersManagementDatasource {
-    abstract getInstructor(id: string): Promise<UserModel>;
-    abstract getAllInstructors(): Promise<UserModel[]>;
-    abstract createInstructor(data: any): Promise<void>;
-    abstract updateInstructor(id: string, data: any): Promise<void>;
-    abstract deleteInstructor(id: string): Promise<void>;
+    abstract getInstructor(id: number, accessToken: string): Promise<UserModel>;
+    abstract getAllInstructors(accessToken: string): Promise<UserModel[]>;
+    abstract createInstructor(data: any, accessToken: string): Promise<void>;
+    abstract updateInstructor(id: number, data: any, accessToken: string): Promise<void>;
+    abstract deleteInstructor(id: number, accessToken: string): Promise<void>;
 
     abstract getStudent(id: string): Promise<UserModel>;
     abstract getAllStudents(): Promise<UserModel[]>;
@@ -33,41 +32,40 @@ export abstract class UsersManagementDatasource {
 
   export class UsersManagementDatasourceImpl implements UsersManagementDatasource{
     //Instructors
-    async getInstructor(id: string): Promise<UserModel> {
+    async getInstructor(id: number, accessToken: string): Promise<UserModel> {
         try {
-            axios.get('', {});
-            id;
-            //TODO Verify
-            return new UserModel({});
+            const resp = await api(accessToken).get('/ instructor/'+id);
+            return  userModelFromJson(resp.data);
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async getAllInstructors(): Promise<UserModel[]> {
+    async getAllInstructors(accessToken: string): Promise<UserModel[]> {
         try {
-            return [];
+            const resp = await api(accessToken).get('/instructores');
+            return (resp.data as any[]).map((student) => userModelFromJson(student));
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async createInstructor(data: any): Promise<void> {
+    async createInstructor(data: any, accessToken: string): Promise<void> {
         try {
-            data
+            await api(accessToken).post('/instructor', data);
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async updateInstructor(id: string, data: any): Promise<void> {
+    async updateInstructor(id: number, data: any, accessToken: string): Promise<void> {
         try {
-            id
-            data
+            debugger
+            await api(accessToken).put('/update-instructor/'+id, data);
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async deleteInstructor(id: string): Promise<void> {
+    async deleteInstructor(id: number, accessToken: string): Promise<void> {
         try {
-            id
+            await api(accessToken).delete('/delete-instructor/'+id);
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }
@@ -129,15 +127,16 @@ export abstract class UsersManagementDatasource {
     async uploadStudents(formData: FormData, accessToken: string) : Promise<string> {
         try {
             const headers : _headers = { ContentType : 'multipart/form-data' };
-            const { data } = await api(accessToken, headers)
-                .post('/upload-aprendices/', formData);
+            const { data } = await api(accessToken, headers).post('/upload-aprendices/', formData);
+
             const res = data['repeated'] as [];
             if (res.length === 0) return '';
-            return res.reduce(function(acc, currentValue) {
+
+            return res.reduce((acc, currentValue)=> {
               const user = userModelFromJson(currentValue);
               acc += user.documentNumber + ': ' + user.names + ' ';
               return acc;
-            }, 'Los siguientes usuarios estan repetidos: ');
+            }, 'Los siguientes usuarios estan ya estan registrados: ');
 
         } catch (error: any) {
             console.log(error);
@@ -150,9 +149,7 @@ export abstract class UsersManagementDatasource {
     async getClassGroups(accessToken: string): Promise<ClassGroup[]|Error> {
         try {
             const { data } = await api(accessToken).get('/ficha');
-            return (data as []).map(function (data) {
-                return classGroupFromJson(data);
-            });
+            return (data as []).map((data)=> classGroupFromJson(data));
         } catch (error : any) {
             throw new ServerException({code: error?.status , data: error});
         }
