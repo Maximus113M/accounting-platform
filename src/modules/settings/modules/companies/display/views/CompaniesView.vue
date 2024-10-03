@@ -22,7 +22,7 @@
             <div>
                 <q-table :grid="$q.screen.lt.sm" class="q-mt-sm q-px-sm" color="black" flat
                     :rows="companiesStore.companiesList" :columns="columns" row-key="id" :filter="filter"
-                    rows-per-page-label="Filas por página" :rows-per-page-options="[2, 10, 20, 30, 40]"
+                    rows-per-page-label="Filas por página" :rows-per-page-options="[10, 20, 30, 40]"
                     no-data-label="No se encontraron resultados" no-results-label="No se encontraron resultados"
                     :loading="isLoading">
 

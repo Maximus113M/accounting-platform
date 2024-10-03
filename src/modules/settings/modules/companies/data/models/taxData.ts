@@ -88,19 +88,19 @@ class EconomicActivity {
 }
 
 const taxDataFromJson= (json: any)=>{
-
+    //debugger
     return new TaxData({
         icaRate: json?.tarifa_ica,
-        hasAIU: json?.maneja_aiu,
-        hasDoubleTax: json?.utiliza_dos_impuestos,
-        isWithholdingAgent: json?.es_agente_retenedor,
-        hasAdValoremTax: json?.maneja_impuesto_ad_valorem,
-        isForeignCurrency: json?.moneda_extranjera,
+        hasAIU: json?.maneja_aiu == 1? true : false,
+        hasDoubleTax: json?.utiliza_dos_impuestos == 1? true : false,
+        isWithholdingAgent: json?.es_agente_retenedor == 1? true : false,
+        hasAdValoremTax: json?.maneja_impuesto_ad_valorem == 1? true : false,
+        isForeignCurrency: json?.moneda_extranjera == 1? true : false,
         //TODO VERIFY
-        taxes: (json?.tributos as any[])?.map((tax)=> new Tax({key: tax})),
+        taxes: (json?.tributos as any[])?.map((tax)=> new Tax({key: tax.id, value: tax.name})),
         economicActivity: new EconomicActivity({key: json?.actividad_economica_codigo_ciiu}),
-        fiscalResponsibilities: (json?.responsabilidades_fiscales as string[])?.map(
-            (key)=> new FiscalResponsibilities({key: key})
+        fiscalResponsibilities: (json?.responsabilidades_fiscales as any[])?.map(
+            (item)=> new FiscalResponsibilities({key: item.codigo, value: item.descripcion})
         ),
     });
 }

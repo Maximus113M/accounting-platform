@@ -37,19 +37,20 @@ class BasicData{
     }){
         this.businessTypeName= businessTypeName?? 'Empresa';
         this.documentType= documentType?? '-';
-        this.documentNumber= documentNumber?? 0;
+        this.documentNumber= documentNumber?? 1;
         this.names= names?? null;
         this.lastnames= lastnames?? null;
         this.businessName= businessName?? '-';
         this.companyName= companyName?? '-';
         this.address= address?? '-';
-        this.phone= phone?? 0;
+        this.phone= phone?? 1;
         this.city= city?? new CityModel({});
     }
 }
 
 //CHECK
 const basicDataFromJson = (json: any)=>{
+    //debugger
     return new BasicData({
         businessTypeName: json?.tipo_razon_social,
         documentType: json?.tipo_identificacion,

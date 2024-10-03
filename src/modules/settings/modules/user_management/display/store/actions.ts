@@ -12,11 +12,11 @@ const usersManagementRepositoryImp = new UsersManagementRepositoryImpl(
 );
 const usersManagementUseCases = new UsersManagementUseCases(usersManagementRepositoryImp);
 
-export const getInstructors = async () => {
+export const getInstructors = async (accessToken: string) => {
   try {
     const userManagementStore = useUsersManagementStore();
 
-    userManagementStore.instructors= await usersManagementUseCases.getAllInstructors();
+    userManagementStore.instructors= await usersManagementUseCases.getAllInstructors(accessToken);
 
     return { status: statusMessages.success, message: 'Información actualizada!'};
   } catch (error: any) {

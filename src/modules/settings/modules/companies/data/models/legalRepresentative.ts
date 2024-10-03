@@ -26,19 +26,20 @@ class LegalRepresentative{
         this.names= names?? '-';
         this.lastNames= lastNames?? '-';
         this.documentType= documentType?? '-';
-        this.documentNumber= documentNumber?? 0;
-        this.hasPartners= hasPartners?? false;
+        this.documentNumber= documentNumber?? 1;
+        this.hasPartners= hasPartners?? false
         this.partnersList= partnersList?? [];
     }
 }
 
 const legalRepresentativeFromJson= (json: any)=>{
+    //debugger
     return new LegalRepresentative({
         names: json?.nombres,
         lastNames: json?.apellidos,
         documentType: json?.tipo_identificacion,
         documentNumber: json?.numero_identificacion,
-        hasPartners: json?.tiene_socios,
+        hasPartners: json?.tiene_socios == 1? true : false,
         partnersList: json?.lista_socios? (JSON.parse(json.lista_socios) as any[]).map((item)=> partnerModelFromJson(item)) : [] 
     });   
 }

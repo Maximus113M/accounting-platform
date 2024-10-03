@@ -56,7 +56,11 @@ export abstract class CompaniesDatasource {
       async updateCompany(serial: number, data: any, accessToken: string): Promise<void> {
         try {
             //TODO REVIEW THIS
-            await api(accessToken).put(`/update-company/${serial}`, data);
+            const header:_headers = {
+              ContentType: 'multipart/form-data',
+  
+            }
+            await api(accessToken, header).put('/update-company/'+serial, data);
             
         } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});

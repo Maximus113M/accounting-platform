@@ -12,9 +12,7 @@ const companiesUseCases = new CompaniesUseCases(companiesRepositoryImp);
 export const getCompanies = async (accessToken: string) => {
   try {
     const companiesStore= useCompaniesStore();
-    const resp = await companiesUseCases.getAllCompanies(accessToken);
-    companiesStore.companiesList= [];
-    companiesStore.companiesList= [...resp];
+    companiesStore.companiesList= await companiesUseCases.getAllCompanies(accessToken);
     return { status: statusMessages.success, message: 'Empresas obtenidas!' };
   } catch (error: any) {
     console.log(error);
@@ -32,8 +30,17 @@ export const getCompany = async (serial: number, accessToken: string) => {
 };
 export const createCompany = async (company: CompanyModel, accessToken: string) => {
   try {
-   
     await companiesUseCases.createCompany(companyModelToJson(company) ,accessToken);
+    
+    return { status: statusMessages.success, message: 'Empresa creada!' };
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
+  }
+};
+export const updateCompany = async (company: CompanyModel, accessToken: string) => {
+  try {
+    await companiesUseCases.updateCompany(company.serial, companyModelToJson(company) ,accessToken);
     
     return { status: statusMessages.success, message: 'Empresa creada!' };
   } catch (error: any) {

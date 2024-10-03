@@ -633,7 +633,7 @@ const initData = async () => {
         }));
     });
     //Instructors
-    const instructorsPromise = usersManagementStore.getInstructors().then((resp) => {
+    const instructorsPromise = usersManagementStore.getInstructors(props.signInUser.accessToken).then((resp) => {
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
             return;
@@ -682,24 +682,17 @@ const showDialog = async () => {
     isShowingDialog.value = true;
 
     if (props.company) {
-        //currentCompany.value = new CompanyModel({ ...props.company });
         //Set debtCollector
         if (currentCompany.value.debtCollector !== 0) {
-            let user = studentList.find((student) => student.value.id === currentCompany.value.debtCollector);
-            if (user) {
+            let userIndex = studentList.findIndex((student) => student.value.id === currentCompany.value.debtCollector);
+            if (userIndex > -1) {
                 debtCollectorType.value = 'Aprendiz';
-                selectedDebtCollector.value = {
-                    label: user.label,
-                    value: user.value
-                };
+                selectedDebtCollector.value = studentList[userIndex];
             } else {
-                user = instructorList.find((instructor) => instructor.value.id === currentCompany.value.debtCollector);
-                if (user) {
+                userIndex = instructorList.findIndex((instructor) => instructor.value.id === currentCompany.value.debtCollector);
+                if (userIndex > -1) {
                     debtCollectorType.value = 'Instructor';
-                    selectedDebtCollector.value = {
-                        label: user.label,
-                        value: user.value
-                    };
+                    selectedDebtCollector.value = instructorList[userIndex]
                 }
             }
         }
@@ -711,7 +704,7 @@ const showDialog = async () => {
         //Set city
         const foundCity = cities.find((city) => city.value.dianCode === currentCompany.value.basicData.city.dianCode);
         selectedCity.value = foundCity;
-        //Set economic Activity
+        //Set Economic Activity
         const foundEconomicActivity = economicActivities.find((economicAct) => economicAct.value.key === currentCompany.value.taxData.economicActivity.key);
         selectedEconomicActivity.value = foundEconomicActivity;
         //Set Fiscal Responsabilities
@@ -733,7 +726,7 @@ const showDialog = async () => {
         partnerList.value = [...currentCompany.value.legalRepresentative.partnersList];
         //Set logo
         if (currentCompany.value.logo) {
-            imageURL.value = baseUrl + currentCompany.value.logo as string;
+            imageURL.value = baseUrl.replace('/api', '') + currentCompany.value.logo as string;
             console.log(imageURL.value)
         }
     } else {
@@ -886,7 +879,31 @@ const onSubmit = async () => {
             return;
         }
     }
+    //Logo
+    if (props.company) {
+        if (!logo.value && !currentCompany.value.logo) {
+            customNotify({ status: statusMessages.warning, message: 'Debes seleccionar un logo' });
+            return;
+        }
+        if (!logo.value) {
+            if (typeof currentCompany.value.logo === 'string') {
+                const logResp = await fetch(currentCompany.value.logo);
+                console.log(logResp)
+                const blob = await logResp.blob();
+                logo.value = new File([blob], `${currentCompany.value.serial}`, { type: 'jpeg, png, jpg, gif' });
+                debugger
+            } else {
+                logo.value = currentCompany.value.logo;
+            }
+        }
 
+        //return;
+    } else {
+        if (!logo.value) {
+            customNotify({ status: statusMessages.warning, message: 'Debes seleccionar un logo' });
+            return;
+        }
+    }
     const newCompany = deepClone(currentCompany.value);
     //Business Type Name
     if (currentCompany.value.basicData.businessTypeName === 'Empresa') {
@@ -902,7 +919,7 @@ const onSubmit = async () => {
     }
     //City
     newCompany.basicData.city = selectedCity.value?.value ?? newCompany.basicData.city;
-    //REQUIRED AN Ec.Ac REVIEW
+    //REQUIRED AN Economic.Activity REVIEW
     newCompany.taxData.economicActivity = selectedEconomicActivity.value?.value ?? newCompany.taxData.economicActivity;
     //Fiscal Responsibilities
     newCompany.taxData.fiscalResponsibilities = selectedFiscalResponsabilities.value ?? newCompany.taxData.fiscalResponsibilities;
@@ -922,14 +939,35 @@ const onSubmit = async () => {
 
     // console.log(newCompany);
     // debugger;
+    if (props.company) {
 
-    await companiesStore.createCompany(newCompany, props.signInUser.accessToken).then((resp) => {
-        customNotify({ status: resp.status, message: resp.message });
-        if (resp.status === statusMessages.success) {
+        await companiesStore.updateCompany(newCompany, props.signInUser.accessToken).then((resp) => {
+            customNotify({ status: resp.status, message: resp.message });
+            if (resp.status === statusMessages.success) {
+                hideDialog();
+            }
+        });
+
+    } else {
+        await companiesStore.createCompany(newCompany, props.signInUser.accessToken).then(async (createResp) => {
+
+            if (createResp.status === statusMessages.fail) {
+                customNotify({ status: createResp.status, message: createResp.message });
+                return;
+            }
+
+            await companiesStore.getCompanies(props.signInUser.accessToken).then((companiesResp) => {
+                if (companiesResp.status === statusMessages.success) {
+                    customNotify({ status: companiesResp.status, message: 'Empresa creada, información actualizada!' });
+                } else {
+                    customNotify({ status: createResp.status, message: createResp.message });
+                }
+            });
+
             hideDialog();
-        }
-    });
-
+            return;
+        });
+    }
 }
 
 const hideDialog = () => {

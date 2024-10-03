@@ -9,11 +9,11 @@ import {
 import { _headers, api } from 'boot/axios';
 
 export abstract class UsersManagementDatasource {
-    abstract getInstructor(id: string): Promise<UserModel>;
-    abstract getAllInstructors(): Promise<UserModel[]>;
-    abstract createInstructor(data: any): Promise<void>;
-    abstract updateInstructor(id: string, data: any): Promise<void>;
-    abstract deleteInstructor(id: string): Promise<void>;
+    abstract getInstructor(id: number, accessToken: string): Promise<UserModel>;
+    abstract getAllInstructors(accessToken: string): Promise<UserModel[]>;
+    abstract createInstructor(data: any, accessToken: string): Promise<void>;
+    abstract updateInstructor(id: number, data: any, accessToken: string): Promise<void>;
+    abstract deleteInstructor(id: number, accessToken: string): Promise<void>;
 
     abstract getStudent(id: string): Promise<UserModel>;
     abstract getAllStudents(): Promise<UserModel[]>;
@@ -33,9 +33,9 @@ export abstract class UsersManagementDatasource {
 
   export class UsersManagementDatasourceImpl implements UsersManagementDatasource{
     //Instructors
-    async getInstructor(id: string): Promise<UserModel> {
+    async getInstructor(id: number, accessToken: string): Promise<UserModel> {
         try {
-            axios.get('', {});
+            axios.get('instructores', {});
             id;
             //TODO Verify
             return new UserModel({});
@@ -43,21 +43,22 @@ export abstract class UsersManagementDatasource {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async getAllInstructors(): Promise<UserModel[]> {
+    async getAllInstructors(accessToken: string): Promise<UserModel[]> {
         try {
-            return [];
+            const resp = await api(accessToken).get('/instructores');
+            return (resp.data as any[]).map((student) => userModelFromJson(student));
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async createInstructor(data: any): Promise<void> {
+    async createInstructor(data: any, accessToken: string): Promise<void> {
         try {
             data
         } catch (error: any) {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async updateInstructor(id: string, data: any): Promise<void> {
+    async updateInstructor(id: number, data: any, accessToken: string): Promise<void> {
         try {
             id
             data
@@ -65,7 +66,7 @@ export abstract class UsersManagementDatasource {
             throw new ServerException({code: error?.status , data: error});
         }
     }
-    async deleteInstructor(id: string): Promise<void> {
+    async deleteInstructor(id: number, accessToken: string): Promise<void> {
         try {
             id
         } catch (error: any) {

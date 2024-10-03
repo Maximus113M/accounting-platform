@@ -60,45 +60,98 @@ class CompanyModel{
 }
 
 const companyModelFromJson= (json: any)=>{
-    /*const x={
-        "serial": 1591273261261,
-        "tipo_regimen_iva": "003 No responsable de IVA",
-        "correo_contacto": "-",
-        "nombre_contacto": "-",
-        "pagina_web": "-",
-        "es_consorcio": 0,
-        "cobrador_id": 2,
-        "logo": "/storage/logos/1591273261261",
-        "user_id": 1,
-        "created_at": "2024-10-02T20:14:20.000000Z",
-        "updated_at": "2024-10-02T20:14:20.000000Z",
-        "datos_basicos": {
-            "id": 21,
-            "tipo_razon_social": "\"Empresa\"",
-            "tipo_identificacion": "\"-\"",
-            "numero_identificacion": 0,
-            "razon_social": "\"-\"",
-            "nombres": "null",
-            "apellidos": "null",
-            "nombre_comercial": "\"-\"",
-            "direccion": "\"-\"",
-            "telefono": 0,
-            "ciudad_codigo_dian": 68276,
-            "empresa_serial": 1591273261261,
-            "tercero_id": null,
-            "created_at": "2024-10-02T20:14:20.000000Z",
-            "updated_at": "2024-10-02T20:14:20.000000Z"
+    const x=
+    {
+        'serial': 9018405850086,
+        'tipo_regimen_iva': '003 No responsable de IVA',
+        'correo_contacto': '-',
+        'nombre_contacto': '-',
+        'pagina_web': '-',
+        'es_consorcio': 0,
+        'cobrador_id': 2,
+        'logo': '/storage/logos/9018405850086',
+        'user_id': 1,
+        'created_at': '2024-10-02T21:20:57.000000Z',
+        'updated_at': '2024-10-02T21:20:57.000000Z',
+        'datos_basicos': {
+            'id': 24,
+            'tipo_razon_social': '\'Empresa\'',
+            'tipo_identificacion': '\'-\'',
+            'numero_identificacion': 0,
+            'razon_social': '\'-\'',
+            'nombres': 'null',
+            'apellidos': 'null',
+            'nombre_comercial': '\'-\'',
+            'direccion': '\'-\'',
+            'telefono': 0,
+            'ciudad_codigo_dian': 68276,
+            'empresa_serial': 9018405850086,
+            'tercero_id': null,
+            'created_at': '2024-10-02T21:20:57.000000Z',
+            'updated_at': '2024-10-02T21:20:57.000000Z'
+        },
+        'representante_legal': {
+            'id': 5,
+            'nombres': 'Camilo',
+            'apellidos': 'Mantilla',
+            'tipo_identificacion': '-',
+            'numero_identificacion': 0,
+            'tiene_socios': 0,
+            'lista_socios': '[]',
+            'empresa_serial': 9018405850086,
+            'created_at': '2024-10-02T21:20:57.000000Z',
+            'updated_at': '2024-10-02T21:20:57.000000Z'
+        },
+        'datos_tributarios': {
+            'id': 5,
+            'tarifa_ica': 200,
+            'maneja_aiu': 0,
+            'utiliza_dos_impuestos': 0,
+            'es_agente_retenedor': 0,
+            'maneja_impuesto_ad_valorem': 0,
+            'moneda_extranjera': 0,
+            'actividad_economica_codigo_ciiu': 10,
+            'empresa_serial': 9018405850086,
+            'created_at': '2024-10-02T21:20:57.000000Z',
+            'updated_at': '2024-10-02T21:20:57.000000Z',
+            'responsabilidades_fiscales': [
+                {
+                    'codigo': '0-13',
+                    'descripcion': 'Gran contribuyente',
+                    'created_at': null,
+                    'updated_at': null,
+                    'pivot': {
+                        'dato_tributario_id': 5,
+                        'responsabilidad_fiscal_id': '0-13'
+                    }
+                }
+            ],
+            'tributos': [
+                {
+                    'id': 1,
+                    'nombre': 'IVA',
+                    'created_at': null,
+                    'updated_at': null,
+                    'pivot': {
+                        'dato_tributario_id': 5,
+                        'tributo_id': 1
+                    }
+                }
+            ]
         }
-    }*/
+    }
+    x;
+    //debugger
+    
     return new CompanyModel({
         serial: json.serial,
         regimeType: json.tipo_regimen_iva,
         emailContact: json.correo_contacto,
         nameContact: json.nombre_contacto,
         pageUrl: json.pagina_web,
-        isConsortium: json.es_consorcio,
+        isConsortium: json.es_consorcio == 1? true : false,
         debtCollector: json.cobrador_id,
-        logo: json.datos_empresa?.logo,
+        logo: json.logo,
         relatedUser: new UserModel({id: json.user_id}),
         //TODO REVIEW
         basicData: basicDataFromJson(json.datos_basicos),
@@ -114,7 +167,7 @@ const companyModelToJson= (company: CompanyModel)=>{
 
     const basicData: Record<string, any>= basicDataToJson(company.basicData);
     for(const key in basicData){
-        formData.append(`datos_basicos[${key}]`, JSON.stringify(basicData[key]));
+        if(validateFormField({field: 'datos_basicos', key: key, value: basicData[key], formData: formData})) continue;
     }
     const companyData: Record<string, any>={
         tipo_regimen_iva: company.regimeType,
