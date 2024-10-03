@@ -45,10 +45,21 @@ const routes: RouteRecordRaw[] = [
 
         },
       },
+      //Groups
       { 
         path: 'group-management',
         beforeEnter: [checkIfAuthenticated], 
         component: () => import('../modules/settings/modules/user_management/display/views/GroupManagementView.vue'), 
+        meta: {
+          requiresAuth: true,
+          access: accessRols.adminAndTeachers
+        },
+      },
+      //Instructors
+      { 
+        path: 'instructors-management',
+        beforeEnter: [checkIfAuthenticated], 
+        component: () => import('../modules/settings/modules/user_management/display/views/InstructorsManagementView.vue'), 
         meta: {
           requiresAuth: true,
           access: accessRols.adminAndTeachers

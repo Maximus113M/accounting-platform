@@ -52,7 +52,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { ClassGroup } from '../../../data/models/classGroup';
-//import { createClassGroup } from 'src/modules/settings/modules/user_management/display/store/actions';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
 import { useUsersManagementStore } from 'src/modules/settings/modules/user_management/display/store';

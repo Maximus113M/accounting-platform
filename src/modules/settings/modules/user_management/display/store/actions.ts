@@ -5,7 +5,7 @@ import { UsersManagementUseCases } from '../../domain/use-cases/usersManagementU
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { exceptiosResponseHandler } from 'src/core/helpers/exceptions';
 import { ClassGroup } from 'src/modules/settings/modules/user_management/data/models/classGroup';
-import { UserModel } from 'src/models/userModel';
+import { UserModel, userModelToJson } from 'src/models/userModel';
 
 const usersManagementRepositoryImp = new UsersManagementRepositoryImpl(
   new UsersManagementDatasourceImpl()
@@ -15,10 +15,39 @@ const usersManagementUseCases = new UsersManagementUseCases(usersManagementRepos
 export const getInstructors = async (accessToken: string) => {
   try {
     const userManagementStore = useUsersManagementStore();
-
     userManagementStore.instructors= await usersManagementUseCases.getAllInstructors(accessToken);
 
     return { status: statusMessages.success, message: 'Información actualizada!'};
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+};
+export const createInstructor = async (instructor: UserModel, accessToken: string) => {
+  try {
+    await usersManagementUseCases.createInstructor(userModelToJson(instructor), accessToken);
+
+    return { status: statusMessages.success, message: 'Instructor creado exitosamente!'};
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+};
+export const updateInstructor = async (instructor: UserModel, accessToken: string) => {
+  try {
+    await usersManagementUseCases.updateInstructor(instructor.id, userModelToJson(instructor), accessToken);
+
+    return { status: statusMessages.success, message: 'Información actualizada!'};
+  } catch (error: any) {
+    console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+};
+export const deleteInstructor = async (instructor: UserModel, accessToken: string) => {
+  try {
+    await usersManagementUseCases.deleteInstructor(instructor.id, accessToken);
+
+    return { status: statusMessages.success, message: 'Instructor eliminado!'};
   } catch (error: any) {
     console.log(error);
     return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
