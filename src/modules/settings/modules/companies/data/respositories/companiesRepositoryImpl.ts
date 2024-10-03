@@ -9,9 +9,9 @@ export class CompaniesRepositoryImpl implements CompaniesRepository{
     constructor(companiesDatasource: CompaniesDatasource){
         this.companiesDatasource= companiesDatasource;
     }
-    async getCompany(id: string, accessToken: string): Promise<CompanyModel> {
+    async getCompany(serial: number, accessToken: string): Promise<CompanyModel> {
         try {
-            return await this.companiesDatasource.getCompany(id, accessToken); 
+            return await this.companiesDatasource.getCompany(serial, accessToken); 
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
@@ -33,23 +33,23 @@ export class CompaniesRepositoryImpl implements CompaniesRepository{
             throw new ServerException({...error});
         }
     }
-    async updateCompany(id: string, data: any, accessToken: string): Promise<void> {
+    async updateCompany(serial: number, data: any, accessToken: string): Promise<void> {
         try {
-            return await this.companiesDatasource.updateCompany(id, data, accessToken); 
+            return await this.companiesDatasource.updateCompany(serial, data, accessToken); 
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
         }
     }
-    async deleteCompany(id: string, accessToken: string): Promise<void> {
+    async deleteCompany(serial: number, accessToken: string): Promise<void> {
         try {
-            return await this.companiesDatasource.deleteCompany(id, accessToken); 
+            return await this.companiesDatasource.deleteCompany(serial, accessToken); 
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});
         }
     }
-    async cloneCompany(serial: string, groupNumber: number, accessToken: string): Promise<any> {
+    async cloneCompany(serial: number, groupNumber: number, accessToken: string): Promise<any> {
         try {
             return await this.companiesDatasource.cloneCompany(serial, groupNumber, accessToken); 
         } catch (err) {

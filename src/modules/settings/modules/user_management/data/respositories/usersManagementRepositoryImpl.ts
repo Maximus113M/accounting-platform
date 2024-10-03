@@ -12,30 +12,19 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository 
     this.usersManagementDatasource = usersManagementDatasource;
   }
 
-  async getInstructor(id: string): Promise<UserModel> {
+  async getInstructor(id: number, acessToken: string): Promise<UserModel> {
     try {
-      return await this.usersManagementDatasource.getInstructor(id);
+      return await this.usersManagementDatasource.getInstructor(id, acessToken);
     } catch (err) {
       const error = err as ServerException;
       throw new ServerException({ ...error });
     }
   }
 
-  async getAllInstructors(): Promise<UserModel[]> {
+  async getAllInstructors(acessToken: string): Promise<UserModel[]> {
     try {
 
-      return await this.usersManagementDatasource.getAllInstructors();
-
-    } catch (err) {
-      const error = err as ServerException;
-      throw new ServerException({ ...error });
-    }
-  }
-
-  async createInstructor(data: any): Promise<void> {
-    try {
-
-      return await this.usersManagementDatasource.createInstructor(data);
+      return await this.usersManagementDatasource.getAllInstructors(acessToken);
 
     } catch (err) {
       const error = err as ServerException;
@@ -43,18 +32,29 @@ export class UsersManagementRepositoryImpl implements UsersManagementRepository 
     }
   }
 
-  async updateInstructor(id: string, data: any): Promise<void> {
+  async createInstructor(data: any, acessToken: string): Promise<void> {
     try {
-      return await this.usersManagementDatasource.updateInstructor(id, data);
+
+      return await this.usersManagementDatasource.createInstructor(data, acessToken);
+
     } catch (err) {
       const error = err as ServerException;
       throw new ServerException({ ...error });
     }
   }
 
-  async deleteInstructor(id: string): Promise<void> {
+  async updateInstructor(id: number, data: any, acessToken: string): Promise<void> {
     try {
-      return await this.usersManagementDatasource.deleteInstructor(id);
+      return await this.usersManagementDatasource.updateInstructor(id, data, acessToken);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async deleteInstructor(id: number, acessToken: string): Promise<void> {
+    try {
+      return await this.usersManagementDatasource.deleteInstructor(id, acessToken);
     } catch (err) {
       const error = err as ServerException;
       throw new ServerException({ ...error });

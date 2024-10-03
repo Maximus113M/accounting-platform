@@ -7,12 +7,12 @@ export class UsersManagementUseCases{
     constructor(usersManagementRepository: UsersManagementRepository){
         this.usersManagementRepository = usersManagementRepository;
     }
-
-    getInstructor= (id: string) => this.usersManagementRepository.getInstructor(id);
-    getAllInstructors= () => this.usersManagementRepository.getAllInstructors();
-    createInstructor= (data: any) => this.usersManagementRepository.createInstructor(data);
-    updateInstructor= (id: string, data: any) => this.usersManagementRepository.updateInstructor(id, data);
-    deleteInstructor= (id: string) => this.usersManagementRepository.deleteInstructor(id);
+    
+    getInstructor= (id: number, accessToken: string) => this.usersManagementRepository.getInstructor(id, accessToken);
+    getAllInstructors= (accessToken: string) => this.usersManagementRepository.getAllInstructors(accessToken);
+    createInstructor= (data: any, accessToken: string) => this.usersManagementRepository.createInstructor(data, accessToken);
+    updateInstructor= (id: number, data: any, accessToken: string) => this.usersManagementRepository.updateInstructor(id, data, accessToken);
+    deleteInstructor= (id: number, accessToken: string) => this.usersManagementRepository.deleteInstructor(id, accessToken);
 
     getStudent= (id: string) => this.usersManagementRepository.getStudent(id);
     getAllStudents= () => this.usersManagementRepository.getAllStudents();

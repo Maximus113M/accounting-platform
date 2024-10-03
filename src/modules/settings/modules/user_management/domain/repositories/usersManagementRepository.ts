@@ -3,11 +3,11 @@ import { ClassGroup } from 'src/modules/settings/modules/user_management/data/mo
 
 
 export abstract class UsersManagementRepository{
-    abstract getInstructor(id: string): Promise<UserModel>;
-    abstract getAllInstructors(): Promise<UserModel[]>;
-    abstract createInstructor(data: any): Promise<void>;
-    abstract updateInstructor(id: string, data: any): Promise<void>;
-    abstract deleteInstructor(id: string): Promise<void>;
+    abstract getInstructor(id: number, accessToken: string): Promise<UserModel>;
+    abstract getAllInstructors(accessToken: string): Promise<UserModel[]>;
+    abstract createInstructor(data: any, accessToken: string): Promise<void>;
+    abstract updateInstructor(id: number, data: any, accessToken: string): Promise<void>;
+    abstract deleteInstructor(id: number, accessToken: string): Promise<void>;
 
     abstract getStudent(id: string): Promise<UserModel>;
     abstract getAllStudents(): Promise<UserModel[]>;

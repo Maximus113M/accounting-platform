@@ -24,7 +24,7 @@ const settingsMenu: SettingsCardProps[] = [
         icon: 'manage_accounts',
         name: 'Instructores',
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus.',
-        route: '',
+        route: 'instructors-management',
     },
     {
         icon: 'school',

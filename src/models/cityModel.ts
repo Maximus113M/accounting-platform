@@ -1,9 +1,15 @@
 class CityModel{
-    dianCode: string;
+    dianCode: number;
     name: string;
 
-    constructor({dianCode, name}:{dianCode?: string, name?: string}){
-        this.dianCode= dianCode?? '';
+    constructor({
+        dianCode, 
+        name
+    }:{
+        dianCode?: number, 
+        name?: string
+    }){
+        this.dianCode= dianCode?? 0; //68276;
         this.name= name?? '';
     }
 }
