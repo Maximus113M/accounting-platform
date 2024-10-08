@@ -198,7 +198,6 @@ const companyModelToJson= (company: CompanyModel)=>{
 
     const taxData: Record<string, any>= taxDataToJson(company.taxData)
     for(const key in taxData){
-
         if(validateFormField({field: 'datos_tributarios', key: key, value: taxData[key], formData: formData})) continue;
 
         if(Array.isArray(taxData[key])){
@@ -216,21 +215,12 @@ const companyModelToJson= (company: CompanyModel)=>{
             
             continue;
         }
-
     }
 
     const legalRepresentative: Record<string, any>= legalRepresentativeToJson(company.legalRepresentative);
     for(const key in legalRepresentative){
         if(validateFormField({field: 'representante_legal', key: key, value: legalRepresentative[key], formData: formData})) continue;
 
-        // if(typeof legalRepresentative[key] === 'boolean'){
-        //     formData.append(`representante_legal[${key}]`, legalRepresentative[key]? '1':'0');
-        //     continue;
-        // }
-        // if(typeof companyData[key] === 'number'){
-        //     formData.append(`representante_legal[${key}]`, companyData[key].toString());
-        //     continue;
-        // }
     }
     
     formData.forEach((value, key) => {

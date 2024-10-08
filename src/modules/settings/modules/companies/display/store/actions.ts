@@ -73,8 +73,8 @@ export const getEconomicActivities = async (accessToken: string) => {
   try {
     const companiesStore= useCompaniesStore();
     const resp = await companiesUseCases.getEconomicActivities(accessToken);
-    companiesStore.economicActivities= [];
     companiesStore.economicActivities= [...resp];
+    console.log('Get EconomicActivities Done!');
     return { status: statusMessages.success, message: 'Actividades economicas obtenidas!' };
   } catch (error: any) {
     console.log(error);
@@ -85,8 +85,8 @@ export const getFiscalResponsabilities = async (accessToken: string) => {
   try {
     const companiesStore= useCompaniesStore();
     const resp = await companiesUseCases.getFiscalResponsabilities(accessToken);
-    companiesStore.fiscalResponsalities= [];
     companiesStore.fiscalResponsalities= [...resp];
+    console.log('Get FiscalResponsabilities Done!');
     return { status: statusMessages.success, message: 'Responsabilidades Fiscales obtenidas!' };
   } catch (error: any) {
     console.log(error);
@@ -97,8 +97,8 @@ export const getTaxes = async (accessToken: string) => {
   try {
     const companiesStore= useCompaniesStore();
     const resp = await companiesUseCases.getTaxes(accessToken);
-    companiesStore.taxes= [];
     companiesStore.taxes= [...resp];
+    console.log('Get Taxes Done!');
     return { status: statusMessages.success, message: 'Tributos obtenidos!' };
   } catch (error: any) {
     console.log(error);

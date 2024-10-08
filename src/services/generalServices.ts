@@ -12,7 +12,7 @@ export class GeneralServices{
             //Not need accesToken by now
             const apiResp= await api('').get('/cities');
             const cities: CityModel[]= (apiResp.data as any[]).map((item)=> cityFromJson(item));
-
+            console.log('Get Cities Done!');
             return { status: statusMessages.success, message: 'Ciudades obtenidas!', data: cities };
         } catch (error) {
             console.log(error);
