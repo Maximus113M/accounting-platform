@@ -152,7 +152,8 @@
                                 <q-radio v-model="currentCompany.isConsortium" label="No" :val="false" />
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4">
+                        <!-- DEBT COLLECTOR DISABLE -->
+                        <!-- <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Usuario cobrador</div>
                             <q-select outlined dense v-model="debtCollectorType" :options="debtCollectorTypeOptions">
                                 <template v-slot:no-option>
@@ -196,7 +197,7 @@
                                     </q-item>
                                 </template>
                             </q-select>
-                        </div>
+                        </div> -->
 
                     </div>
 
@@ -457,7 +458,7 @@
 
             <q-card-actions align="right" class="q-px-md q-mb-sm">
                 <q-btn no-caps color="primary" type="submit" form="company_form"
-                    :label="props.company ? 'Guardar' : 'Crear'" style="padding: 0px 20px;" />
+                    :label="props.company ? 'Guardar' : 'Crear'" :loading="isLoading" style="padding: 0px 20px;" />
                 <q-btn no-caps color="red-7" label="Cancelar" @click="hideDialog" style="padding: 0px 20px;" />
             </q-card-actions>
         </q-card>
@@ -484,7 +485,7 @@ import { baseUrl } from 'src/boot/axios';
 
 const rootStore = useRootStore();
 const companiesStore = useCompaniesStore();
-const usersManagementStore = useUsersManagementStore();
+//const usersManagementStore = useUsersManagementStore();
 const props = defineProps({
     company: { type: CompanyModel },
     signInUser: { type: UserModel, required: true }
@@ -498,6 +499,7 @@ const tabsMenu = [
 ];
 
 const isShowingDialog = ref<boolean>(false);
+const isLoading = ref<boolean>(false);
 const currentCompany = ref(new CompanyModel({}));
 const selectedTab = ref(0);
 
@@ -506,14 +508,14 @@ const cities: Record<string, any>[] = [];
 const selectedCity = ref<Record<string, any> | undefined>(undefined);
 const citiesOptions = ref<Record<string, any>[]>([]);
 //Debt Collectors Options
-const debtCollectorType = ref<string | undefined>(undefined);
-const debtCollectorTypeOptions: string[] = ['Aprendiz', 'Instructor'];
+// const debtCollectorType = ref<string | undefined>(undefined);
+// const debtCollectorTypeOptions: string[] = ['Aprendiz', 'Instructor'];
 //Debt Collectors Users
-const selectedDebtCollector = ref<Record<string, any> | undefined>(undefined);
-const debtCollectorsOptions = ref<Record<string, any>[]>([]);
+//const selectedDebtCollector = ref<Record<string, any> | undefined>(undefined);
+//const debtCollectorsOptions = ref<Record<string, any>[]>([]);
 //Users Collectors
-const studentList: Record<string, any>[] = [];
-const instructorList: Record<string, any>[] = [];
+//const studentList: Record<string, any>[] = [];
+//const instructorList: Record<string, any>[] = [];
 
 //Economic Activity
 const economicActivities: Record<string, any>[] = [];
@@ -530,14 +532,6 @@ const partnerList = ref<PartnerModel[]>([]);
 const logo = ref<File | null>(null);
 const imageURL = ref('');
 
-watch(() => debtCollectorType.value, (type) => {
-    selectedDebtCollector.value = undefined;
-    if (type === 'Aprendiz') {
-        debtCollectorsOptions.value = [...studentList];
-    } else {
-        debtCollectorsOptions.value = [...instructorList];
-    }
-});
 watch(() => logo.value, (file) => {
     if (file) {
         URL.revokeObjectURL(imageURL.value);
@@ -548,37 +542,33 @@ watch(() => logo.value, (file) => {
 
 const initData = async () => {
     customNotify({ status: statusMessages.info, message: 'Obteniendo información...', spinner: spinnerType.Ios });
+    //console.log(props.signInUser.accessToken);
     console.log('Start load...');
-    const inicio = performance.now();
-    const promiseList: Promise<void>[] = [];
+    const init = performance.now();
     //Get company
     if (props.company) {
-        const companyPromise = companiesStore.getCompany(props.company.serial, props.signInUser.accessToken).then((resp) => {
-            if (resp.status === statusMessages.success) {
-                currentCompany.value = deepClone(resp.data!);
-            } else {
-                customNotify({ status: resp.status, message: resp.message });
-            }
-        });
-        promiseList.push(companyPromise);
+        const companyResp = await companiesStore.getCompany(props.company.serial, props.signInUser.accessToken);    
+        if (companyResp.status === statusMessages.success) {
+            currentCompany.value = deepClone(companyResp.data!);
+        } else {
+            customNotify({ status: companyResp.status, message: companyResp.message });
+        }
     }
     //Get cities
     if (rootStore.cities.length === 0) {
-        const citiesPromise = GeneralServices.getCities().then((resp) => {
-            if (resp.status === statusMessages.fail) {
-                customNotify({ status: resp.status, message: resp.message });
-                return;
+        const citiesResp = await GeneralServices.getCities();
+        if (citiesResp.status === statusMessages.fail) {
+            customNotify({ status: citiesResp.status, message: citiesResp.message });
+            return;
+        }
+        rootStore.cities = citiesResp.data!;
+        cities.push(...rootStore.cities.map((city) => {
+            return {
+                label: city.dianCode + ' - ' + city.name,
+                value: city
             }
-            rootStore.cities = resp.data!;
-            cities.push(...rootStore.cities.map((city) => {
-                return {
-                    label: city.dianCode + ' - ' + city.name,
-                    value: city
-                }
-            }));
-            citiesOptions.value = [...cities];
-        });
-        promiseList.push(citiesPromise);
+        }));
+        citiesOptions.value = [...cities];
     } else {
         cities.push(...rootStore.cities.map((city) => {
             return {
@@ -588,78 +578,37 @@ const initData = async () => {
         }));
         citiesOptions.value = [...cities];
     }
+
+    const promiseList: Promise<any>[] = [];
     //Get economicActivities
-    const economicActivitiesPromise = companiesStore.getEconomicActivities(props.signInUser.accessToken).then((resp) => {
-        if (resp.status === statusMessages.fail) {
-            customNotify({ status: resp.status, message: resp.message });
-            return;
-        }
-        economicActivities.length = 0;
-        economicActivities.push(...companiesStore.economicActivities.map((item) => {
-            return {
-                label: `${item.key} - ${item.value}`,
-                value: item
-            }
-        }));
-        economicActivityOptions.value = [...economicActivities];
-    });
+    promiseList.push(companiesStore.getEconomicActivities(props.signInUser.accessToken));
     //Get fiscalResponsabilities
-    const fiscalResponsabilitiesPromise = companiesStore.getFiscalResponsabilities(props.signInUser.accessToken).then((resp) => {
-        if (resp.status === statusMessages.fail) {
-            customNotify({ status: resp.status, message: resp.message });
-            return;
-        }
-    });
+    promiseList.push(companiesStore.getFiscalResponsabilities(props.signInUser.accessToken));
     //Get taxes
-    const taxesPromise = companiesStore.getTaxes(props.signInUser.accessToken).then((resp) => {
+    promiseList.push(companiesStore.getTaxes(props.signInUser.accessToken));
+    
+    const promiseResp= await Promise.all(promiseList);
+    promiseResp.forEach((resp: {status: statusMessages, message: string} , index)=>{
         if (resp.status === statusMessages.fail) {
             customNotify({ status: resp.status, message: resp.message });
             return;
         }
-    });
-    //TODO: VERIFY HOW TO GET THE RELATED USERS
-    //Students
-    const studentsPromise = usersManagementStore.getStudentsByClassGroup(1).then((resp) => {
-        if (resp.status === statusMessages.fail) {
-            customNotify({ status: resp.status, message: resp.message });
-            return;
+        if(index === 0) {
+            economicActivities.length = 0;
+            economicActivities.push(...companiesStore.economicActivities.map((item) => {
+                return {
+                    label: `${item.key} - ${item.value}`,
+                    value: item
+                }
+            }));
+            economicActivityOptions.value = [...economicActivities];
         }
-        studentList.length = 0;
-        studentList.push(...usersManagementStore.studentsByClassGroup.map((student) => {
-            return {
-                label: student.names + ' ' + student.lastNames,
-                value: student
-            }
-        }));
-    });
-    //Instructors
-    const instructorsPromise = usersManagementStore.getInstructors(props.signInUser.accessToken).then((resp) => {
-        if (resp.status === statusMessages.fail) {
-            customNotify({ status: resp.status, message: resp.message });
-            return;
-        }
-        instructorList.length = 0;
-        instructorList.push(...usersManagementStore.instructors.map((instructor) => {
-            return {
-                label: instructor.names + ' ' + instructor.lastNames,
-                value: instructor
-            }
-        }));
-    });
-
-    promiseList.push(economicActivitiesPromise);
-    promiseList.push(fiscalResponsabilitiesPromise);
-    promiseList.push(taxesPromise);
-    promiseList.push(studentsPromise);
-    promiseList.push(instructorsPromise);
-
-    await Promise.all(promiseList);
-
-    const fin = performance.now();
-    const tiempoTranscurrido = fin - inicio;
+    })
+    const end = performance.now();
+    const tiempoTranscurrido = end - init;
     console.log(`Time to resolve: ${tiempoTranscurrido.toFixed(2)} ms`);
 
-    customNotify({ status: statusMessages.success, message: 'Información obtenida ...' });
+    customNotify({ status: statusMessages.success, message: 'Información obtenida!', time: 1000 });
 
     console.log('End load...');
 }
@@ -668,8 +617,8 @@ const showDialog = async () => {
     await initData();
 
     selectedCity.value = undefined;
-    debtCollectorType.value = undefined;
-    selectedDebtCollector.value = undefined;
+    //debtCollectorType.value = undefined;
+    //selectedDebtCollector.value = undefined;
     selectedEconomicActivity.value = undefined;
 
     URL.revokeObjectURL(imageURL.value);
@@ -683,24 +632,20 @@ const showDialog = async () => {
 
     if (props.company) {
         //Set debtCollector
-        if (currentCompany.value.debtCollector !== 0) {
-            let userIndex = studentList.findIndex((student) => student.value.id === currentCompany.value.debtCollector);
-            if (userIndex > -1) {
-                debtCollectorType.value = 'Aprendiz';
-                selectedDebtCollector.value = studentList[userIndex];
-            } else {
-                userIndex = instructorList.findIndex((instructor) => instructor.value.id === currentCompany.value.debtCollector);
-                if (userIndex > -1) {
-                    debtCollectorType.value = 'Instructor';
-                    selectedDebtCollector.value = instructorList[userIndex]
-                }
-            }
-        }
-        //Set relatedUser
-        const foundRelatedUser = instructorList.find((instructor) => instructor.value.id === currentCompany.value.relatedUser.id)
-        if (foundRelatedUser) {
-            currentCompany.value.relatedUser = new UserModel({ ...foundRelatedUser.value });
-        }
+        // if (currentCompany.value.debtCollector !== 0) {
+        //     let userIndex = studentList.findIndex((student) => student.value.id === currentCompany.value.debtCollector);
+        //     if (userIndex > -1) {
+        //         debtCollectorType.value = 'Aprendiz';
+        //         selectedDebtCollector.value = studentList[userIndex];
+        //     } else {
+        //         userIndex = instructorList.findIndex((instructor) => instructor.value.id === currentCompany.value.debtCollector);
+        //         if (userIndex > -1) {
+        //             debtCollectorType.value = 'Instructor';
+        //             selectedDebtCollector.value = instructorList[userIndex]
+        //         }
+        //     }
+        // }
+        
         //Set city
         const foundCity = cities.find((city) => city.value.dianCode === currentCompany.value.basicData.city.dianCode);
         selectedCity.value = foundCity;
@@ -749,7 +694,7 @@ const showDialog = async () => {
 
 
 //Economic Activity
-const filterEconomicActivitiesFn = (val: string, update: any) => {
+function filterEconomicActivitiesFn(val: string, update: any) {
     if (val === '') {
         update(() => {
             economicActivityOptions.value = [...economicActivities];
@@ -769,7 +714,7 @@ const getFiscalResponsabilitiesNames = () => selectedFiscalResponsabilities.valu
 const getTaxesNames = () => selectedTaxes.value?.map((item) => item.value).join(', ');
 
 //Cities
-const filterCityFn = (val: string, update: any) => {
+function filterCityFn(val: string, update: any) {
     if (val === '') {
         update(() => {
             citiesOptions.value = [...cities];
@@ -783,32 +728,31 @@ const filterCityFn = (val: string, update: any) => {
 };
 
 //DebtCollertors
-const filterDebtCollertorsFn = (val: string, update: any) => {
-    if (!debtCollectorType.value) return;
-    if (val === '') {
-        update(() => {
-            debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ? [...studentList] : [...instructorList];
-        })
-        return;
-    }
+// const filterDebtCollertorsFn = (val: string, update: any) => {
+//     if (!debtCollectorType.value) return;
+//     if (val === '') {
+//         update(() => {
+//             debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ? [...studentList] : [...instructorList];
+//         })
+//         return;
+//     }
 
-    const needle = val.toLowerCase();
-    update(() => {
-        debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ?
-            studentList.filter((student) => student.label.toLocaleLowerCase().includes(needle))
-            :
-            instructorList.filter((instructor) => instructor.label.toLocaleLowerCase().includes(needle))
-    });
-}
+//     const needle = val.toLowerCase();
+//     update(() => {
+//         debtCollectorsOptions.value = debtCollectorType.value === 'Aprendiz' ?
+//             studentList.filter((student) => student.label.toLocaleLowerCase().includes(needle))
+//             :
+//             instructorList.filter((instructor) => instructor.label.toLocaleLowerCase().includes(needle))
+//     });
+// }
 
 //Partners
-const partnersEnable = () => {
+function partnersEnable(){
     if (partnerList.value.length === 0) {
         partnerList.value.push(new PartnerModel({}));
     }
 }
-
-const addNewPartner = () => {
+function addNewPartner(){
     if (partnerList.value.length > 0) {
         const partner = partnerList.value[partnerList.value.length - 1];
         if (!validatePartnerFields(partner, true)) {
@@ -820,7 +764,7 @@ const addNewPartner = () => {
     customNotify({ status: statusMessages.success, message: 'Socio añadido', time: 1000 });
 }
 
-const removePartner = (index: number) => {
+function removePartner(index: number) {
     const partner = partnerList.value[index];
     if (validatePartnerFields(partner)) {
         Dialog.create({
@@ -846,7 +790,7 @@ const removePartner = (index: number) => {
     customNotify({ status: statusMessages.success, message: 'Socio eliminado', time: 1000 });
 }
 
-const validatePartnerFields = (partner: PartnerModel, strict?: boolean) => {
+function validatePartnerFields (partner: PartnerModel, strict?: boolean){
     let counter = 0;
     if (partner.names === '') counter++;
     if (partner.lastNames === '') counter++;
@@ -857,19 +801,19 @@ const validatePartnerFields = (partner: PartnerModel, strict?: boolean) => {
 }
 
 //Logo
-const cancelFile = () => {
+function cancelFile() {
     URL.revokeObjectURL(imageURL.value);
     imageURL.value = '';
     logo.value = null;
 }
 
-const onRejectedFile = () => {
+function onRejectedFile() {
     customNotify({ status: statusMessages.warning, message: 'El archivo no es valido' })
 }
 
 
 
-const onSubmit = async () => {
+async function onSubmit() {
     //VALIDATIONS
     //Partners
     if (currentCompany.value.legalRepresentative.hasPartners) {
@@ -904,6 +848,8 @@ const onSubmit = async () => {
             return;
         }
     }
+
+    isLoading.value= true;
     const newCompany = deepClone(currentCompany.value);
     //Business Type Name
     if (currentCompany.value.basicData.businessTypeName === 'Empresa') {
@@ -912,14 +858,10 @@ const onSubmit = async () => {
     } else {
         currentCompany.value.basicData.businessName = null;
     }
-    //Related dectCollector
-    if (selectedDebtCollector.value) {
-        newCompany.relatedUser = props.signInUser;
-        newCompany.debtCollector = selectedDebtCollector.value.value.id;
-    }
+
     //City
     newCompany.basicData.city = selectedCity.value?.value ?? newCompany.basicData.city;
-    //REQUIRED AN Economic.Activity REVIEW
+    //Economic Activity REVIEW
     newCompany.taxData.economicActivity = selectedEconomicActivity.value?.value ?? newCompany.taxData.economicActivity;
     //Fiscal Responsibilities
     newCompany.taxData.fiscalResponsibilities = selectedFiscalResponsabilities.value ?? newCompany.taxData.fiscalResponsibilities;
@@ -940,46 +882,44 @@ const onSubmit = async () => {
     // console.log(newCompany);
     // debugger;
     if (props.company) {
-
-        await companiesStore.updateCompany(newCompany, props.signInUser.accessToken).then((resp) => {
-            customNotify({ status: resp.status, message: resp.message });
-            if (resp.status === statusMessages.success) {
-                hideDialog();
-            }
-        });
+        const updateResp= await companiesStore.updateCompany(newCompany, props.signInUser.accessToken);
+        if (updateResp.status === statusMessages.fail) {
+            customNotify({ status: updateResp.status, message: updateResp.message });
+            isLoading.value= false;
+            return;
+        }
+        await refreshCompanyTable(updateResp, 'Información actualizada!');
+        hideDialog();
 
     } else {
-        await companiesStore.createCompany(newCompany, props.signInUser.accessToken).then(async (createResp) => {
-
-            if (createResp.status === statusMessages.fail) {
-                customNotify({ status: createResp.status, message: createResp.message });
-                return;
-            }
-
-            await companiesStore.getCompanies(props.signInUser.accessToken).then((companiesResp) => {
-                if (companiesResp.status === statusMessages.success) {
-                    customNotify({ status: companiesResp.status, message: 'Empresa creada, información actualizada!' });
-                } else {
-                    customNotify({ status: createResp.status, message: createResp.message });
-                }
-            });
-
-            hideDialog();
+        //Set relatedUser
+        newCompany.relatedUser = props.signInUser;
+        const createResp = await companiesStore.createCompany(newCompany, props.signInUser.accessToken);
+        if (createResp.status === statusMessages.fail) {
+            customNotify({ status: createResp.status, message: createResp.message });
+            isLoading.value= false;
             return;
-        });
+        }
+        await refreshCompanyTable(createResp, 'Empresa creada, información actualizada!');
+        hideDialog();
     }
+    isLoading.value= false;
 }
 
-const hideDialog = () => {
+async function refreshCompanyTable(fatherResp: any, message: string){
+    const companiesResp = await companiesStore.getCompanies(props.signInUser.accessToken);
+    if (companiesResp.status === statusMessages.success) {
+        customNotify({ status: companiesResp.status, message: message });
+        return;
+    } 
+    customNotify({ status: fatherResp.status, message: fatherResp.message });
+        
+}
+
+function hideDialog() {
     isShowingDialog.value = false;
 }
 
-// const cities = [
-//     'Bucaramanga (002)',
-//     'Floridablanca (052)',
-//     'Piedecuesta (285)',
-//     'Giron (351)',
-// ];
 </script>
 
 <style scoped lang="scss">
@@ -1009,3 +949,34 @@ const hideDialog = () => {
     border-radius: 15px;
 }
 </style>
+
+
+//TODO: VERIFY HOW TO GET THE RELATED USERS
+    <!-- //Students
+    const studentsPromise = usersManagementStore.getStudentsByClassGroup(1).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+        studentList.length = 0;
+        studentList.push(...usersManagementStore.studentsByClassGroup.map((student) => {
+            return {
+                label: student.names + ' ' + student.lastNames,
+                value: student
+            }
+        }));
+    });
+    //Instructors
+    const instructorsPromise = usersManagementStore.getInstructors(props.signInUser.accessToken).then((resp) => {
+        if (resp.status === statusMessages.fail) {
+            customNotify({ status: resp.status, message: resp.message });
+            return;
+        }
+        instructorList.length = 0;
+        instructorList.push(...usersManagementStore.instructors.map((instructor) => {
+            return {
+                label: instructor.names + ' ' + instructor.lastNames,
+                value: instructor
+            }
+        }));
+    }); -->

@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 const globalNotify= ref<any | undefined>(undefined);
 
-export const customNotify= ({status, message, position, progress, time= 3000, spinner}:{status: statusMessages, message: string, position?: string, progress?: boolean, time?: number, spinner?: spinnerType})=>{
+export const customNotify= ({status, message, position, progress, time= 2000, spinner}:{status: statusMessages, message: string, position?: string, progress?: boolean, time?: number, spinner?: spinnerType})=>{
     if(globalNotify.value){
         globalNotify.value()
     }
