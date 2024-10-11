@@ -60,7 +60,7 @@ export abstract class CompaniesDatasource {
               ContentType: 'multipart/form-data',
   
             }
-            await api(accessToken, header).put('/update-company/'+serial, data);
+            await api(accessToken, header).post('/update-company/'+serial+'?_method=PUT', data);
             
         } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
