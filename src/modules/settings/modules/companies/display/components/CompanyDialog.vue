@@ -25,8 +25,6 @@
             </div>
 
             <q-card-section>
-                <!-- :rules="[(val: number) => (val && val > 0) || 'Debes completar este campo']" -->
-                <!-- :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" -->
                 <q-form @submit="onSubmit" id="company_form" class="q-px-md q-pb-md">
                     <div v-if="selectedTab === 0" class="row  q-col-gutter-x-xl">
                         <div class="col-12 text-h6 text-bold q-mb-sm">
@@ -480,12 +478,11 @@ import { FiscalResponsibilities, Tax } from '../../data/models/taxData';
 
 import { useRootStore } from 'src/stores/root-store';
 import { useCompaniesStore } from '../store';
-import { useUsersManagementStore } from '../../../user_management/display/store';
 import { baseUrl } from 'src/boot/axios';
 
 const rootStore = useRootStore();
 const companiesStore = useCompaniesStore();
-//const usersManagementStore = useUsersManagementStore();
+
 const props = defineProps({
     company: { type: CompanyModel },
     signInUser: { type: UserModel, required: true }
@@ -562,22 +559,15 @@ const initData = async () => {
             return;
         }
         rootStore.cities = citiesResp.data!;
-        cities.push(...rootStore.cities.map((city) => {
-            return {
-                label: city.dianCode + ' - ' + city.name,
-                value: city
-            }
-        }));
-        citiesOptions.value = [...cities];
-    } else {
-        cities.push(...rootStore.cities.map((city) => {
-            return {
-                label: city.dianCode + ' - ' + city.name,
-                value: city
-            }
-        }));
-        citiesOptions.value = [...cities];
     }
+    cities.push(...rootStore.cities.map((city) => {
+        return {
+            label: city.dianCode + ' - ' + city.name,
+            value: city
+        }
+    }));
+    citiesOptions.value = [...cities];
+    
 
     const promiseList: Promise<any>[] = [];
     //Get economicActivities
