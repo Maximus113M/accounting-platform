@@ -4,6 +4,7 @@ import { AccountUseCases } from 'src/modules/accounting/modules/accounts/domain/
 import { AccountRepositoryImpl } from 'src/modules/accounting/modules/accounts/data/repositories/accountRepositoryImpl';
 import { AccountRepository } from 'src/modules/accounting/modules/accounts/domain/repositories/accountRepository';
 import { AccountDatasourceImpl } from 'src/modules/accounting/modules/accounts/data/datasources/accountDatasource';
+import { Account } from 'src/modules/accounting/modules/accounts/data/models/account';
 
 const accountRepository :AccountRepository = new AccountRepositoryImpl(new AccountDatasourceImpl());
 const accountUseCases = new AccountUseCases(accountRepository);
@@ -20,4 +21,16 @@ const getPuc = async (serial: number) => {
   }
 }
 
-export { getPuc }
+const createAccount = async (account: Account) => {
+  try {
+    const token = sessionStorage.getItem('token');
+    const resp= await accountUseCases.createAccount(token!, account);
+
+    return { status: statusMessages.success, message: resp };
+  }  catch (error) {
+    console.log(error);
+    return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
+  }
+}
+
+export { getPuc, createAccount }

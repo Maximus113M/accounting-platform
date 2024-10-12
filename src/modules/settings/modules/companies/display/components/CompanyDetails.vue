@@ -9,7 +9,7 @@
 
     <q-dialog v-model="isShowingDialog" backdrop-filter="blur(1px)" persistent>
         <q-card style="min-width: 620px; width: 85%; max-width: 1400px;">
-                
+
             <q-card-section>
                 <div class="row justify-between q-mb-md">
                     <div class="row items-center">
@@ -25,12 +25,12 @@
                 <div class="q-px-md q-pb-md">
                     <div class="col-12 row justify-center">
                         <q-avatar size="220px">
-                            <q-img v-if="imageURL !== ''"  :src="imageURL" alt="Company-image" 
+                            <q-img v-if="imageURL !== ''"  :src="imageURL" alt="Company-image"
                             error-src="../../../../../../assets/images/No_Image_Available.jpg" />
 
                             <img v-else src="../../../../../../assets/images/No_Image_Available.jpg"
                                 alt="No-image">
-                        </q-avatar>           
+                        </q-avatar>
                     </div>
 
                     <div class="row  q-col-gutter-x-lg q-col-gutter-y-sm">
@@ -113,7 +113,7 @@
                         <div class="col-12 row q-mt-lg q-mb-sm" >
                             <div class="col-12" style="border: 1px solid lightgrey;"></div>
                         </div>
-                        
+
                         <div class="col-12 text-h6 text-bold q-mb-sm">
                             Tributario
                         </div>
@@ -122,7 +122,7 @@
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Código actividad económica</div>
                             <q-input readonly outlined dense type="text" :model-value="`${selectedEconomicActivity.key+' - '+selectedEconomicActivity.value}`" />
                         </div>
-                        
+
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tarifa ICA</div>
                             <q-input readonly outlined dense type="number" v-model.number="currentCompany.taxData.icaRate" />
@@ -173,7 +173,7 @@
                         <div class="col-12 row q-mt-lg q-mb-sm" >
                             <div class="col-12" style="border: 1px solid lightgrey;"></div>
                         </div>
-                        
+
                         <div class="col-12 text-h6 text-bold">
                             Representante Legal
                         </div>
@@ -260,7 +260,7 @@
                             </div>
 
                         </div>
-                   
+
                     </div>
 
                 </div>
@@ -270,7 +270,6 @@
 </template>
 
 <script setup lang="ts">
-import { Dialog } from 'quasar';
 import { ref, watch } from 'vue';
 import { deepClone } from 'src/core/utils/general';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
@@ -327,7 +326,7 @@ const initData = async () => {
     const init = performance.now();
     //Get company
     if (props.company) {
-        const companyResp = await companiesStore.getCompany(props.company.serial, props.signInUser.accessToken);    
+        const companyResp = await companiesStore.getCompany(props.company.serial, props.signInUser.accessToken);
         if (companyResp.status === statusMessages.success) {
             currentCompany.value = deepClone(companyResp.data!);
         } else {
@@ -342,7 +341,7 @@ const initData = async () => {
             return;
         }
         rootStore.cities = citiesResp.data!;
-    } 
+    }
 
     const promiseList: Promise<any>[] = [];
     //Get economicActivities
@@ -351,7 +350,7 @@ const initData = async () => {
     promiseList.push(companiesStore.getFiscalResponsabilities(props.signInUser.accessToken));
     //Get taxes
     promiseList.push(companiesStore.getTaxes(props.signInUser.accessToken));
-    
+
     const promiseResp= await Promise.all(promiseList);
     promiseResp.forEach((resp: {status: statusMessages, message: string})=>{
         if (resp.status === statusMessages.fail) {
@@ -379,7 +378,7 @@ const showDialog = async () => {
     selectedFiscalResponsabilities.value= '';
 
     isShowingDialog.value = true;
-   
+
     //Set city
     const foundCity = rootStore.cities.find((city) => city.dianCode === currentCompany.value.basicData.city.dianCode);
     if(foundCity){
@@ -416,7 +415,7 @@ const showDialog = async () => {
         imageURL.value = baseUrl.replace('/api', '') + currentCompany.value.logo as string;
         console.log(imageURL.value)
     }
-    
+
 }
 
 </script>

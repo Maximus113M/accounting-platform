@@ -3,8 +3,8 @@ class Account {
   code: number;
   name: string;
   description: string|null;
-  level: Level | undefined;
-  nature: Nature | undefined;
+  level: Level;
+  nature: Nature;
   father_id: number | null;
   serial_company: number | null;
   children: Account[] | [];
@@ -24,8 +24,8 @@ class Account {
     code: number;
     name: string;
     description: string | null;
-    level: Level | undefined;
-    nature: Nature | undefined;
+    level: Level;
+    nature: Nature;
     father_id: number | null;
     serial_company: number | null;
     children: Account[];
@@ -40,6 +40,18 @@ class Account {
     this.serial_company = serial_company;
     this.children = children;
   }
+}
+
+const accountToJson = (account: Account) =>{
+  return {
+    codigo: account.code,
+    nombre: account.name,
+    descripcion: account.description,
+    nivel: levelToJson(account.level),
+    naturaleza: natureToJson(account.nature),
+    padre_id: account.father_id,
+    empresa_serial: account.serial_company,
+  };
 }
 
 const accountFromJson= (json: any) : Account =>{
@@ -59,9 +71,25 @@ const accountFromJson= (json: any) : Account =>{
   });
 }
 
+const natureToJson =  (nature: Nature) : string =>{
+  if (nature === Nature.debtor) return "deudora"
+  else if (nature === Nature.creditor) return "acreedora";
+}
+
 const natureFromJson = (nature: string) : Nature|undefined=>{
   if (nature === 'acreedora') return Nature.creditor;
-  else if (nature === 'deudora') return Nature.debtor;
+  //else if (nature === 'deudora') return Nature.debtor;
+  else return Nature.debtor;
+}
+
+const levelToJson = (level: Level) : string | null =>{
+  if (level === Level.class) return 'clase';
+  else if (level === Level.group) return 'grupo';
+  else if (level === Level.account) return 'cuenta';
+  else if (level === Level.sub_account) return 'subcuenta';
+  else if (level === Level.assistant) return 'auxiliar';
+  //else if (level === Level.sub_assistant) return 'subauxiliar';
+  else return 'subauxiliar';
 }
 
 const levelFromJson = (level: string) : Level|undefined=>{
@@ -70,7 +98,8 @@ const levelFromJson = (level: string) : Level|undefined=>{
   else if (level === 'cuenta') return Level.account;
   else if (level === 'subcuenta') return Level.sub_account;
   else if (level === 'auxiliar') return Level.assistant;
-  else if (level === 'subauxiliar') return Level.sub_assistant;
+  //else if (level === 'subauxiliar') return Level.sub_assistant;
+  else return Level.sub_assistant;
 }
 
 enum Level {
@@ -88,4 +117,4 @@ enum Nature {
 }
 
 
-export { Account, accountFromJson }
+export { Account, accountFromJson, accountToJson, Level, Nature }

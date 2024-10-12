@@ -4,10 +4,9 @@ import { ServerException } from 'src/core/helpers/exceptions';
 import { AccountDatasource } from 'src/modules/accounting/modules/accounts/data/datasources/accountDatasource';
 
 export class AccountRepositoryImpl implements AccountRepository {
+  private readonly accountDataSource: AccountDatasource;
 
-  private readonly accountDataSource:AccountDatasource;
-
-  constructor(accountDataSource:AccountDatasource) {
+  constructor(accountDataSource: AccountDatasource) {
     this.accountDataSource = accountDataSource;
   }
 
@@ -15,8 +14,17 @@ export class AccountRepositoryImpl implements AccountRepository {
     try {
       return await this.accountDataSource.getPuc(accessToken, serial);
     } catch (err) {
-      const error= err as ServerException;
-      throw new ServerException({...error});
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
+    }
+  }
+
+  async createAccount(accessToken: string, account: Account): Promise<string> {
+    try {
+      return await this.accountDataSource.createAccount(accessToken, account);
+    } catch (err) {
+      const error = err as ServerException;
+      throw new ServerException({ ...error });
     }
   }
 }
