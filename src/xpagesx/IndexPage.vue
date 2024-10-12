@@ -10,13 +10,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Todo, Meta } from 'components/models';
 import ExampleComponent from 'components/ExampleComponent.vue';
+import { useAccountStore } from 'src/modules/accounting/modules/accounts/display/store';
+
+const accountStore = useAccountStore();
 
 defineOptions({
   name: 'IndexPage'
 });
+
+onMounted(async () => {
+  const res = await accountStore.getPuc(7629149764355);
+  console.log(res);
+})
 
 const todos = ref<Todo[]>([
   {
