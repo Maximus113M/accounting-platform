@@ -3,7 +3,7 @@ import { LegalRepresentative, legalRepresentativeFromJson, legalRepresentativeTo
 import { TaxData, taxDataFromJson, taxDataToJson } from './taxData';
 import { BasicData, basicDataFromJson, basicDataToJson } from './basicData';
 
-class CompanyModel{
+export class CompanyModel{
     serial: number;
     regimeType: string;
     emailContact: string;
@@ -59,7 +59,7 @@ class CompanyModel{
     }
 }
 
-const companyModelFromJson= (json: any)=>{
+export const companyModelFromJson= (json: any)=>{
     const x=
     {
         'serial': 9018405850086,
@@ -162,7 +162,7 @@ const companyModelFromJson= (json: any)=>{
     });
 }
 
-const companyModelToJson= (company: CompanyModel)=>{
+export const companyModelToJson= (company: CompanyModel)=>{
     const formData = new FormData();
 
     const basicData: Record<string, any>= basicDataToJson(company.basicData);
@@ -245,6 +245,3 @@ const validateFormField= ({field, key, value, formData}:{field: string, key: str
     }
     return false;
 }
-
-
-export{ CompanyModel, companyModelFromJson, companyModelToJson }

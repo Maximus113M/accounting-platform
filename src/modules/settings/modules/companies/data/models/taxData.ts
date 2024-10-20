@@ -96,7 +96,6 @@ const taxDataFromJson= (json: any)=>{
         isWithholdingAgent: json?.es_agente_retenedor == 1? true : false,
         hasAdValoremTax: json?.maneja_impuesto_ad_valorem == 1? true : false,
         isForeignCurrency: json?.moneda_extranjera == 1? true : false,
-        //TODO VERIFY
         taxes: (json?.tributos as any[])?.map((tax)=> new Tax({key: tax.id, value: tax.name})),
         economicActivity: new EconomicActivity({key: json?.actividad_economica_codigo_ciiu}),
         fiscalResponsibilities: (json?.responsabilidades_fiscales as any[])?.map(
@@ -113,7 +112,6 @@ const taxDataToJson= (taxData: TaxData)=>{
         es_agente_retenedor: taxData.isWithholdingAgent,
         maneja_impuesto_ad_valorem: taxData.hasAdValoremTax,
         moneda_extranjera: taxData.isForeignCurrency,
-        //TODO VERIFY
         tributos: taxData.taxes.map((tax)=> Number(tax.key)),
         actividad_economica_codigo_ciiu: taxData.economicActivity.key, // !== '' ?  taxData.economicActivity.key : 123,
         responsabilidades_fiscales: taxData.fiscalResponsibilities.map((item)=>item.key),

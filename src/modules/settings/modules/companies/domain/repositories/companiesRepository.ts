@@ -1,5 +1,6 @@
 import { CompanyModel } from '../../data/models/companyModel';
 import { EconomicActivity, FiscalResponsibilities, Tax } from '../../data/models/taxData';
+import { ThirdModel } from '../../data/models/thrid/thirdModel';
 
 export abstract class CompaniesRepository{
     abstract getCompany(serial: number, accessToken: string): Promise<CompanyModel>;
@@ -12,4 +13,11 @@ export abstract class CompaniesRepository{
     abstract getEconomicActivities(accessToken: string ): Promise<EconomicActivity[]>;
     abstract getFiscalResponsabilities(accessToken: string): Promise<FiscalResponsibilities[]>;
     abstract getTaxes(accessToken: string): Promise<Tax[]>;
+
+    //Thirds
+    abstract getThird( companyId: number, thirdId: number, accessToken: string): Promise<ThirdModel>;
+    abstract getAllThirds(companyId: number, accessToken: string): Promise<ThirdModel[]>;
+    abstract createThird(data: any, accessToken: string): Promise<void>;
+    abstract updateThird(thirdId: number, data: any, accessToken: string): Promise<void>;
+    abstract deleteThird(thirdId: number, accessToken: string): Promise<void>;
 }

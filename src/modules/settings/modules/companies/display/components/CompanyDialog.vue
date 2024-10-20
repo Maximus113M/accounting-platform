@@ -662,7 +662,9 @@ const showDialog = async () => {
         //Set logo
         if (currentCompany.value.logo) {
             imageURL.value = baseUrl.replace('/api', '') + currentCompany.value.logo as string;
+            console.log(currentCompany.value.logo)
             console.log(imageURL.value)
+            console.log(props.signInUser.accessToken)
         }
     } else {
         currentCompany.value = new CompanyModel({});

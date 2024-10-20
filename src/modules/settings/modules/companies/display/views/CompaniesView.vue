@@ -143,42 +143,4 @@ const deleteDialog = (company: CompanyModel) => {
     }).onCancel(() => {
     });
 }
-
-// class DashData {
-//     userCounter: UsersCounter
-//     genereData: GenereData
-//     constructor(userCounter: UsersCounter,
-//         genereData: GenereData) {
-//         this.genereData = genereData;
-//         this.userCounter = userCounter;
-//     }
-// }
-
-// class UsersCounter {
-//     a: string;
-//     b: string;
-
-//     constructor(a: string, b: string) {
-//         this.a = a;
-//         this.b = b;
-//     }
-// }
-
-// class GenereData {
-//     c: string;
-//     d: string;
-
-//     constructor({ c, d }: { c?: string, d?: string }) {
-//         this.c = c ?? '';
-//         this.d = d ?? '';
-//     }
-// }
-
-// const getData = () => {
-//     const data = new DashData(new UsersCounter('Hola', 'Marly'), new GenereData({}))
-
-//     //Consulta DATA USERCOUNTER=>
-//     console.log(data.userCounter.a)
-//     console.log(data.userCounter.b)
-// }
 </script>

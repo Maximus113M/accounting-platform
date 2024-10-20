@@ -73,10 +73,11 @@ const accountFromJson= (json: any) : Account =>{
 
 const natureToJson =  (nature: Nature) : string =>{
   if (nature === Nature.debtor) return "deudora"
-  else if (nature === Nature.creditor) return "acreedora";
+  //else if (nature === Nature.creditor)
+  return "acreedora";
 }
 
-const natureFromJson = (nature: string) : Nature|undefined=>{
+const natureFromJson = (nature: string) : Nature=>{
   if (nature === 'acreedora') return Nature.creditor;
   //else if (nature === 'deudora') return Nature.debtor;
   else return Nature.debtor;
@@ -92,7 +93,7 @@ const levelToJson = (level: Level) : string | null =>{
   else return 'subauxiliar';
 }
 
-const levelFromJson = (level: string) : Level|undefined=>{
+const levelFromJson = (level: string) : Level=>{
   if (level === 'clase') return Level.class;
   else if (level === 'grupo') return Level.group;
   else if (level === 'cuenta') return Level.account;

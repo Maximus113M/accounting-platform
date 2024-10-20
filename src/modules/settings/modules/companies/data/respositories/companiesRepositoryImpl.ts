@@ -3,6 +3,7 @@ import { CompaniesRepository } from '../../domain/repositories/companiesReposito
 import { CompaniesDatasource } from '../datasources/companiesDatasource';
 import { CompanyModel } from '../models/companyModel';
 import { EconomicActivity, FiscalResponsibilities, Tax } from '../models/taxData';
+import { ThirdModel } from '../models/thrid/thirdModel';
 
 export class CompaniesRepositoryImpl implements CompaniesRepository{
     private companiesDatasource: CompaniesDatasource;
@@ -80,5 +81,47 @@ export class CompaniesRepositoryImpl implements CompaniesRepository{
             const error= err as ServerException;
             throw new ServerException({...error});
         }    
+    }
+
+    //THRIDS
+    async getThird(companyId: number, thirdId: number, accessToken: string): Promise<ThirdModel> {
+        try {
+            return await this.companiesDatasource.getThird(companyId, thirdId, accessToken); 
+        } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }
+    }
+    async getAllThirds(companyId: number, accessToken: string): Promise<ThirdModel[]> {
+        try {
+            return await this.companiesDatasource.getAllThirds(companyId, accessToken); 
+        } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }
+    }
+    async createThird(data: any, accessToken: string): Promise<void> {
+        try {
+            return await this.companiesDatasource.createThird(data, accessToken); 
+        } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }
+    }
+    async updateThird(thirdId: number, data: any, accessToken: string): Promise<void> {
+        try {
+            return await this.companiesDatasource.updateThird(thirdId, data, accessToken); 
+        } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }
+    }
+    async deleteThird(thirdId: number, accessToken: string): Promise<void> {
+        try {
+            return await this.companiesDatasource.deleteThird(thirdId, accessToken); 
+        } catch (err) {
+            const error= err as ServerException;
+            throw new ServerException({...error});
+        }
     }
 }

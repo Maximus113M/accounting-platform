@@ -27,22 +27,22 @@ defineOptions({
 });
 
 onMounted(async () => {
-  const res = await accountStore.getPuc(7629149764355);
-  console.log(res);
+  // const res = await accountStore.getPuc(7629149764355);
+  // console.log(res);
 
-  const { message } = await accountStore.createAccount(
-    new Account({
-      code: 930510,
-      name: 'Cuenta Contable Test',
-      description: 'Desceipcion aqui',
-      level: Level.sub_account,
-      nature: Nature.creditor,
-      serial_company: 7629149764355,
-      father_id: 414
-    })
-  );
+  // const { message } = await accountStore.createAccount(
+  //   new Account({
+  //     code: 930510,
+  //     name: 'Cuenta Contable Test',
+  //     description: 'Desceipcion aqui',
+  //     level: Level.sub_account,
+  //     nature: Nature.creditor,
+  //     serial_company: 7629149764355,
+  //     father_id: 414
+  //   })
+  // );
 
-  console.log(message);
+  // console.log(message);
 });
 
 const todos = ref<Todo[]>([

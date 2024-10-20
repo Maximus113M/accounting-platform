@@ -18,5 +18,10 @@ export class CompaniesUseCases{
     getFiscalResponsabilities= (accessToken: string) => this.companiesRepository.getFiscalResponsabilities(accessToken);
     getTaxes= (accessToken: string) => this.companiesRepository.getTaxes(accessToken);
 
-
+    //Thirds
+    getThird = ( companyId: number, thirdId: number, accessToken: string) => this.companiesRepository.getThird(companyId, thirdId, accessToken);
+    getAllThirds = (companyId: number, accessToken: string) => this.companiesRepository.getAllThirds(companyId, accessToken);
+    createThird = (data: any, accessToken: string) => this.companiesRepository.createThird(data, accessToken);
+    updateThird = (thirdId: number, data: any, accessToken: string) => this.companiesRepository.updateThird(thirdId, data, accessToken);
+    deleteThird = (thirdId: number, accessToken: string) => this.companiesRepository.deleteThird(thirdId, accessToken);
 }

@@ -5,6 +5,7 @@ import { CompaniesRepositoryImpl } from '../../data/respositories/companiesRepos
 import { CompaniesUseCases } from '../../domain/use-cases/companiesUseCases';
 import { exceptiosResponseHandler } from 'src/core/helpers/exceptions';
 import { CompanyModel, companyModelToJson } from '../../data/models/companyModel';
+import { ThirdModel } from '../../data/models/thrid/thirdModel';
 
 const companiesRepositoryImp = new CompaniesRepositoryImpl(new CompaniesDatasourceImpl());
 const companiesUseCases = new CompaniesUseCases(companiesRepositoryImp);
@@ -69,6 +70,7 @@ export const deleteCompany = async (companyId: number, accessToken: string) => {
   }
 };
 
+
 export const getEconomicActivities = async (accessToken: string) => {
   try {
     const companiesStore= useCompaniesStore();
@@ -105,3 +107,57 @@ export const getTaxes = async (accessToken: string) => {
     return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };
   }
 };
+
+
+export async function getThird( companyId: number, thirdId: number, accessToken: string){
+  try {
+    const resp= await companiesUseCases.getThird(companyId, thirdId, accessToken);
+    console.log('Get Third Done!');
+    return { status: statusMessages.success, message: 'Información obtenida!', data: resp};
+  } catch (error) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };    
+  }
+}
+export async function getAllThirds(companyId: number, accessToken: string){
+  try {
+    const companiesStore= useCompaniesStore();
+    companiesStore.thirdList= [...await companiesUseCases.getAllThirds(companyId, accessToken)];
+    console.log('Get All Thirds Done!');
+    return { status: statusMessages.success, message: 'Información obtenida!'};
+  } catch (error) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };    
+  }
+}
+export async function createThird(data: any, accessToken: string){
+  try {
+    await companiesUseCases.createThird(data, accessToken);
+    console.log('Create Third Done!');
+    return { status: statusMessages.success, message: 'Tercero creado!'};
+  } catch (error) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };    
+  }
+}
+export async function updateThird(thirdId: number, data: any, accessToken: string){
+  try {
+    await companiesUseCases.updateThird(thirdId, data, accessToken);
+    console.log('Update Third Done!');
+    return { status: statusMessages.success, message: 'Tercero actualizado!'};
+  } catch (error) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };    
+  }
+}
+export async function deleteThird(thirdId: number, accessToken: string){
+  try {
+    await companiesUseCases.deleteThird(thirdId, accessToken);
+    console.log('Delete Third Done!');
+    return { status: statusMessages.success, message: 'Tributos obtenidos!'};
+  } catch (error) {
+    console.log(error);
+    return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };    
+  }
+}
+
