@@ -23,5 +23,5 @@ export class CompaniesUseCases{
     getAllThirds = (companyId: number, accessToken: string) => this.companiesRepository.getAllThirds(companyId, accessToken);
     createThird = (data: any, accessToken: string) => this.companiesRepository.createThird(data, accessToken);
     updateThird = (thirdId: number, data: any, accessToken: string) => this.companiesRepository.updateThird(thirdId, data, accessToken);
-    deleteThird = (thirdId: number, accessToken: string) => this.companiesRepository.deleteThird(thirdId, accessToken);
+    deleteThird = (thirdId: number, companyId: number, accessToken: string) => this.companiesRepository.deleteThird(thirdId, companyId, accessToken);
 }

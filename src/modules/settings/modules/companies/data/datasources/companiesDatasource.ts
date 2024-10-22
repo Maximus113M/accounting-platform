@@ -21,7 +21,7 @@ export abstract class CompaniesDatasource {
     abstract getAllThirds(companyId: number, accessToken: string): Promise<ThirdModel[]>;
     abstract createThird(data: ThirdModel, accessToken: string): Promise<void>;
     abstract updateThird(thirdId: number, data: ThirdModel, accessToken: string): Promise<void>;
-    abstract deleteThird(thirdId: number, testMessage: string, accessToken: string): Promise<void>;
+    abstract deleteThird(thirdId: number, companyId: number, accessToken: string): Promise<void>;
   }
   
   export class CompaniesDatasourceImpl implements CompaniesDatasource{
@@ -150,10 +150,11 @@ export abstract class CompaniesDatasource {
           throw new ServerException({code: error?.status , data: error});
         }
       }
-      async deleteThird(thirdId: number, testMessage: string, accessToken: string): Promise<void> {
+      async deleteThird(thirdId: number, companyId: number, accessToken: string): Promise<void> {
         try {
-          console.log(testMessage)
-          await api(accessToken).delete('/delete-third/'+thirdId);
+          await api(accessToken).delete('/delete-third/'+thirdId, {
+            data: {empresa_serial: companyId}
+          });
         } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }

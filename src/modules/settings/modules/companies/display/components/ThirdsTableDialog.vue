@@ -33,7 +33,7 @@
                         <q-td :props="props">
                             <div class="row justify-center q-gutter-xs">
                                 <ThirdDialog :company-serial="initProps.companySerial" :current-third="props.row" :sign-in-user="signInUser" />
-                                <q-btn flat dense icon="delete" @click.prevent="deleteThirdDialog(props.row)">
+                                <q-btn flat dense icon="delete" :key="`delete-${props.row.id}${new Date()}`" @click.prevent="deleteThirdDialog(props.row)">
                                     <q-tooltip :offset="[0, 10]" transition-show="scale" transition-hide="scale"
                                         class="text-caption">
                                         Eliminar
@@ -139,7 +139,7 @@ function deleteThirdDialog(third: ThirdModel) {
     })
         .onOk(async () => {
             console.log(third.id)
-            const res = await companiesStore.deleteThird(third.id, initProps.signInUser.accessToken);
+            const res = await companiesStore.deleteThird(third.id, initProps.companySerial ,initProps.signInUser.accessToken);
             customNotify({status: res.status, message: res.message});
             if (res.status === statusMessages.success) {           
                 await companiesStore.getAllThirds(initProps.companySerial, initProps.signInUser.accessToken);

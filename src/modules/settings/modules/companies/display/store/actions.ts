@@ -150,9 +150,9 @@ export async function updateThird(thirdId: number, data: any, accessToken: strin
     return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };    
   }
 }
-export async function deleteThird(thirdId: number, accessToken: string){
+export async function deleteThird(thirdId: number, companyId: number, accessToken: string){
   try {
-    await companiesUseCases.deleteThird(thirdId, accessToken);
+    await companiesUseCases.deleteThird(thirdId, companyId, accessToken);
     console.log('Delete Third Done!');
     return { status: statusMessages.success, message: 'Tercero eliminado!'};
   } catch (error) {

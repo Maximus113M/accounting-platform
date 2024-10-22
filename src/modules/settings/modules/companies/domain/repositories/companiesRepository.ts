@@ -19,5 +19,5 @@ export abstract class CompaniesRepository{
     abstract getAllThirds(companyId: number, accessToken: string): Promise<ThirdModel[]>;
     abstract createThird(data: any, accessToken: string): Promise<void>;
     abstract updateThird(thirdId: number, data: any, accessToken: string): Promise<void>;
-    abstract deleteThird(thirdId: number, accessToken: string): Promise<void>;
+    abstract deleteThird(thirdId: number, companyId: number, accessToken: string): Promise<void>;
 }
