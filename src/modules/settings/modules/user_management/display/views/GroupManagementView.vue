@@ -119,34 +119,6 @@ const columns: any = [
         sortable: false,
     },
 ];
-
-const cloneCompanyDialog = (group: ClassGroup) => {
-    Dialog.create({
-        title: '<div class="primary">Eliminar ficha</div>',
-        message: `¿<strong>Deseas eliminar</strong> a la ficha seleccionada <strong>"${group.name}"</strong> ? Se eliminará la información y aprendices con sus empresas asociadas.`,
-        ok: {
-            push: true,
-            color: 'primary',
-        },
-        cancel: {
-            push: true,
-            color: 'red-5',
-        },
-        html: true,
-    })
-        .onOk(async () => {
-            // const res = await companiesStore.cloneCompany({serial: group.number});
-            // customNotify({
-            //     status: res.status,
-            //     message: res.message
-            // });
-            // if (res.status === statusMessages.success) {
-            //     userManagementStore.classGroups = userManagementStore.classGroups.filter((classGroup: ClassGroup) =>
-            //         classGroup.number !== group.number
-            //     );
-            // }
-        });
-};
 const deleteGroupDialog = (group: ClassGroup) => {
     Dialog.create({
         title: '<div class="primary">Eliminar ficha</div>',

@@ -1,4 +1,4 @@
-import { FiscalResponsibilities } from "../taxData";
+import { FiscalResponsibilities } from '../taxData';
 
 export class BillingData{
     names: string;
@@ -55,7 +55,7 @@ export class BillingData{
             regimeType: json.tipo_regimen_iva,
             phone: json.telefono,
             postalCode: json.codigo_postal,
-            fiscalResponsibilities: (json.responsabilidades_fiscales as string[]).map((fiscRespKey)=> new FiscalResponsibilities({key: fiscRespKey})),
+            fiscalResponsibilities: (json.responsabilidades_fiscales as string[])?.map((fiscRespKey)=> new FiscalResponsibilities({key: fiscRespKey})),
         })
     }
 }

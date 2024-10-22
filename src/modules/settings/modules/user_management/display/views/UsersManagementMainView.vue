@@ -23,13 +23,13 @@ const settingsMenu: SettingsCardProps[] = [
     {
         icon: 'manage_accounts',
         name: 'Instructores',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus.',
+        description: 'Gestiona la creación, actualización y eliminación de los instructores del sistema.',
         route: 'instructors-management',
     },
     {
         icon: 'school',
         name: 'Fichas',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus.',
+        description: 'Gestiona la creación, actualización y eliminación de las fichas y aprendices del sistema.',
         route: 'group-management',
     },
 ];

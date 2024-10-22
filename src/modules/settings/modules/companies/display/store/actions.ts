@@ -154,7 +154,7 @@ export async function deleteThird(thirdId: number, accessToken: string){
   try {
     await companiesUseCases.deleteThird(thirdId, accessToken);
     console.log('Delete Third Done!');
-    return { status: statusMessages.success, message: 'Tributos obtenidos!'};
+    return { status: statusMessages.success, message: 'Tercero eliminado!'};
   } catch (error) {
     console.log(error);
     return { status: statusMessages.fail, message: exceptiosResponseHandler({error: error}) };    

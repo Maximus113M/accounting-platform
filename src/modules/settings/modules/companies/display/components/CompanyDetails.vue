@@ -206,8 +206,8 @@
 
                         <div v-if="currentCompany.legalRepresentative.hasPartners" class="col-12 q-mt-md">
                             <div class="row items-center">
-                                <div class="q-pb-xs text-subtitle1 text-bold">Agregar socios</div>
-                                <q-icon class="q-ml-sm" name="person_add" size="sm" />
+                                <div class="q-pb-xs text-subtitle1 text-bold">Socios</div>
+                                <q-icon class="q-ml-sm" name="group" size="sm" />
                             </div>
 
                             <div v-for="(partner, index) of partnerList" :key="index"
@@ -219,46 +219,30 @@
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombres</div>
-                                    <q-input outlined dense type="text" v-model="partner.names"
-     />
+                                    <q-input readonly outlined dense type="text" v-model="partner.names" />
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
-                                    <q-input outlined dense type="text" v-model="partner.lastNames"
-     />
+                                    <q-input readonly outlined dense type="text" v-model="partner.lastNames" />
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
-                                    <q-select outlined dense v-model="partner.documentType"
-                                        :options="rootStore.documentTypes"
-    >
-                                        <template v-slot:no-option>
-                                            <q-item>
-                                                <q-item-section class="text-grey">
-                                                    Sin resultados
-                                                </q-item-section>
-                                            </q-item>
-                                        </template>
-                                    </q-select>
+                                    <q-input readonly outlined dense v-model="partner.documentType" />
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
-                                    <q-input outlined dense type="number" v-model.number="partner.documentNumber"
-     />
+                                    <q-input readonly outlined dense type="number" v-model.number="partner.documentNumber" />
                                 </div>
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="q-pb-xs text-subtitle2 text-weight-medium">
                                         ¿Persona expuesta públicamente?
                                     </div>
                                     <div class="row justify-around radio-border">
-                                        <q-radio v-model="partner.isPublicPerson" label="Si" :val="true" />
-                                        <q-radio v-model="partner.isPublicPerson" label="No" :val="false" />
+                                        <q-radio disable v-model="partner.isPublicPerson" label="Si" :val="true" />
+                                        <q-radio disable v-model="partner.isPublicPerson" label="No" :val="false" />
                                     </div>
                                 </div>
-
-                                <div class="col-12 row" style="border: 2 solid gray; height: 2px; width: 100%;"></div>
                             </div>
-
                         </div>
 
                     </div>
@@ -279,7 +263,7 @@ import { GeneralServices } from 'src/services/generalServices';
 import { UserModel } from 'src/models/userModel';
 import { PartnerModel } from '../../data/models/partnerModel';
 import { CompanyModel } from '../../data/models/companyModel';
-import { EconomicActivity, FiscalResponsibilities, Tax } from '../../data/models/taxData';
+import { EconomicActivity } from '../../data/models/taxData';
 
 import { useRootStore } from 'src/stores/root-store';
 import { useCompaniesStore } from '../store';
@@ -327,11 +311,10 @@ const initData = async () => {
     //Get company
     if (props.company) {
         const companyResp = await companiesStore.getCompany(props.company.serial, props.signInUser.accessToken);
-        if (companyResp.status === statusMessages.success) {
-            currentCompany.value = deepClone(companyResp.data!);
-        } else {
+        if (companyResp.status !== statusMessages.success) {
             customNotify({ status: companyResp.status, message: companyResp.message });
-        }
+        } 
+        currentCompany.value = new CompanyModel({...deepClone(companyResp.data!)});
     }
     //Get cities
     if (rootStore.cities.length === 0) {
@@ -387,7 +370,6 @@ const showDialog = async () => {
 
     //Set Economic Activity
     const foundEconomicActivity = companiesStore.economicActivities.find((economicAct) => economicAct.key === currentCompany.value.taxData.economicActivity.key);
-    debugger
     if(foundEconomicActivity){
         selectedEconomicActivity.value = foundEconomicActivity;
     }

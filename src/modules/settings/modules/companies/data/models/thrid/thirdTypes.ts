@@ -1,4 +1,4 @@
-class ThirdType{
+export class ThirdType{
     id: number;
     name: string;
     

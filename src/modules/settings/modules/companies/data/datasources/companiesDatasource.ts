@@ -21,7 +21,7 @@ export abstract class CompaniesDatasource {
     abstract getAllThirds(companyId: number, accessToken: string): Promise<ThirdModel[]>;
     abstract createThird(data: ThirdModel, accessToken: string): Promise<void>;
     abstract updateThird(thirdId: number, data: ThirdModel, accessToken: string): Promise<void>;
-    abstract deleteThird(thirdId: number, accessToken: string): Promise<void>;
+    abstract deleteThird(thirdId: number, testMessage: string, accessToken: string): Promise<void>;
   }
   
   export class CompaniesDatasourceImpl implements CompaniesDatasource{
@@ -119,26 +119,23 @@ export abstract class CompaniesDatasource {
         }
       }
       
-      // Route::get('third/{serial}/{tercero_id}', [\App\Modules\Settings\Third\Http\Controllers\TerceroController::class, "getThird"]);
+
       async getThird(companyId: number, thirdId: number, accessToken: string): Promise<ThirdModel> {
         try {
           const apiResp= await api(accessToken).get('/third/'+companyId+'/'+thirdId);
-          return ThirdModel.thirdModelFromJson(apiResp.data()) ;
+          return ThirdModel.thirdModelFromJson(apiResp.data) ;
         } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }
       }
-      // Route::get('thirds/{serial}', [\App\Modules\Settings\Third\Http\Controllers\TerceroController::class, "getAllThirds"]);
       async getAllThirds(companyId: number, accessToken: string): Promise<ThirdModel[]> {
         try {
           const apiResp= await api(accessToken).get('/thirds/'+companyId);
-          return (apiResp.data() as any[])?.map((third)=> ThirdModel.thirdModelFromJson(third)) ;
+          return (apiResp.data as any[])?.map((third)=> ThirdModel.thirdModelFromJson(third)) ;
         } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }
       } 
-      // Route::post('create-third', [\App\Modules\Settings\Third\Http\Controllers\TerceroController::class, "createThird"])
-      // ->name("create.third");
       async createThird(data: ThirdModel, accessToken: string): Promise<void> {
         try {
           await api(accessToken).post('/create-third', ThirdModel.thirdModelToJson(data));
@@ -146,7 +143,6 @@ export abstract class CompaniesDatasource {
           throw new ServerException({code: error?.status , data: error});
         }
       } 
-      // Route::put('update-third/{tercero_id}', [\App\Modules\Settings\Third\Http\Controllers\TerceroController::class, "updateThird"]);
       async updateThird(thirdId: number, data: ThirdModel, accessToken: string): Promise<void> {
         try {
           await api(accessToken).put('/update-third/'+thirdId, ThirdModel.thirdModelToJson(data));
@@ -154,10 +150,10 @@ export abstract class CompaniesDatasource {
           throw new ServerException({code: error?.status , data: error});
         }
       }
-      // Route::delete('delete-third/{tercero_id}', [\App\Modules\Settings\Third\Http\Controllers\TerceroController::class, "deleteThird"]);
-      async deleteThird(thirdId: number, accessToken: string): Promise<void> {
+      async deleteThird(thirdId: number, testMessage: string, accessToken: string): Promise<void> {
         try {
-          await api(accessToken).get('/delete-third/'+thirdId);
+          console.log(testMessage)
+          await api(accessToken).delete('/delete-third/'+thirdId);
         } catch (error: any) {
           throw new ServerException({code: error?.status , data: error});
         }

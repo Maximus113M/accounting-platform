@@ -118,7 +118,7 @@ export class CompaniesRepositoryImpl implements CompaniesRepository{
     }
     async deleteThird(thirdId: number, accessToken: string): Promise<void> {
         try {
-            return await this.companiesDatasource.deleteThird(thirdId, accessToken); 
+            return await this.companiesDatasource.deleteThird(thirdId, 'test', accessToken); 
         } catch (err) {
             const error= err as ServerException;
             throw new ServerException({...error});

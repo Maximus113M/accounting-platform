@@ -27,6 +27,7 @@ export interface SettingsCardProps {
 <style scoped>
 .card {
     width: 265px;
+    min-height: 330px;
     border-radius: 10px;
     border: 2px solid #D6D6D6;
     box-shadow: 5px 9px 10px rgba(0, 0, 0, 0.15);

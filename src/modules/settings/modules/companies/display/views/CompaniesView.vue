@@ -31,7 +31,7 @@
                             <div class="row justify-center q-gutter-xs">
                                 <CompanyDialog :company="props.row" :sign-in-user="authStore.signInUser" />
                                 <CompanyDetails :company="props.row" :sign-in-user="authStore.signInUser" />
-
+                                <ThirdsTableDialog :company-serial="props.row.serial" :sign-in-user="authStore.signInUser"/>
                                 <q-btn flat dense icon="delete" @click="deleteDialog(props.row)">
                                     <q-tooltip :offset="[0, 10]" transition-show="scale" transition-hide="scale"
                                         class="text-caption">
@@ -50,6 +50,7 @@
 <script setup lang="ts">
 import CompanyDialog from '../components/CompanyDialog.vue';
 import CompanyDetails from '../components/CompanyDetails.vue';
+import ThirdsTableDialog from '../components/ThirdsTableDialog.vue';
 
 import { onMounted, ref } from 'vue';
 import { Dialog } from 'quasar';

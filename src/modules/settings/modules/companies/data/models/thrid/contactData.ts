@@ -26,6 +26,14 @@ export class ContactModel{
     }
 
     static toJson(contactModel: ContactModel){
+        if(contactModel.id === 0){
+            return{
+                nombre: contactModel.names,
+                apellido: contactModel.lastNames,
+                correo_electronico: contactModel.email,
+                telefono: contactModel.phone,
+            }
+        }
         return{
             id: contactModel.id,
             nombre: contactModel.names,

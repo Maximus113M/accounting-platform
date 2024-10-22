@@ -17,21 +17,14 @@ const settingsMenu: SettingsCardProps[] = [
     {
         icon: 'supervisor_account',
         name: 'Gestión Usuarios',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus.',
+        description: 'Gestiona la creación, actualización y eliminación de instructores, fichas y aprendices del sistema.',
         route: 'users-management',
     },
     {
         icon: 'factory',
         name: 'Empresas',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus.',
+        description: 'Gestiona la creación, actualización y eliminación de las empresas del sistema.',
         route: 'company',
-    },
-    {
-        icon: 'badge',
-        name: 'Creación de terceros',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus.',
-        route: '',
-    },
-
+    }
 ];
 </script>
