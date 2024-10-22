@@ -58,33 +58,33 @@
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo razón social</div>
                             <div class="row justify-around radio-border">
-                                <q-radio v-model="currentThird.basicData.businessTypeName" label="Personal Natural"
+                                <q-radio v-model="selectedThird.basicData.businessTypeName" label="Personal Natural"
                                     val="Personal Natural" />
-                                <q-radio v-model="currentThird.basicData.businessTypeName" label="Empresa"
+                                <q-radio v-model="selectedThird.basicData.businessTypeName" label="Empresa"
                                     val="Empresa" />
                             </div>
                         </div>
-                        <div v-if="currentThird.basicData.businessTypeName === 'Personal Natural'"
+                        <div v-if="selectedThird.basicData.businessTypeName === 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre</div>
-                            <q-input outlined dense type="text" v-model="currentThird.basicData.names"
+                            <q-input outlined dense type="text" v-model="selectedThird.basicData.names"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
-                        <div v-if="currentThird.basicData.businessTypeName === 'Personal Natural'"
+                        <div v-if="selectedThird.basicData.businessTypeName === 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos</div>
-                            <q-input outlined dense type="text" v-model="currentThird.basicData.lastnames"
+                            <q-input outlined dense type="text" v-model="selectedThird.basicData.lastnames"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
-                        <div v-if="currentThird.basicData.businessTypeName !== 'Personal Natural'"
+                        <div v-if="selectedThird.basicData.businessTypeName !== 'Personal Natural'"
                             class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Razón social</div>
-                            <q-input outlined dense type="text" v-model="currentThird.basicData.businessName"
+                            <q-input outlined dense type="text" v-model="selectedThird.basicData.businessName"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Tipo Documento</div>
-                            <q-select outlined dense v-model="currentThird.basicData.documentType"
+                            <q-select outlined dense v-model="selectedThird.basicData.documentType"
                                 :options="rootStore.documentTypes"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']">
                                 <template v-slot:no-option>
@@ -98,12 +98,12 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Documento</div>
-                            <q-input outlined dense type="number" v-model.number="currentThird.basicData.documentNumber"
+                            <q-input outlined dense type="number" v-model.number="selectedThird.basicData.documentNumber"
                                 :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre Comercial</div>
-                            <q-input outlined dense type="text" v-model="currentThird.basicData.companyName"
+                            <q-input outlined dense type="text" v-model="selectedThird.basicData.companyName"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
@@ -126,17 +126,17 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Dirección</div>
-                            <q-input outlined dense type="text" v-model="currentThird.basicData.address"
+                            <q-input outlined dense type="text" v-model="selectedThird.basicData.address"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Código de sucursal</div>
-                            <q-input outlined dense type="text" v-model.number="currentThird.warehouseCode"
+                            <q-input outlined dense type="text" v-model.number="selectedThird.warehouseCode"
                                 :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Teléfono</div>
-                            <q-input outlined dense type="number" v-model.number="currentThird.basicData.phone"
+                            <q-input outlined dense type="number" v-model.number="selectedThird.basicData.phone"
                                 :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                     </div>
@@ -152,17 +152,17 @@
 
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Nombre de contacto</div>
-                            <q-input outlined dense type="text" v-model="currentThird.billingData.names"
+                            <q-input outlined dense type="text" v-model="selectedThird.billingData.names"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Apellidos de contacto</div>
-                            <q-input outlined dense type="text" v-model="currentThird.billingData.lastNames"
+                            <q-input outlined dense type="text" v-model="selectedThird.billingData.lastNames"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Correo</div>
-                            <q-input outlined dense type="text" v-model="currentThird.billingData.email"
+                            <q-input outlined dense type="text" v-model="selectedThird.billingData.email"
                                 :rules="[(val: string) => (val && val.length > 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
@@ -179,12 +179,12 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Teléfono</div>
-                            <q-input outlined dense type="number" v-model.number="currentThird.billingData.phone"
+                            <q-input outlined dense type="number" v-model.number="selectedThird.billingData.phone"
                                 :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="q-pb-xs text-subtitle2 text-weight-medium">Código postal</div>
-                            <q-input outlined dense type="text" v-model.number="currentThird.billingData.postalCode"
+                            <q-input outlined dense type="text" v-model.number="selectedThird.billingData.postalCode"
                                 :rules="[(val: number) => (val && val >= 0) || 'Debes completar este campo']" />
                         </div>
                         <div class="col-12 col-sm-6 col-md-4">
@@ -311,7 +311,7 @@ const props = defineProps({
 
 const isShowingDialog = ref<boolean>(false);
 const isLoading = ref<boolean>(false);
-const currentThird = ref(new ThirdModel({}));
+const selectedThird = ref(new ThirdModel({}));
 
 //THIRD TYPE
 const selectedThridTypes = ref<ThirdType[]>([]);
@@ -347,7 +347,7 @@ const initData = async () => {
     if (props.currentThird) {
         const thirdResp = await companiesStore.getThird(props.companySerial, props.currentThird.id, props.signInUser.accessToken);
         if (thirdResp.status === statusMessages.success) {
-            currentThird.value = new ThirdModel({ ...deepClone(thirdResp.data!) });
+            selectedThird.value = new ThirdModel({ ...deepClone(thirdResp.data!) });
         } else {
             customNotify({ status: thirdResp.status, message: thirdResp.message });
         }
@@ -405,8 +405,9 @@ const initData = async () => {
 }
 
 const showDialog = async () => {
+    selectedThird.value = new ThirdModel({});
     await initData();
-    console.log(props.currentThird)
+    console.log(props.currentThird);
     selectedCity.value = undefined;
     selectedFiscalResponsabilities.value = [];
     selectedRegimeType.value = selectedRegimeTypeOptions[0];
@@ -416,27 +417,27 @@ const showDialog = async () => {
 
     if (props.currentThird) {
         //Set city
-        const foundCity = cities.find((city) => city.value.dianCode === currentThird.value.basicData.city.dianCode);
+        const foundCity = cities.find((city) => city.value.dianCode === selectedThird.value.basicData.city.dianCode);
         selectedCity.value = foundCity;
         //Set Fiscal Responsabilities
-        for (let FisRes of currentThird.value.billingData.fiscalResponsibilities) {
+        for (let FisRes of selectedThird.value.billingData.fiscalResponsibilities) {
             const foundFiscalResponsability = companiesStore.fiscalResponsalities.find((item) => item.key === FisRes.key);
             if (foundFiscalResponsability) {
                 selectedFiscalResponsabilities.value.push(foundFiscalResponsability);
             }
         }
-        selectedRegimeType.value = currentThird.value.billingData.regimeType;
+        selectedRegimeType.value = selectedThird.value.billingData.regimeType;
         selectedThridTypes.value = [];
 
-        for (const type of currentThird.value.thirdType) {
+        for (const type of selectedThird.value.thirdType) {
             const foundType = thirdTypes.find((thirdType) => thirdType.id === type.id);
             if (foundType) {
                 selectedThridTypes.value.push(foundType);
             }
         }
-        contactList.value = [...currentThird.value.contacts];
+        contactList.value = [...selectedThird.value.contacts];
     } else {
-        currentThird.value = new ThirdModel({});
+        selectedThird.value = new ThirdModel({});
         //Set city
         const foundCity = cities.find((city) => city.value.name.toLowerCase() === 'floridablanca');
         selectedCity.value = foundCity;
@@ -528,13 +529,13 @@ async function onSubmit() {
     }
 
     isLoading.value = true;
-    const newThird = new ThirdModel({ ...deepClone(currentThird.value) });
+    const newThird = new ThirdModel({ ...deepClone(selectedThird.value) });
     //Business Type Name
-    if (currentThird.value.basicData.businessTypeName === 'Empresa') {
-        currentThird.value.basicData.names = null;
-        currentThird.value.basicData.lastnames = null;
+    if (selectedThird.value.basicData.businessTypeName === 'Empresa') {
+        selectedThird.value.basicData.names = null;
+        selectedThird.value.basicData.lastnames = null;
     } else {
-        currentThird.value.basicData.businessName = null;
+        selectedThird.value.basicData.businessName = null;
     }
 
     //City

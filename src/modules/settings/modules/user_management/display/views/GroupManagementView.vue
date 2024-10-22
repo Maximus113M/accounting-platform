@@ -64,13 +64,11 @@ import { useUsersManagementStore } from 'src/modules/settings/modules/user_manag
 import { deleteClassGroup, getClassGroups } from 'src/modules/settings/modules/user_management/display/store/actions';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
 import { customNotify } from 'src/core/utils/notifications';
-import { useCompaniesStore } from '../../../companies/display/store';
 import { useAuthStore } from 'src/modules/auth/display/store';
 
 const router = useRouter();
 const filter = ref<string>('');
 const userManagementStore = useUsersManagementStore();
-const companiesStore = useCompaniesStore();
 const authStore = useAuthStore();
 
 onMounted(async () => {

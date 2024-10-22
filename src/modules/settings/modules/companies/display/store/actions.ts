@@ -5,7 +5,6 @@ import { CompaniesRepositoryImpl } from '../../data/respositories/companiesRepos
 import { CompaniesUseCases } from '../../domain/use-cases/companiesUseCases';
 import { exceptiosResponseHandler } from 'src/core/helpers/exceptions';
 import { CompanyModel, companyModelToJson } from '../../data/models/companyModel';
-import { ThirdModel } from '../../data/models/thrid/thirdModel';
 
 const companiesRepositoryImp = new CompaniesRepositoryImpl(new CompaniesDatasourceImpl());
 const companiesUseCases = new CompaniesUseCases(companiesRepositoryImp);
