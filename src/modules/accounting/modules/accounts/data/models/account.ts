@@ -1,8 +1,8 @@
 class Account {
-  id: number|null;
+  id: number | null;
   code: number;
   name: string;
-  description: string|null;
+  description: string | null;
   level: Level;
   nature: Nature;
   father_id: number | null;
@@ -19,8 +19,8 @@ class Account {
     father_id,
     serial_company,
     children,
-  } : {
-    id: number|null;
+  }: {
+    id: number | null;
     code: number;
     name: string;
     description: string | null;
@@ -42,7 +42,7 @@ class Account {
   }
 }
 
-const accountToJson = (account: Account) =>{
+const accountToJson = (account: Account) => {
   return {
     codigo: account.code,
     nombre: account.name,
@@ -54,8 +54,8 @@ const accountToJson = (account: Account) =>{
   };
 }
 
-const accountFromJson= (json: any) : Account =>{
-  const descendants : any[] = json.descendants;
+const accountFromJson = (json: any): Account => {
+  const descendants: any[] = json.descendants;
   return new Account({
     id: json.id,
     code: json.codigo,
@@ -65,25 +65,33 @@ const accountFromJson= (json: any) : Account =>{
     nature: natureFromJson(json.nature),
     father_id: json.padre_id,
     serial_company: json.empresa_serial,
-    children: descendants.length !== 0 ? descendants.map((item)=> {
+    children: descendants.length !== 0 ? descendants.map((item) => {
       return accountFromJson(item);
     }) : [],
   });
 }
 
-const natureToJson =  (nature: Nature) : string =>{
+export function accountToTreeData(account: Account): any {
+  return {
+    label: account.name,
+    value: account,
+    children: account.children.length > 0 ? account.children.map((accountChild) => accountToTreeData(accountChild)) : []
+  }
+}
+
+const natureToJson = (nature: Nature): string => {
   if (nature === Nature.debtor) return "deudora"
   //else if (nature === Nature.creditor)
   return "acreedora";
 }
 
-const natureFromJson = (nature: string) : Nature=>{
+const natureFromJson = (nature: string): Nature => {
   if (nature === 'acreedora') return Nature.creditor;
   //else if (nature === 'deudora') return Nature.debtor;
   else return Nature.debtor;
 }
 
-const levelToJson = (level: Level) : string | null =>{
+const levelToJson = (level: Level): string | null => {
   if (level === Level.class) return 'clase';
   else if (level === Level.group) return 'grupo';
   else if (level === Level.account) return 'cuenta';
@@ -93,7 +101,7 @@ const levelToJson = (level: Level) : string | null =>{
   else return 'subauxiliar';
 }
 
-const levelFromJson = (level: string) : Level=>{
+const levelFromJson = (level: string): Level => {
   if (level === 'clase') return Level.class;
   else if (level === 'grupo') return Level.group;
   else if (level === 'cuenta') return Level.account;

@@ -75,11 +75,20 @@ const routes: RouteRecordRaw[] = [
           access: accessRols.all
         },
       },
-      
+      //ACCOUNTING
       { 
-        path: 'test', 
+        path: 'accounts', 
         beforeEnter: [checkIfAuthenticated],
-        component: () => import('../xpagesx/IndexPage.vue'), 
+        component: () => import('../modules/accounting/modules/accounts/display/views/CompaniesAccountView.vue'), 
+        meta: {
+          requiresAuth: true,
+          access: accessRols.all
+        },
+      },
+      { 
+        path: 'company-account', 
+        beforeEnter: [checkIfAuthenticated],
+        component: () => import('../modules/accounting/modules/accounts/display/views/CompaniesAccountView.vue'), 
         meta: {
           requiresAuth: true,
           access: accessRols.all

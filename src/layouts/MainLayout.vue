@@ -70,7 +70,7 @@ const menuItemList = ref<SideBarItemProps[]>([
   {
     title: 'Contabilidad',
     icon: 'receipt_long',
-    route: '/main/test',
+    route: '/main/accounts',
     isSelected: false,
   },
   {

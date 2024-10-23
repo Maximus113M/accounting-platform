@@ -14,7 +14,7 @@ const getPuc = async (serial: number) => {
     const token = sessionStorage.getItem('token');
     const resp= await accountUseCases.getPuc(token!, serial);
 
-    return { status: statusMessages.success, message: 'Sesión iniciada', data: resp};
+    return { status: statusMessages.success, message: 'PUC actualizado!', data: resp};
   }  catch (error) {
     console.log(error);
     return { status: statusMessages.fail, error: error, message: exceptiosResponseHandler({error: error})};
