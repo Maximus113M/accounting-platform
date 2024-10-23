@@ -1,4 +1,4 @@
-import { Level } from "src/modules/accounting/modules/accounts/data/models/account";
+import { Level } from 'src/modules/accounting/modules/accounts/data/models/account';
 
 export const deepClone = <T>(obj: T): T => {
   if (obj === null || typeof obj !== 'object') {

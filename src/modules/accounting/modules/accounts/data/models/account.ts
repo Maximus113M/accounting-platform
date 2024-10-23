@@ -73,16 +73,16 @@ const accountFromJson = (json: any): Account => {
 
 export function accountToTreeData(account: Account): any {
   return {
-    label: account.name,
+    label: account.code +' - '+ account.name,
     value: account,
     children: account.children.length > 0 ? account.children.map((accountChild) => accountToTreeData(accountChild)) : []
   }
 }
 
 const natureToJson = (nature: Nature): string => {
-  if (nature === Nature.debtor) return "deudora"
+  if (nature === Nature.debtor) return 'deudora'
   //else if (nature === Nature.creditor)
-  return "acreedora";
+  return 'acreedora';
 }
 
 const natureFromJson = (nature: string): Nature => {

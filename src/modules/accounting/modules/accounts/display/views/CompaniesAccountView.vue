@@ -55,14 +55,15 @@
                     <div class="col-6">
                         <q-tree :nodes="treeData" node-key="label">
                             <template v-slot:default-header="props">
-
                                 <div @click="onSelectedAccount(props.node)"
                                     class="text-weight-bold text-grey-8 cursor-pointer">
                                     {{ props.key }}
                                 </div>
-
-
                             </template>
+                            <template v-slot:default-body="props">
+                                    {{ props.node.value.name }}
+                            </template>
+
                         </q-tree>
                     </div>
                     <div class="col-6" style="border-left: 2px solid lightgray;">
@@ -121,7 +122,7 @@ import { useCompaniesStore } from 'src/modules/settings/modules/companies/displa
 import { onMounted, ref } from 'vue';
 import { useAccountStore } from '../store';
 import { statusMessages } from 'src/core/helpers/generalHelpers';
-import { Account, accountToTreeData, Level, Nature } from '../../data/models/account';
+import { Account, accountToTreeData, Level } from '../../data/models/account';
 import { getLevelName, getNextLevel } from 'src/core/utils/general';
 
 const authStore = useAuthStore();
@@ -251,7 +252,6 @@ function onSelectedAccount(accountNode: { label: string, value: Account, childre
 
         selectedAccounts.value.push(foundFatherAssitant);
         selectedAccounts.value.push(accountNode.value);
-        console.log(selectedAccounts.value);
     }
 
 }
